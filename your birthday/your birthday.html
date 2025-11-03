@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>С Днем Рождения, Майрам!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        
+        body {
+            background: linear-gradient(to bottom, #1a237e, #0d47a1);
+            color: white;
+        }
+        
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* Balloon Page */
+        #balloon-page {
+            z-index: 10;
+        }
+        
+        .balloon {
+            position: absolute;
+            width: 50px;
+            height: 60px;
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        .balloon:before {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(20deg); }
+        }
+        
+        .start-button {
+            padding: 20px 50px;
+            font-size: clamp(20px, 5vw, 28px);
+            background: linear-gradient(45deg, #FF5252, #FF4081);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            transition: all 0.3s;
+            font-weight: bold;
+            min-width: 250px;
+        }
+        
+        .start-button:hover, .start-button:active {
+            transform: scale(1.1);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Fireworks Page */
+        #fireworks-page {
+            background: #000;
+            z-index: 20;
+        }
+        
+        .firework {
+            position: absolute;
+            border-radius: 50%;
+        }
+        
+        /* Jumbled Letters Page */
+        #jumble-page {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            z-index: 30;
+        }
+        
+        .letter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: clamp(10px, 3vw, 15px);
+            margin: 20px 0;
+        }
+        
+        .letter {
+            width: clamp(60px, 15vw, 80px);
+            height: clamp(60px, 15vw, 80px);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(24px, 6vw, 30px);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            color: #333;
+            user-select: none;
+        }
+        
+        .letter:hover, .letter:active {
+            transform: scale(1.1);
+            background: #FFD700;
+        }
+        
+        .selected {
+            background: #FFD700 !important;
+            transform: scale(1.1);
+        }
+        
+        .message {
+            color: white;
+            font-size: clamp(18px, 4vw, 24px);
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            padding: 0 10px;
+            line-height: 1.4;
+        }
+        
+        /* Surprise Page */
+        #surprise-page {
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            z-index: 40;
+            overflow-y: auto;
+        }
+        
+        .birthday-message {
+            font-size: clamp(32px, 8vw, 48px);
+            font-weight: bold;
+            color: #ff4081;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            text-align: center;
+            animation: pulse 2s infinite;
+            padding: 0 10px;
+        }
+        
+        .sister-message {
+            font-size: clamp(16px, 4vw, 20px);
+            color: #1a237e;
+            text-align: center;
+            max-width: 90%;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            padding: 0 10px;
+        }
+        
+        .photo-container {
+            position: relative;
+            width: min(320px, 80vw);
+            height: min(320px, 80vw);
+            margin-bottom: 20px;
+        }
+        
+        .curtain {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, #8B0000, #B22222);
+            transition: height 1.5s ease-in-out;
+            z-index: 10;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .curtain::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent);
+        }
+        
+        .curtain-left {
+            left: 0;
+            border-radius: 10px 0 0 10px;
+        }
+        
+        .curtain-right {
+            right: 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .curtain-rope {
+            position: absolute;
+            top: -12px;
+            width: 8px;
+            height: 20px;
+            background: #DAA520;
+            border-radius: 4px;
+            z-index: 11;
+        }
+        
+        .curtain-rope-left {
+            left: 30px;
+        }
+        
+        .curtain-rope-right {
+            right: 30px;
+        }
+        
+        .photo-frame {
+            width: 100%;
+            height: 100%;
+            border: 8px solid white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: clamp(14px, 3vw, 16px);
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .photo-placeholder i {
+            font-size: clamp(50px, 12vw, 70px);
+            margin-bottom: 10px;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ff4081;
+            opacity: 0.8;
+            animation: fall linear forwards;
+            pointer-events: none;
+        }
+        
+        .music-control {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #FF5252, #FF4081);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: clamp(16px, 4vw, 18px);
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            margin-top: 15px;
+            min-width: 180px;
+        }
+        
+        .music-control:hover, .music-control:active {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Простая кнопка для перенаправления */
+        .redirect-button {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: clamp(16px, 4vw, 18px);
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            margin-top: 15px;
+            min-width: 200px;
+        }
+
+        .redirect-button:hover, .redirect-button:active {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #45a049, #4CAF50);
+        }
+        
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        /* Progress bar for loading */
+        .loading-bar {
+            width: 80%;
+            max-width: 300px;
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: #FFD700;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+        
+        /* Success message */
+        .success-message {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: clamp(16px, 4vw, 20px);
+            margin: 10px 0;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Error message */
+        .error-message {
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: clamp(16px, 4vw, 18px);
+            margin: 10px 0;
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .letter-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .photo-container {
+                width: min(280px, 85vw);
+                height: min(280px, 85vw);
+            }
+            
+            .button-container {
+                gap: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .letter-grid {
+                gap: 8px;
+            }
+            
+            .letter {
+                width: 55px;
+                height: 55px;
+                font-size: 20px;
+            }
+            
+            .photo-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .curtain-rope-left {
+                left: 20px;
+            }
+            
+            .curtain-rope-right {
+                right: 20px;
+            }
+            
+            .button-container {
+                gap: 10px;
+            }
+        }
+        
+        /* Orientation specific styles */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .page {
+                padding: 10px;
+                justify-content: flex-start;
+                padding-top: 20px;
+            }
+            
+            .letter-grid {
+                margin: 10px 0;
+            }
+            
+            .photo-container {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .sister-message {
+                margin-bottom: 15px;
+            }
+            
+            .button-container {
+                flex-direction: row;
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Balloon Page -->
+    <div id="balloon-page" class="page">
+        <button class="start-button" onclick="startFireworks()">
+            <i class="fas fa-gift"></i> Нажмите для сюрприза!
+        </button>
+    </div>
+    
+    <!-- Fireworks Page -->
+    <div id="fireworks-page" class="page hidden"></div>
+    
+    <!-- Jumbled Letters Page -->
+    <div id="jumble-page" class="page hidden">
+        <p class="message">Найдите и выберите буквы слова "АПА"!</p>
+        <div class="letter-grid">
+            <div class="letter" onclick="selectLetter(this)">А</div>
+            <div class="letter" onclick="selectLetter(this)">П</div>
+            <div class="letter" onclick="selectLetter(this)">А</div>
+            <div class="letter" onclick="selectLetter(this)">Р</div>
+            <div class="letter" onclick="selectLetter(this)">М</div>
+            <div class="letter" onclick="selectLetter(this)">И</div>
+            <div class="letter" onclick="selectLetter(this)">В</div>
+            <div class="letter" onclick="selectLetter(this)">Е</div>
+            <div class="letter" onclick="selectLetter(this)">Н</div>
+            <div class="letter" onclick="selectLetter(this)">Г</div>
+            <div class="letter" onclick="selectLetter(this)">О</div>
+            <div class="letter" onclick="selectLetter(this)">В</div>
+            <div class="letter" onclick="selectLetter(this)">Ы</div>
+            <div class="letter" onclick="selectLetter(this)">Р</div>
+            <div class="letter" onclick="selectLetter(this)">Д</div>
+            <div class="letter" onclick="selectLetter(this)">Й</div>
+        </div>
+        <div id="selection-message"></div>
+    </div>
+    
+    <!-- Surprise Page -->
+    <div id="surprise-page" class="page hidden">
+        <h1 class="birthday-message">Туулган кунунуз менен , Майрам апам!</h1>
+        <p class="sister-message">Майрам апа туулган  кунунуз менен куттуктайм коп жашаныз кулуп жайнап журунуз жузунуздон жылмаю тушпосун и баарына рахмат
+спасибо за всё!</p>
+        
+        <div class="photo-container">
+            <div class="curtain-rope curtain-rope-left"></div>
+            <div class="curtain-rope curtain-rope-right"></div>
+            <div class="curtain curtain-left"></div>
+            <div class="curtain curtain-right"></div>
+            <div class="photo-frame">
+               <div class="photo-frame">
+    <img src="./WhatsApp Image 2025-10-30 at 13.02.41.jpeg" alt="Майрам апа" style="width:100%; height:100%; object-fit:cover;">
+</div>
+
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button class="music-control" onclick="toggleMusic()">
+                <i class="fas fa-pause"></i> Пауза
+            </button>
+            
+            <!-- Простая кнопка для перенаправления -->
+            <button class="redirect-button" onclick="redirectToNextPage()">
+                <i class="fas fa-arrow-right"></i> Следующий сюрприз
+            </button>
+        </div>
+    </div>
+    
+    <audio id="birthdayAudio" loop preload="auto">
+        <source src="./меолдия красивый.mp4" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        // Global variables
+        let selectedLetters = [];
+        let currentPage = 'balloon-page';
+        const correctWord = 'АПА'; // Изменено с МАЙРАМ на АПА
+        
+        // Initialize the application
+        function init() {
+            createBalloons();
+            preloadAudio();
+            
+            // Add touch event listeners for better mobile support
+            document.addEventListener('touchstart', function() {}, {passive: true});
+            
+            // Prevent context menu on long press
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        }
+        
+        // Create balloons
+        function createBalloons() {
+            const colors = ['#FF5252', '#FF4081', '#E040FB', '#7C4DFF', '#536DFE', '#448AFF', '#40C4FF', '#18FFFF', '#64FFDA', '#69F0AE'];
+            const balloonPage = document.getElementById('balloon-page');
+            
+            // Clear existing balloons
+            balloonPage.querySelectorAll('.balloon').forEach(balloon => balloon.remove());
+            
+            for (let i = 0; i < 30; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                
+                // Random properties
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.random() * 20 + 40;
+                const left = Math.random() * 100;
+                const animationDelay = Math.random() * 15;
+                const animationDuration = Math.random() * 10 + 10;
+                
+                // Apply styles
+                balloon.style.width = `${size}px`;
+                balloon.style.height = `${size * 1.2}px`;
+                balloon.style.background = color;
+                balloon.style.left = `${left}%`;
+                balloon.style.animationDelay = `${animationDelay}s`;
+                balloon.style.animationDuration = `${animationDuration}s`;
+                
+                balloonPage.appendChild(balloon);
+            }
+        }
+        
+        // Preload audio for better performance
+        function preloadAudio() {
+            const audio = document.getElementById('birthdayAudio');
+            audio.load();
+        }
+        
+        // Switch between pages
+        function showPage(pageId) {
+            // Hide current page
+            document.getElementById(currentPage).classList.add('hidden');
+            
+            // Show new page
+            document.getElementById(pageId).classList.remove('hidden');
+            currentPage = pageId;
+        }
+        
+        // Start fireworks
+        function startFireworks() {
+            showPage('fireworks-page');
+            
+            // Create fireworks
+            createFireworks();
+            
+            // After fireworks, show jumbled letters
+            setTimeout(() => {
+                showPage('jumble-page');
+                resetLetterSelection();
+            }, 4000);
+        }
+        
+        // Create fireworks effect
+        function createFireworks() {
+            const fireworksPage = document.getElementById('fireworks-page');
+            const colors = ['#FF5252', '#FF4081', '#FFD700', '#00E5FF', '#7C4DFF', '#18FFFF', '#64FFDA'];
+            
+            // Clear existing fireworks
+            fireworksPage.querySelectorAll('.firework').forEach(firework => firework.remove());
+            
+            for (let i = 0; i < 40; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    
+                    // Random properties
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const size = Math.random() * 8 + 2;
+                    const left = Math.random() * 100;
+                    const top = Math.random() * 100;
+                    
+                    // Apply styles
+                    firework.style.width = `${size}px`;
+                    firework.style.height = `${size}px`;
+                    firework.style.background = color;
+                    firework.style.left = `${left}%`;
+                    firework.style.top = `${top}%`;
+                    firework.style.boxShadow = `0 0 ${size*2}px ${size/2}px ${color}`;
+                    
+                    fireworksPage.appendChild(firework);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (firework.parentNode) {
+                            firework.remove();
+                        }
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+        
+        // Letter selection logic
+        function selectLetter(element) {
+            // If already selected, deselect it
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                selectedLetters = selectedLetters.filter(letter => letter !== element);
+                updateSelectionMessage();
+                return;
+            }
+            
+            // If we already have 3 letters, don't allow more
+            if (selectedLetters.length >= 3) { // Изменено с 6 на 3
+                showErrorMessage('Уже выбрано 3 буквы! Сначала снимите выделение с некоторых букв.');
+                return;
+            }
+            
+            // Select the letter
+            element.classList.add('selected');
+            selectedLetters.push(element);
+            updateSelectionMessage();
+            
+            // Check if we have the correct word
+            if (selectedLetters.length === 3) { // Изменено с 6 на 3
+                const word = selectedLetters.map(el => el.textContent).join('');
+                if (word === correctWord) {
+                    // Correct selection
+                    showSuccessMessage('Правильно! Открываем сюрприз...');
+                    setTimeout(showSurprisePage, 1500);
+                } else {
+                    // Wrong selection
+                    showErrorMessage('Неверно! Попробуйте еще раз.');
+                    setTimeout(resetLetterSelection, 1500);
+                }
+            }
+        }
+        
+        // Reset letter selection
+        function resetLetterSelection() {
+            selectedLetters.forEach(el => el.classList.remove('selected'));
+            selectedLetters = [];
+            updateSelectionMessage();
+        }
+        
+        // Update selection message
+        function updateSelectionMessage() {
+            const messageEl = document.getElementById('selection-message');
+            if (selectedLetters.length > 0) {
+                const currentWord = selectedLetters.map(el => el.textContent).join('');
+                messageEl.textContent = `Выбрано: ${currentWord}`;
+                messageEl.className = 'message';
+            } else {
+                messageEl.textContent = '';
+                messageEl.className = '';
+            }
+        }
+        
+        // Show success message
+        function showSuccessMessage(text) {
+            const messageEl = document.getElementById('selection-message');
+            messageEl.textContent = text;
+            messageEl.className = 'success-message';
+        }
+        
+        // Show error message
+        function showErrorMessage(text) {
+            const messageEl = document.getElementById('selection-message');
+            messageEl.textContent = text;
+            messageEl.className = 'error-message';
+        }
+        
+        // Show surprise page
+        function showSurprisePage() {
+            showPage('surprise-page');
+            
+            // Play birthday music
+            const audio = document.getElementById('birthdayAudio');
+            audio.play().catch(e => {
+                console.log('Автовоспроизведение заблокировано');
+            });
+            
+            // Create confetti
+            createConfetti();
+            
+            // Open the curtains after a short delay
+            setTimeout(openCurtains, 1000);
+        }
+        
+        // Open curtains effect
+        function openCurtains() {
+            const leftCurtain = document.querySelector('.curtain-left');
+            const rightCurtain = document.querySelector('.curtain-right');
+            
+            if (leftCurtain && rightCurtain) {
+                leftCurtain.style.height = '0%';
+                rightCurtain.style.height = '0%';
+            }
+        }
+        
+        // Toggle music
+        function toggleMusic() {
+            const audio = document.getElementById('birthdayAudio');
+            const button = document.querySelector('.music-control');
+            const icon = button.querySelector('i');
+            
+            if (audio.paused) {
+                audio.play();
+                icon.className = 'fas fa-pause';
+                button.innerHTML = '<i class="fas fa-pause"></i> Пауза';
+            } else {
+                audio.pause();
+                icon.className = 'fas fa-play';
+                button.innerHTML = '<i class="fas fa-play"></i> Включить музыку';
+            }
+        }
+        
+        // Create confetti effect
+        function createConfetti() {
+            const surprisePage = document.getElementById('surprise-page');
+            const colors = ['#FF5252', '#FF4081', '#FFD700', '#00E5FF', '#7C4DFF', '#18FFFF', '#64FFDA'];
+            
+            // Clear existing confetti
+            surprisePage.querySelectorAll('.confetti').forEach(confetti => confetti.remove());
+            
+            for (let i = 0; i < 120; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    
+                    // Random properties
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const size = Math.random() * 8 + 4;
+                    const left = Math.random() * 100;
+                    const animationDelay = Math.random() * 5;
+                    const animationDuration = Math.random() * 5 + 5;
+                    
+                    // Apply styles
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    confetti.style.background = color;
+                    confetti.style.left = `${left}%`;
+                    confetti.style.animationDelay = `${animationDelay}s`;
+                    confetti.style.animationDuration = `${animationDuration}s`;
+                    
+                    surprisePage.appendChild(confetti);
+                }, i * 30);
+            }
+        }
+        
+        // Функция для перенаправления на другой файл
+        function redirectToNextPage() {
+            // Простое перенаправление на другой файл
+            window.location.href = 'next-page.html';
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (currentPage === 'balloon-page') {
+                createBalloons();
+            }
+        });
+        
+        // Handle orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(() => {
+                if (currentPage === 'balloon-page') {
+                    createBalloons();
+                }
+            }, 300);
+        });
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
