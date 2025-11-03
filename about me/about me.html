@@ -8,13 +8,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --accent: #ff6b6b;
-            --light: #ffffff;
-            --dark: #333333;
-            --gray: #f5f5f5;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --primary: #8A2BE2;
+            --secondary: #4B0082;
+            --accent: #00CED1;
+            --dark-bg: #121212;
+            --dark-card: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-border: #333333;
+            --shadow: 0 10px 30px rgba(0,0,0,0.3);
+            --glow: 0 0 15px rgba(138, 43, 226, 0.5);
         }
 
         * {
@@ -31,8 +33,8 @@
         }
 
         body {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: var(--dark);
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1a2e 100%);
+            color: var(--dark-text);
             line-height: 1.6;
             min-height: 100vh;
             overflow-x: hidden;
@@ -40,6 +42,21 @@
             -khtml-user-drag: none;
             -moz-user-drag: none;
             -o-user-drag: none;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(75, 0, 130, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(0, 206, 209, 0.05) 0%, transparent 30%);
+            z-index: -1;
         }
 
         .container {
@@ -51,7 +68,7 @@
         header {
             text-align: center;
             padding: 40px 0;
-            color: var(--light);
+            color: var(--dark-text);
             position: relative;
         }
 
@@ -64,11 +81,11 @@
         .profile-img {
             width: 200px;
             height: 200px;
-            border-radius: 15px;
+            border-radius: 50%;
             object-fit: cover;
-            border: 3px solid var(--light);
+            border: 4px solid var(--primary);
             margin-bottom: 20px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow), var(--glow);
             position: relative;
             z-index: 2;
             transition: all 0.5s ease;
@@ -82,8 +99,8 @@
         }
 
         .profile-img:hover {
-            transform: scale(1.03);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 25px rgba(138, 43, 226, 0.6);
         }
 
         .image-protection {
@@ -92,24 +109,34 @@
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 15px;
+            border-radius: 50%;
             z-index: 3;
             cursor: default;
             background: transparent;
         }
 
         h1 {
-            font-size: 2.2em;
+            font-size: 2.5em;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             letter-spacing: 1px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .title {
             font-size: 1.4em;
             margin-bottom: 10px;
-            color: #ffeb3b;
+            color: var(--accent);
             font-weight: bold;
+            background: rgba(30, 30, 30, 0.7);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--dark-border);
         }
 
         .subtitle {
@@ -117,6 +144,10 @@
             opacity: 0.9;
             max-width: 500px;
             margin: 0 auto;
+            background: rgba(30, 30, 30, 0.7);
+            padding: 12px 25px;
+            border-radius: 20px;
+            border: 1px solid var(--dark-border);
         }
 
         .main-content {
@@ -130,13 +161,26 @@
         }
 
         .card {
-            background: var(--light);
-            padding: 25px;
+            background: var(--dark-card);
+            padding: 30px;
             border-radius: 20px;
             box-shadow: var(--shadow);
             transition: all 0.4s ease;
             opacity: 0;
             transform: translateY(30px);
+            border: 1px solid var(--dark-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
         }
 
         .card.visible {
@@ -146,28 +190,31 @@
 
         .card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), var(--glow);
         }
 
-        .channel-section {
-            background: linear-gradient(135deg, #08c 0%, #0044cc 100%);
-            color: var(--light);
+        .contact-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--dark-text);
             text-align: center;
+            border: 1px solid rgba(0, 206, 209, 0.3);
         }
 
-        .channel-section h2 {
-            color: var(--light);
+        .contact-section h2 {
+            color: var(--accent);
         }
 
-        .channel-section .btn {
-            background: var(--light);
-            color: #08c;
+        .contact-section .btn {
+            background: linear-gradient(135deg, var(--accent), #008B8B);
+            color: var(--dark-bg);
             margin: 10px;
+            font-weight: bold;
         }
 
-        .channel-section .btn:hover {
-            background: #f0f0f0;
+        .contact-section .btn:hover {
+            background: linear-gradient(135deg, #00E5E5, #009999);
             transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 206, 209, 0.3);
         }
 
         h2 {
@@ -181,45 +228,7 @@
 
         h2 i {
             font-size: 1.2em;
-        }
-
-        .skill {
-            margin-bottom: 20px;
-        }
-
-        .skill-name {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .skill-bar {
-            background: var(--gray);
-            border-radius: 10px;
-            overflow: hidden;
-            height: 12px;
-            position: relative;
-        }
-
-        .skill-level {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            transition: width 1.5s ease-in-out;
-            width: 0%;
-            position: relative;
-        }
-
-        .skill-level::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shimmer 2s infinite;
+            color: var(--accent);
         }
 
         .btn {
@@ -229,7 +238,7 @@
             gap: 10px;
             padding: 14px 28px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--light);
+            color: var(--dark-text);
             text-decoration: none;
             border-radius: 50px;
             text-align: center;
@@ -237,7 +246,7 @@
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -246,23 +255,48 @@
 
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.4);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 20px;
+            border: 1px solid var(--dark-border);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .cta-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cta-text {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: var(--accent);
+            font-weight: 600;
         }
 
         .quote {
             font-style: italic;
             text-align: center;
             padding: 25px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(30, 30, 30, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            color: var(--light);
+            color: var(--dark-text);
             margin-top: 40px;
             font-size: 1.1em;
-            border-left: 4px solid #ffeb3b;
+            border-left: 4px solid var(--accent);
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.6s ease;
+            border: 1px solid var(--dark-border);
         }
 
         .quote.visible {
@@ -270,31 +304,57 @@
             transform: translateY(0);
         }
 
-        .channel-stats {
+        .contact-info {
             display: flex;
-            gap: 25px;
-            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
             margin-top: 20px;
-            flex-wrap: wrap;
+            text-align: left;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .stat {
-            text-align: center;
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
             padding: 15px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(30, 30, 30, 0.7);
             border-radius: 10px;
-            min-width: 100px;
+            border: 1px solid var(--dark-border);
+            transition: transform 0.3s ease;
         }
 
-        .stat-number {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #ffeb3b;
+        .contact-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
-        .stat-label {
-            font-size: 0.85em;
-            opacity: 0.9;
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            font-size: 1.2em;
+        }
+
+        .contact-text {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .contact-value {
+            font-weight: 600;
+            color: var(--accent);
         }
 
         .social-links {
@@ -308,14 +368,34 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            color: var(--light);
-            font-size: 1.2em;
+            background: rgba(30, 30, 30, 0.7);
+            color: var(--dark-text);
+            font-size: 1.3em;
             transition: all 0.3s ease;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--dark-border);
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(0);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .social-link:hover::before {
+            transform: scale(1);
         }
 
         .social-link:hover {
@@ -323,19 +403,21 @@
         }
 
         .social-link.telegram:hover {
-            background: var(--light);
-            color: #0088cc;
+            background: #0088cc;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.4);
         }
 
         .social-link.tiktok:hover {
             background: #000000;
             color: #ff0050;
-            box-shadow: 0 5px 15px rgba(255, 0, 80, 0.3);
+            box-shadow: 0 5px 15px rgba(255, 0, 80, 0.4);
         }
 
         .social-link.instagram:hover {
-            background: var(--light);
-            color: #e4405f;
+            background: #e4405f;
+            color: white;
+            box-shadow: 0 5px 15px rgba(228, 64, 95, 0.4);
         }
 
         /* Защитное сообщение */
@@ -357,11 +439,6 @@
         }
 
         /* Анимации */
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
         @keyframes pulse {
             0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
             70% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
@@ -379,7 +456,7 @@
             }
             
             h1 {
-                font-size: 1.8em;
+                font-size: 2em;
             }
             
             .title {
@@ -400,17 +477,16 @@
                 font-size: 1.4em;
             }
             
-            .channel-stats {
-                gap: 15px;
+            .contact-info {
+                gap: 10px;
             }
             
-            .stat {
-                min-width: 80px;
+            .contact-item {
                 padding: 12px;
             }
             
-            .stat-number {
-                font-size: 1.5em;
+            .cta-text {
+                font-size: 1.2em;
             }
         }
 
@@ -420,7 +496,7 @@
             }
             
             h1 {
-                font-size: 1.6em;
+                font-size: 1.8em;
             }
             
             .profile-img {
@@ -438,26 +514,27 @@
                 font-size: 1em;
             }
             
-            .channel-stats {
-                gap: 10px;
-            }
-            
-            .stat {
-                min-width: 70px;
-                padding: 10px;
-            }
-            
-            .stat-number {
-                font-size: 1.3em;
-            }
-            
             .social-links {
                 gap: 10px;
             }
             
             .social-link {
-                width: 40px;
-                height: 40px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.2em;
+            }
+            
+            .contact-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .cta-section {
+                padding: 20px;
+            }
+            
+            .cta-text {
                 font-size: 1.1em;
             }
         }
@@ -469,7 +546,7 @@
             }
             
             h1 {
-                font-size: 1.4em;
+                font-size: 1.6em;
             }
             
             .title {
@@ -519,79 +596,33 @@
             </div>
             <h1>mambetovv</h1>
             <div class="title">Frontend разработчик</div>
-            <p class="subtitle">Начинающий программист | Веб-разработка</p>
+            <p class="subtitle"> Только начинаю свой путь в IT</p>
         </header>
 
         <div class="main-content">
             <div class="card" id="about-card">
                 <h2><i class="fas fa-user"></i> Обо мне</h2>
-                <p>Привет! Я Frontend разработчик, который создает красивые и функциональные веб-интерфейсы.</p>
-                <p>Только начинаю свой путь в IT. Увлекаюсь веб-разработкой и постоянно учусь чему-то новому.</p>
+                <p>Привет! Я Frontend разработчик, который создает красивые и функциональные веб-интерфейсы.
+                Только начинаю свой путь в IT. Увлекаюсь веб-разработкой и постоянно учусь чему-то новому</p>
+                <p>Страстно увлечен веб-разработкой и постоянно совершенствую свои навыки. Верю, что хороший дизайн и качественный код могут изменить пользовательский опыт к лучшему.</p>
+                <p>Люблю решать сложные задачи и создавать продукты, которые приносят реальную пользу людям.</p>
             </div>
 
-            <div class="card" id="skills-card">
-                <h2><i class="fas fa-code"></i> Мои навыки</h2>
-                <div class="skill">
-                    <div class="skill-name">
-                        <span>HTML</span>
-                        <span>90%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-level" data-width="90"></div>
-                    </div>
-                </div>
-                <div class="skill">
-                    <div class="skill-name">
-                        <span>CSS</span>
-                        <span>50%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-level" data-width="50"></div>
-                    </div>
-                </div>
-                <div class="skill">
-                    <div class="skill-name">
-                        <span>JavaScript</span>
-                        <span>25%</span>
-                    </div>
-                    <div class="skill-bar">
-                        <div class="skill-level" data-width="25"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card channel-section" id="channel-card">
-                <h2><i class="fab fa-telegram"></i> Мой Telegram канал</h2>
-                <p>Подписывайтесь на мой канал о Frontend разработке!</p>
-                <p>Делимся полезными материалами, советами и последними тенденциями в веб-разработке.</p>
-                
-                <div class="channel-stats">
-                    <div class="stat">
-                        <div class="stat-number">100+</div>
-                        <div class="stat-label">подписчиков</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">50+</div>
-                        <div class="stat-label">постов</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">24/7</div>
-                        <div class="stat-label">полезный контент</div>
-                    </div>
-                </div>
-                
-                <a href="https://t.me/StackMambetovv" class="btn" target="_blank">
-                    <i class="fab fa-telegram"></i> Подписаться на канал
+            <div class="cta-section" id="cta-section">
+                <div class="cta-text">Если есть вопросы? Напишите мне в личку!</div>
+                <a href="https://t.me/mambetovv_CODE" class="btn" target="_blank">
+                    <i class="fab fa-telegram"></i> Написать в Telegram
                 </a>
             </div>
-        </div>
+
+            
 
         <div class="quote" id="quote">
             <p>"Мы вместе будем всё изучать! Давайте расти и развиваться в Frontend разработке вместе! 🚀"</p>
         </div>
 
         <div class="social-links">
-            <a href="https://t.me/StackMambetovv" class="social-link telegram" target="_blank">
+            <a href="https://t.me/mambetovv_CODE" class="social-link telegram" target="_blank">
                 <i class="fab fa-telegram"></i>
             </a>
             <a href="https://www.tiktok.com/@gym_mambetovv" class="social-link tiktok" target="_blank">
@@ -693,20 +724,10 @@
                 }, 2000);
             }
             
-            // Анимация прогресс-баров
-            const skillLevels = document.querySelectorAll('.skill-level');
-            
-            // Запускаем анимацию с задержкой
-            setTimeout(() => {
-                skillLevels.forEach(skill => {
-                    const width = skill.getAttribute('data-width');
-                    skill.style.width = width + '%';
-                });
-            }, 800);
-
             // Добавляем анимацию для карточек при скролле
             const cards = document.querySelectorAll('.card');
             const quote = document.getElementById('quote');
+            const ctaSection = document.getElementById('cta-section');
             
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -721,18 +742,19 @@
             });
             
             observer.observe(quote);
+            observer.observe(ctaSection);
 
-            // Добавляем небольшую задержку для появления первой карточки
+            // Добавляем небольшую задержку для появления элементов
             setTimeout(() => {
                 document.getElementById('about-card').classList.add('visible');
             }, 300);
             
             setTimeout(() => {
-                document.getElementById('skills-card').classList.add('visible');
+                document.getElementById('cta-section').classList.add('visible');
             }, 500);
             
             setTimeout(() => {
-                document.getElementById('channel-card').classList.add('visible');
+                document.getElementById('contact-card').classList.add('visible');
             }, 700);
             
             setTimeout(() => {
