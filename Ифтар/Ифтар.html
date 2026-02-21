@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>💖 Ифтар 💖</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(145deg, #b3a2d1, #d9c9f0);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+            transition: background 0.5s;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 20px 30px;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 4px #ffffff inset;
+            text-align: center;
+            width: 90%;
+            max-width: 380px;
+            z-index: 10;
+            border: 2px solid white;
+        }
+
+        .img-box {
+            background: #f0e6ff;
+            border-radius: 30px;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 0 #b19cd9;
+            border: 3px solid white;
+        }
+
+        .img-box img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 20px;
+            display: block;
+        }
+
+        h2 {
+            color: #4a2b5c;
+            font-size: 1.8rem;
+            margin: 10px 0 20px;
+            line-height: 1.4;
+            font-weight: 700;
+            text-shadow: 2px 2px 0 #e6d2ff;
+        }
+
+        h1 {
+            color: #b03a6b;
+            font-size: 2rem;
+            margin: 15px 0;
+            line-height: 1.3;
+            font-weight: 800;
+            text-shadow: 4px 4px 0 #ffc1d6;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            min-height: 100px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        button {
+            padding: 14px 24px;
+            font-size: 1.6rem;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            box-shadow: 0 6px 0 #7f5d8f, 0 10px 20px rgba(0,0,0,0.2);
+            border: 3px solid white;
+            will-change: transform;
+        }
+
+        #btn-yes {
+            background-color: #c65f9c;
+            color: white;
+            transform: scale(1);
+            z-index: 20;
+        }
+
+        #btn-no {
+            background-color: #e58a9c;
+            color: #3d1e2b;
+            position: relative;
+            z-index: 30;
+        }
+
+        #btn-no.runaway {
+            transition: left 0.2s ease-out, top 0.2s ease-out;
+            background-color: #f5a3b5;
+            box-shadow: 0 8px 0 #8f4d60;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .hint {
+            margin-top: 15px;
+            color: #4d3466;
+            font-size: 1rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        @media (max-width: 450px) {
+            .card { padding: 20px 15px; }
+            h2 { font-size: 1.5rem; }
+            button { font-size: 1.4rem; padding: 12px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- Шаг 1: вопрос -->
+        <div id="step-1">
+            <div class="img-box">
+                <img src="https://media.tenor.com/wNIW3hd5rA4AAAAi/%D8%B3%D8%AA%D9%8A%D9%83%D8%B1-%D9%85%D8%AA%D8%AD%D8%B1%D9%83%D8%A9-%D8%B3%D8%A8%D8%AD%D9%87.gif" alt="мишки">
+            </div>
+            <h2>✨ ифтарга чакырасныбы досум? ✨</h2>
+            <div class="buttons">
+                <button id="btn-yes">чакырам🤲</button>
+                <button id="btn-no">😢 жок</button>
+            </div>
+            <div class="hint">.........</div>
+        </div>
+
+        <!-- Шаг 2: согласие -->
+        <div id="step-2" class="hidden">
+            <div class="img-box">
+                <img src="https://media1.tenor.com/m/sejI93quPQkAAAAd/muslim-cat-cat.gif" alt="счастливые мишки">
+            </div>
+            <h1>хахахаххахахаххаахах<br> Болду кутом! ❤️</h1>
+           
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const btnYes = document.getElementById('btn-yes');
+            const btnNo = document.getElementById('btn-no');
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const body = document.body;
+
+            // Сброс инлайн-стилей
+            btnNo.style.position = 'relative';
+            btnNo.style.left = 'auto';
+            btnNo.style.top = 'auto';
+            btnYes.style.transform = 'scale(1)';
+
+            let scaleFactor = 1.0;
+            
+            // Русские фразы для кнопки "Нет" (бесконечный цикл)
+            const noTexts = [
+                "жок",
+                "Точно жок?",
+                "ойлон...",
+                "дагы бас",
+                "антпе :(",
+                "жок 😂",
+                "баарибир жетпейсин",
+                "хахах!",
+                "жет мага",
+                "жок",
+                "жок"
+            ];
+            let textIndex = 0;
+
+            function updateEffects() {
+                // Кнопка "Да" растёт до 3.5х
+                scaleFactor = Math.min(scaleFactor + 0.15, 3.5);
+                btnYes.style.transform = `scale(${scaleFactor})`;
+                btnYes.style.transition = 'transform 0.2s';
+
+                // Смена текста на кнопке "Нет"
+                textIndex = (textIndex + 1) % noTexts.length;
+                btnNo.innerText = '😢 ' + noTexts[textIndex];
+            }
+
+            // Безопасное перемещение кнопки "Нет" (всегда в пределах экрана)
+            function moveButton() {
+                updateEffects();
+
+                const btnWidth = btnNo.offsetWidth;
+                const btnHeight = btnNo.offsetHeight;
+                const padding = 5;
+
+                const maxX = window.innerWidth - btnWidth - padding;
+                const maxY = window.innerHeight - btnHeight - padding;
+
+                if (maxX < padding || maxY < padding) return;
+
+                let x = Math.random() * maxX;
+                let y = Math.random() * maxY;
+
+                x = Math.max(padding, Math.min(x, maxX));
+                y = Math.max(padding, Math.min(y, maxY));
+
+                btnNo.style.position = 'fixed';
+                btnNo.style.left = x + 'px';
+                btnNo.style.top = y + 'px';
+                btnNo.style.right = 'auto';
+                btnNo.style.bottom = 'auto';
+                btnNo.classList.add('runaway');
+            }
+
+            // Коррекция позиции при изменении размера окна
+            function adjustPositionOnResize() {
+                if (btnNo.style.position !== 'fixed') return;
+
+                const btnWidth = btnNo.offsetWidth;
+                const btnHeight = btnNo.offsetHeight;
+                const padding = 5;
+                const maxX = window.innerWidth - btnWidth - padding;
+                const maxY = window.innerHeight - btnHeight - padding;
+
+                let left = parseFloat(btnNo.style.left) || 0;
+                let top = parseFloat(btnNo.style.top) || 0;
+
+                if (left > maxX) left = maxX;
+                if (left < padding) left = padding;
+                if (top > maxY) top = maxY;
+                if (top < padding) top = padding;
+
+                btnNo.style.left = left + 'px';
+                btnNo.style.top = top + 'px';
+            }
+
+            // События для "Нет"
+            btnNo.addEventListener('mouseover', moveButton);
+            btnNo.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                moveButton();
+            });
+            btnNo.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                moveButton();
+            });
+            btnNo.addEventListener('click', (e) => {
+                e.preventDefault();
+                moveButton();
+            });
+
+            // Событие для "Да"
+            btnYes.addEventListener('click', () => {
+                step1.classList.add('hidden');
+                step2.classList.remove('hidden');
+                body.style.background = 'linear-gradient(145deg, #ffc1cc, #ffb6c1)';
+                btnYes.style.display = 'none';
+                btnNo.style.display = 'none';
+            });
+
+            // Коррекция при изменении размера окна
+            window.addEventListener('resize', adjustPositionOnResize);
+
+            // Инициализация
+            window.addEventListener('load', () => {
+                btnNo.style.position = 'relative';
+                btnNo.style.left = 'auto';
+                btnNo.style.top = 'auto';
+                btnNo.classList.remove('runaway');
+            });
+        })();
+    </script>
+</body>
+</html>
