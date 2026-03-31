@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <link rel="icon" type="image/png" href="./image.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="MAMBETOVV KURUT — премиальный курут из Кыргызстана. Натуральный продукт с высокогорных пастбищ, ручная работа, 4 вкуса. Доставка по всей стране.">
+    <meta name="keywords" content="курут, MAMBETOVV, кыргызский курут, натуральный продукт, премиальный курут, сухофрукты, снеки, энергия кочевников">
+    <meta name="author" content="MAMBETOVV BRAND">
+    <meta property="og:title" content="MAMBETOVV KURUT | Премиальный вкус Кыргызстана">
+    <meta property="og:description" content="Натуральный курут ручной работы. Энергия гор в каждом шарике.">
+    <meta property="og:type" content="website">
+    <title>MAMBETOVV KURUT | Премиальный курут из Кыргызстана</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --secondary: #10b981;
+            --dark-bg: #020617;
+            --card-bg: #0f172a;
+            --text-gray: #94a3b8;
+            --text-light: #f1f5f9;
+            --transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* ---- Навигация ---- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 5%;
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(12px);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+            transition: var(--transition);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: #fff;
+            font-weight: 400;
+        }
+
+        /* Десктопное меню */
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Бургер-меню (мобильное) */
+        .burger {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .burger span {
+            width: 28px;
+            height: 2px;
+            background: var(--text-light);
+            transition: var(--transition);
+            border-radius: 2px;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 70px;
+            left: -100%;
+            width: 80%;
+            max-width: 280px;
+            height: calc(100vh - 70px);
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(16px);
+            z-index: 999;
+            transition: left 0.3s ease;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.4);
+        }
+
+        .mobile-menu.open {
+            left: 0;
+        }
+
+        .mobile-menu a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(245,158,11,0.2);
+        }
+
+        .mobile-menu a i {
+            width: 28px;
+            color: var(--primary);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 998;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+
+        .overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* ---- Hero с видео и параллакс-эффектом ---- */
+        .hero {
+            height: 100vh;
+            min-height: 600px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            will-change: transform;
+            transform: scale(1.02);
+            transition: transform 8s ease;
+        }
+
+        .hero:hover .hero-video {
+            transform: scale(1.05);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(2,6,23,0.75), rgba(2,6,23,0.6));
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 0 1.5rem;
+            animation: fadeUp 1s ease forwards;
+        }
+
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.8rem, 8vw, 5rem);
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .hero-content h1 span {
+            color: var(--primary);
+            font-style: italic;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-main {
+            display: inline-block;
+            padding: 14px 38px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+        }
+
+        .btn-main:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+            background: var(--primary-dark);
+        }
+
+        /* ---- Секции (общие) ---- */
+        .section {
+            padding: 90px 8%;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: var(--transition);
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .title-area {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .title-area h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .title-area .line {
+            width: 80px;
+            height: 3px;
+            background: var(--primary);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        /* ---- О куруте (подробно) ---- */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .about-img img {
+            width: 100%;
+            border-radius: 24px;
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.4);
+            transition: var(--transition);
+        }
+
+        .about-img img:hover {
+            transform: scale(1.02);
+        }
+
+        .about-text p {
+            color: var(--text-gray);
+            line-height: 1.7;
+            margin-bottom: 1.2rem;
+        }
+
+        .about-text h3 {
+            color: var(--primary);
+            margin: 1.5rem 0 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        .benefit-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 1.5rem 0;
+        }
+
+        .benefit-badge {
+            background: rgba(245,158,11,0.15);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .benefit-badge:hover {
+            background: rgba(245,158,11,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* ---- Процесс (детальный) ---- */
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .step-card {
+            background: var(--card-bg);
+            padding: 30px 20px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .step-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(245,158,11,0.3);
+            box-shadow: 0 15px 30px -12px rgba(0,0,0,0.4);
+        }
+
+        .step-num {
+            font-size: 3rem;
+            font-weight: 800;
+            color: rgba(245,158,11,0.2);
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .step-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+        }
+
+        /* ---- Продукты (вкусы) - 2 колонки на мобилке ---- */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-12px);
+            border-color: rgba(245,158,11,0.4);
+            box-shadow: 0 25px 35px -15px rgba(0,0,0,0.5);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .product-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .product-price {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin: 10px 0;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .product-price i {
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--secondary);
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ---- Рекламный баннер ---- */
+        .promo-banner {
+            background: linear-gradient(120deg, #f59e0b, #d97706);
+            padding: 50px 30px;
+            border-radius: 40px;
+            color: #000;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .promo-banner:hover {
+            transform: scale(1.01);
+            box-shadow: 0 20px 35px -12px rgba(245,158,11,0.4);
+        }
+
+        .promo-banner h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .promo-banner p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        /* ---- Контакты и соцсети ---- */
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .footer-logo h2 {
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+        }
+
+        .social-icons {
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 30px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            font-size: 1.8rem;
+            color: var(--text-gray);
+            margin: 0 15px;
+            transition: var(--transition);
+            display: inline-block;
+        }
+
+        .social-icons a:hover {
+            color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        footer {
+            background: #010409;
+            padding: 70px 8% 30px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* ---- Адаптивность ---- */
+        @media (max-width: 900px) {
+            .nav-links {
+                display: none;
+            }
+            .burger {
+                display: flex;
+            }
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .section {
+                padding: 60px 5%;
+            }
+            .title-area h2 {
+                font-size: 2rem;
+            }
+            .products-grid {
+                gap: 16px;
+            }
+        }
+
+        /* Главное: на мобильных устройствах (ширина ≤ 700px) товары встают в 2 колонки */
+        @media (max-width: 700px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .product-card img {
+                height: 150px;
+            }
+            .product-info {
+                padding: 1rem;
+            }
+            .product-info h3 {
+                font-size: 1.1rem;
+            }
+            .product-price {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                gap: 12px;
+            }
+            .product-card img {
+                height: 130px;
+            }
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">MAMBETOVV<span>KURUT</span></div>
+    <button class="burger" id="burgerBtn">
+        <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+        <li><a href="#about">О куруте</a></li>
+        <li><a href="#process">Производство</a></li>
+        <li><a href="#products">Вкусы</a></li>
+        <li><a href="#contact">Контакты</a></li>
+    </ul>
+</header>
+
+<!-- Мобильное меню -->
+<div class="mobile-menu" id="mobileMenu">
+    <a href="#about"><i class="fas fa-info-circle"></i> О куруте</a>
+    <a href="#process"><i class="fas fa-mortar-pestle"></i> Производство</a>
+    <a href="#products"><i class="fas fa-ice-cream"></i> Вкусы</a>
+    <a href="#contact"><i class="fas fa-phone-alt"></i> Контакты</a>
+    <a href="https://instagram.com/mambetovv" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+    <a href="https://wa.me/996700123456" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<!-- Hero с видео и параллакс-эффектом -->
+<section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+        <source src="./os1QQUcCoDAFlSGjIZFhBRmgfECggBr0I6fRRE (1).mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>MAMBETOVV <span>KURUT</span></h1>
+        <p>Энергия кочевников, воплощённая в каждом шарике. Натуральный суперфуд из сердца Тянь-Шаня.</p>
+        <a href="#about" class="btn-main">ИССЛЕДОВАТЬ ТРАДИЦИИ</a>
+    </div>
+</section>
+
+<!-- О куруте (подробно) -->
+<section id="about" class="section">
+    <div class="title-area">
+        <h2>Наследие кочевников</h2>
+        <div class="line"></div>
+    </div>
+    <div class="about-grid">
+        <div class="about-img">
+            <img src="https://i.pinimg.com/736x/79/57/57/79575767d21999838c43639b7cd44325.jpg" alt="Кыргызские горы">
+        </div>
+        <div class="about-text">
+            <p><strong>Курут</strong> — это не просто еда, это живая история. На протяжении веков кыргызские кочевники брали его в дальние переходы через высокие горы. Курут может долго храниться без холодильника, даёт невероятную энергию и укрепляет организм.</p>
+            <p><strong>MAMBETOVV KURUT</strong> возрождает старинные рецепты, используя только экологически чистое молоко с высокогорных пастбищ. Мы соединили вековые традиции с современными стандартами качества.</p>
+            <h3>Полезные свойства</h3>
+            <div class="benefit-list">
+                <span class="benefit-badge"><i class="fas fa-bone"></i> Кальций</span>
+                <span class="benefit-badge"><i class="fas fa-bolt"></i> Энергия</span>
+                <span class="benefit-badge"><i class="fas fa-heartbeat"></i> Пробиотики</span>
+                <span class="benefit-badge"><i class="fas fa-leaf"></i> 100% натурально</span>
+                <span class="benefit-badge"><i class="fas fa-dumbbell"></i> богат белком</span>
+            </div>
+            <p>Курут улучшает пищеварение, укрепляет кости и даёт заряд бодрости. Идеально подходит для активных людей, спортсменов и тех, кто ценит здоровое питание.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Производство (подробные этапы) -->
+<section id="process" class="section" style="background: rgba(255,255,255,0.02);">
+    <div class="title-area">
+        <h2>Как рождается наш курут</h2>
+        <div class="line"></div>
+    </div>
+    <div class="process-steps">
+        <div class="step-card">
+            <div class="step-num">01</div>
+            <h3>Отборное молоко</h3>
+            <p>Свежее коровье и овечье молоко с высокогорных джайлоо Нарына. Ежедневная дойка без антибиотиков.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-num">02</div>
+            <h3>Сквашивание & Сузьмо</h3>
+            <p>Айран сцеживают в мешочках из конского волоса до состояния густой массы — сузьмо. Это основа будущего курута.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-num">03</div>
+            <h3>Ручная формовка</h3>
+            <p>Каждый шарик лепится вручную мастерами, добавляется натуральная соль. Традиционная техника без автоматизации.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-num">04</div>
+            <h3>Сушка на солнце</h3>
+            <p>Курут сушится на чистом горном воздухе под лучами кыргызского солнца 3–5 дней. Без печей и искусственной сушки.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Вкусы (4 карточки, на мобилке 2×2) -->
+<section id="products" class="section">
+    <div class="title-area">
+        <h2>Коллекция вкусов</h2>
+        <div class="line"></div>
+    </div>
+    <div class="products-grid">
+        <div class="product-card">
+            <img src="https://avatars.mds.yandex.net/i?id=4bcc290a8b5077ba3ea16695f96f45efaf0b9bb5-7593536-images-thumbs&n=13" alt="Классический">
+            <div class="product-info">
+                <span class="badge"><i class="fas fa-trophy"></i> Бестселлер</span>
+                <h3>Классический</h3>
+                <p>Традиционный солоноватый вкус с идеальным балансом.</p>
+                <div class="product-price"><i class="fas fa-tag"></i> 150 сом</div>
+            </div>
+        </div>
+        <div class="product-card">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkia7gEiuHK1PTa8tOQ6nGu3tZbZrdnpqRXbG4jiZFQJKzBGVV" alt="Острый">
+            <div class="product-info">
+                <span class="badge" style="background: #ef4444;"><i class="fas fa-fire"></i> Хит 🔥</span>
+                <h3>Огненный чили</h3>
+                <p>Жгучий перец чили придаёт яркий вкус.</p>
+                <div class="product-price"><i class="fas fa-tag"></i> 170 сом</div>
+            </div>
+        </div>
+        <div class="product-card">
+            <img src="data:image/jpeg;base64,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" alt="Горные травы">
+            <div class="product-info">
+                <span class="badge" style="background: #3b82f6;"><i class="fas fa-leaf"></i> Organic</span>
+                <h3>Горные травы</h3>
+                <p>Чабрец, душица и мята с альпийских лугов.</p>
+                <div class="product-price"><i class="fas fa-tag"></i> 180 сом</div>
+            </div>
+        </div>
+        <div class="product-card">
+            <img src="https://avatars.mds.yandex.net/i?id=e035b71d1a55d8bd50611987a05a5cd1acb01e63-16473922-images-thumbs&n=13" alt="Копчёный">
+            <div class="product-info">
+                <span class="badge" style="background: #8b5cf6;"><i class="fas fa-crown"></i> Премиум</span>
+                <h3>Дымный аромат</h3>
+                <p>Лёгкое копчение на вишнёвой щепе.</p>
+                <div class="product-price"><i class="fas fa-tag"></i> 190 сом</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Рекламный баннер с призывом -->
+<section class="section">
+    <div class="promo-banner">
+        <h2>Готов к новым вершинам?</h2>
+        <p>MAMBETOVV KURUT — твой идеальный компаньон в путешествиях, спорте и учёбе. Возьми с собой кусочек Кыргызстана!</p>
+        <a href="https://wa.me/996505694279?text=Здравствуйте,%20хочу%20заказать" class="btn-main" style="background: #000; color: #fff;">
+    ЗАКАЗАТЬ СЕЙЧАС
+</a>
+    </div>
+</section>
+
+<!-- Контакты и соцсети -->
+<footer id="contact">
+    <div class="footer-grid">
+        <div class="footer-logo">
+            <h2 class="logo">MAMBETOVV<span>KURUT</span></h2>
+            <p style="color: var(--text-gray);">Возрождая традиции, вдохновляем будущее.</p>
+        </div>
+        <div>
+            <h4>Навигация</h4>
+            <p><a href="#about" style="color: var(--text-gray); text-decoration: none;">О куруте</a></p>
+            <p><a href="#process" style="color: var(--text-gray); text-decoration: none;">Производство</a></p>
+            <p><a href="#products" style="color: var(--text-gray); text-decoration: none;">Вкусы</a></p>
+        </div>
+        <div>
+            <h4>Связь с нами</h4>
+            <p><i class="fas fa-map-marker-alt"></i> г. Бишкек, Кыргызстан</p>
+            <p><i class="fas fa-phone-alt"></i> +996 505-**-42-**</p>
+            <p><i class="fas fa-envelope"></i> MAMBETOVVKURUT@gmail.com</p>
+        </div>
+    </div>
+    <div class="social-icons">
+<a href="https://www.instagram.com/mambetovv_0_7" target="_blank" rel="noopener">
+    <i class="fab fa-instagram"></i>
+</a>
+
+<a href="https://wa.me/996505694279?text=Здравствуйте!%20Хочу%20заказать%20курут" target="_blank" rel="noopener">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<a href="https://t.me/mambetovv_404" target="_blank" rel="noopener">
+    <i class="fab fa-telegram"></i>
+</a>
+
+<a href="https://www.tiktok.com/@mambetovv.x404" target="_blank" rel="noopener">
+    <i class="fab fa-tiktok"></i>
+</a>
+        <p style="margin-top: 25px; font-size: 12px; color: var(--text-gray);">© 2025 MAMBETOVV BRAND. Все права защищены.</p>
+    </div>
+</footer>
+
+<script>
+    // Бургер-меню
+    const burger = document.getElementById('burgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('overlay');
+
+    function toggleMenu() {
+        mobileMenu.classList.toggle('open');
+        overlay.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+    }
+
+    burger.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+
+    // Закрытие меню при клике на ссылку
+    document.querySelectorAll('.mobile-menu a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const targetId = link.getAttribute('href');
+            if (targetId && targetId.startsWith('#')) {
+                e.preventDefault();
+                toggleMenu();
+                const target = document.querySelector(targetId);
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                toggleMenu();
+            }
+        });
+    });
+
+    // Анимация при скролле
+    const observerOptions = { threshold: 0.15 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    document.querySelectorAll('.section').forEach(section => observer.observe(section));
+
+    // Плавная прокрутка для навигации
+    document.querySelectorAll('.nav-links a, .btn-main[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href && href !== '#') {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+</script>
+</body>
+</html> 
