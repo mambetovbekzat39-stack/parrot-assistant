@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0a0f1a">
+  <title>luminous heart | particle love</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      width: 100%;
+      height: 100%;
+      min-height: 100vh;
+      background: radial-gradient(circle at 30% 10%, #120b1a 0%, #1a0e1f 45%, #0c0712 100%);
+      overflow: hidden;
+      position: fixed;
+      touch-action: pan-x pan-y; /* keep scrollable? but canvas blocks interaction, just smooth */
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      will-change: transform;
+      outline: none;
+      touch-action: none;  /* avoids scroll while interacting on canvas, smoother particles */
+    }
+
+    /* subtle ornamental gradient overlay for depth */
+    .ambient-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 40%, rgba(255, 80, 120, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+      z-index: 2;
+    }
+
+    /* delicate floating text — romantic, minimal, non-intrusive */
+    .love-note {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      font-weight: 400;
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: rgba(255, 210, 220, 0.65);
+      background: rgba(15, 8, 22, 0.35);
+      backdrop-filter: blur(6px);
+      padding: 6px 18px;
+      width: fit-content;
+      margin: 0 auto 16px auto;
+      border-radius: 60px;
+      pointer-events: none;
+      z-index: 3;
+      border: 0.5px solid rgba(255, 120, 150, 0.3);
+      font-weight: 400;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 560px) {
+      .love-note {
+        font-size: 11px;
+        bottom: 14px;
+        padding: 5px 14px;
+        backdrop-filter: blur(5px);
+      }
+    }
+
+    /* optional safe area */
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .love-note {
+        bottom: max(14px, env(safe-area-inset-bottom));
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="pinkboard"></canvas>
+  <div class="ambient-glow" aria-hidden="true"></div>
+  <div class="love-note">✦ 这是给您的 <br>Zhè shì gěi nín de <br> это тебе  ✦</div>
+
+  <script>
+    /*
+     * LOVE PARTICLE ENGINE — refined for mobile & immersive aesthetics
+     * original concept enhanced: smooth resets, gradient heart textures,
+     * performance optimization, responsive scaling & romantic color palette.
+     */
+    (function() {
+      // =========  BEAUTY SETTINGS (tuned for visual elegance & phone performance) =========
+      const SETTINGS = {
+        particles: {
+          length:   680,          // optimal for smooth 60fps on mobile
+          duration: 2.1,         // particle lifespan (seconds)
+          velocity: 92,          // drift speed (pixels/sec)
+          effect: -0.72,         // graceful deceleration
+          size: 32,              // heart emblem size (pixels)
+        },
+        heartScaleFactor: 360,    // relative size of heart shape on canvas (internal)
+        sparkleIntensity: 1.0,    // global alpha modifier (reserved)
+      };
+
+      // =========  POLYFILL for older mobile browsers (requestAnimationFrame) =========
+      (function() {
+        let lastTime = 0;
+        const vendors = ['ms', 'moz', 'webkit', 'o'];
+        for(let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+          window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+          window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+        }
+        if (!window.requestAnimationFrame) {
+          window.requestAnimationFrame = function(callback) {
+            const currTime = new Date().getTime();
+            const timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            const id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+          };
+        }
+        if (!window.cancelAnimationFrame) {
+          window.cancelAnimationFrame = function(id) { clearTimeout(id); };
+        }
+      })();
+
+      // =========  HELPER: Point class (2D vector) =========
+      class Point {
+        constructor(x = 0, y = 0) {
+          this.x = x;
+          this.y = y;
+        }
+        clone() {
+          return new Point(this.x, this.y);
+        }
+        length(len) {
+          if (typeof len === 'undefined') return Math.hypot(this.x, this.y);
+          this.normalize();
+          this.x *= len;
+          this.y *= len;
+          return this;
+        }
+        normalize() {
+          const len = this.length();
+          if (len > 1e-8) {
+            this.x /= len;
+            this.y /= len;
+          }
+          return this;
+        }
+      }
+
+      // =========  PARTICLE with smooth age & dynamic drawing =========
+      class Particle {
+        constructor() {
+          this.position = new Point();
+          this.velocity = new Point();
+          this.acceleration = new Point();
+          this.age = 0;
+        }
+        initialize(x, y, dx, dy) {
+          this.position.x = x;
+          this.position.y = y;
+          this.velocity.x = dx;
+          this.velocity.y = dy;
+          this.acceleration.x = dx * SETTINGS.particles.effect;
+          this.acceleration.y = dy * SETTINGS.particles.effect;
+          this.age = 0;
+        }
+        update(deltaTime) {
+          this.position.x += this.velocity.x * deltaTime;
+          this.position.y += this.velocity.y * deltaTime;
+          this.velocity.x += this.acceleration.x * deltaTime;
+          this.velocity.y += this.acceleration.y * deltaTime;
+          this.age += deltaTime;
+        }
+        draw(ctx, heartImg) {
+          // ease-out cubic for graceful shrink & fade
+          const t = this.age / SETTINGS.particles.duration;
+          const easeOut = (t) => {
+            const tt = t - 1;
+            return tt * tt * tt + 1;
+          };
+          const lifeFactor = 1 - t;
+          const scaleFactor = easeOut(Math.min(1, t));
+          const size = heartImg.width * scaleFactor;
+          
+          ctx.globalAlpha = Math.min(1, Math.max(0, lifeFactor * 0.95));
+          ctx.drawImage(
+            heartImg,
+            this.position.x - size * 0.5,
+            this.position.y - size * 0.5,
+            size,
+            size
+          );
+        }
+      }
+
+      // =========  PARTICLE POOL (circular buffer optimized) =========
+      class ParticlePool {
+        constructor(maxParticles) {
+          this.pool = new Array(maxParticles);
+          for (let i = 0; i < maxParticles; i++) this.pool[i] = new Particle();
+          this.firstActive = 0;
+          this.firstFree = 0;
+          this.max = maxParticles;
+          this.duration = SETTINGS.particles.duration;
+        }
+        
+        add(x, y, dx, dy) {
+          this.pool[this.firstFree].initialize(x, y, dx, dy);
+          this.firstFree = (this.firstFree + 1) % this.max;
+          // if buffer overwrap, advance active pointer
+          if (this.firstFree === this.firstActive) {
+            this.firstActive = (this.firstActive + 1) % this.max;
+          }
+        }
+        
+        update(deltaTime) {
+          let i = this.firstActive;
+          while (i !== this.firstFree) {
+            this.pool[i].update(deltaTime);
+            i = (i + 1) % this.max;
+          }
+          // remove expired particles from active head
+          while (this.firstActive !== this.firstFree && this.pool[this.firstActive].age >= this.duration) {
+            this.firstActive = (this.firstActive + 1) % this.max;
+          }
+        }
+        
+        draw(ctx, heartImg) {
+          let i = this.firstActive;
+          while (i !== this.firstFree) {
+            this.pool[i].draw(ctx, heartImg);
+            i = (i + 1) % this.max;
+          }
+        }
+        
+        // full reset: clear all particles (used on resize for perfect alignment)
+        reset() {
+          this.firstActive = 0;
+          this.firstFree = 0;
+          // optional: reinitialize pool to avoid stale references, but just resetting indices is enough.
+          // memory is reused, particles will be overwritten
+          for (let i = 0; i < this.max; i++) {
+            this.pool[i].age = this.duration; // effectively inactive
+          }
+          this.firstActive = 0;
+          this.firstFree = 0;
+        }
+      }
+
+      // =========  CLASSIC HEART CURVE (parametric) =========
+      // returns raw heart coordinates (range approx x: ±160, y: ±130 + offset)
+      function pointOnHeart(t) {
+        // t from -PI to PI
+        const x = 160 * Math.pow(Math.sin(t), 3);
+        const y = 130 * Math.cos(t) - 50 * Math.cos(2*t) - 20 * Math.cos(3*t) - 10 * Math.cos(4*t) + 25;
+        return new Point(x, y);
+      }
+
+      // =========  CREATE BEAUTIFUL HEART TEXTURE (pink/golden gradient + soft glow) =========
+      const createHeartImage = (size) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = size;
+        canvas.height = size;
+        
+        // mapping function to convert heart curve into canvas coordinates inside the emblem
+        const toCanvasCoord = (t) => {
+          const raw = pointOnHeart(t);
+          // scale raw heart relative to emblem (make heart fill most of the canvas)
+          const scale = size / SETTINGS.heartScaleFactor;
+          const cx = size / 2 + raw.x * scale;
+          const cy = size / 2 - raw.y * scale; // flip Y axis
+          return { x: cx, y: cy };
+        };
+        
+        ctx.beginPath();
+        let first = true;
+        // draw heart path with high resolution
+        for (let t = -Math.PI; t <= Math.PI; t += 0.018) {
+          const { x, y } = toCanvasCoord(t);
+          if (first) {
+            ctx.moveTo(x, y);
+            first = false;
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.closePath();
+        
+        // romantic warm gradient (rich pink to deep rose)
+        const gradient = ctx.createLinearGradient(size * 0.2, size * 0.1, size * 0.8, size * 0.9);
+        gradient.addColorStop(0, '#ff5277');
+        gradient.addColorStop(0.4, '#ff2b5e');
+        gradient.addColorStop(0.7, '#e6004c');
+        gradient.addColorStop(1, '#b0003a');
+        
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        
+        // add subtle inner sparkle (soft highlight)
+        ctx.save();
+        ctx.shadowBlur = 0; // avoid perf drain on texture generation itself
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.beginPath();
+        for (let t = -Math.PI; t <= Math.PI; t += 0.12) {
+          const { x, y } = toCanvasCoord(t);
+          ctx.moveTo(x, y);
+        }
+        // tiny glow effect with lighter fill
+        ctx.fillStyle = 'rgba(255, 220, 190, 0.25)';
+        ctx.fill();
+        
+        // add little star-like accent in the middle (romantic shimmer)
+        ctx.restore();
+        ctx.beginPath();
+        const centerX = size/2;
+        const centerY = size/2 - 3;
+        const radGrad = ctx.createRadialGradient(centerX-2, centerY-2, 2, centerX, centerY, size*0.2);
+        radGrad.addColorStop(0, '#fff0e0');
+        radGrad.addColorStop(0.8, '#ffb6c1');
+        ctx.arc(centerX, centerY, size*0.12, 0, 2*Math.PI);
+        ctx.fillStyle = radGrad;
+        ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
+        
+        const image = new Image();
+        image.src = canvas.toDataURL();
+        return image;
+      };
+
+      // =========  ANIMATION LOOP & CANVAS MANAGER =========
+      const canvasElem = document.getElementById('pinkboard');
+      let ctx = canvasElem.getContext('2d');
+      let particleSystem = new ParticlePool(SETTINGS.particles.length);
+      let heartTexture = null;
+      let animationFrameId = null;
+      let lastTimestamp = null;
+      let particleRate = SETTINGS.particles.length / SETTINGS.particles.duration; // particles per second
+      
+      // runtime variables for animation
+      let resizePending = false;
+      
+      // generate the heart emblem (once)
+      heartTexture = createHeartImage(SETTINGS.particles.size);
+      
+      // =========  RESIZE HANDLER: perfect canvas dimensions & particle reset =========
+      function resizeCanvasAndReset() {
+        const width = canvasElem.clientWidth;
+        const height = canvasElem.clientHeight;
+        
+        // set actual canvas resolution to match CSS (retina-ready)
+        if (canvasElem.width !== width || canvasElem.height !== height) {
+          canvasElem.width = width;
+          canvasElem.height = height;
+        }
+        
+        // IMPORTANT: after canvas dimensions change, old particles have absolute coordinates 
+        // that mismatch new scale — reset pool to avoid visual glitches!
+        if (particleSystem) {
+          particleSystem.reset();
+        } else {
+          particleSystem = new ParticlePool(SETTINGS.particles.length);
+        }
+        
+        // re-set drawing context & optional smoothing
+        ctx = canvasElem.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+      }
+      
+      // responsive event: resize + orientation change with debounce
+      let resizeTimer;
+      function handleResize() {
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          resizeCanvasAndReset();
+          resizePending = false;
+        }, 70);
+        // fast initial update
+        resizeCanvasAndReset();
+      }
+      
+      // =========  SPAWN PARTICLES BASED ON HEART BOUNDARY =========
+      function spawnParticles(deltaTime, canvasW, canvasH) {
+        const amount = particleRate * deltaTime;
+        if (amount <= 0) return;
+        const fullAmount = Math.min(amount, 25); // avoid bursting too many at once, but keep smooth
+        for (let i = 0; i < fullAmount; i++) {
+          // random angle around heart curve (full revolution)
+          const t = Math.PI - (2 * Math.PI * Math.random()); // range -PI .. PI
+          const posRaw = pointOnHeart(t);
+          // map to canvas coordinates (center-aligned)
+          const spawnX = canvasW / 2 + posRaw.x;
+          const spawnY = canvasH / 2 - posRaw.y;
+          
+          // direction vector: outward normal based on derivative? using position vector from heart center gives radiant burst
+          // best effect: direction normalized from heart center outwards + some randomness
+          let dir = new Point(posRaw.x, -posRaw.y); // direction vector from heart center
+          const len = dir.length();
+          if (len > 0.01) {
+            dir.x /= len;
+            dir.y /= len;
+          } else {
+            dir.x = (Math.random() - 0.5);
+            dir.y = (Math.random() - 0.5);
+          }
+          // particle velocity magnitude
+          const speed = SETTINGS.particles.velocity * (0.7 + Math.random() * 0.8);
+          const velX = dir.x * speed;
+          const velY = dir.y * speed;
+          
+          particleSystem.add(spawnX, spawnY, velX, velY);
+        }
+        
+        // extra few particles for richness (staggered)
+        if (fullAmount < amount && (amount - fullAmount) > 0.4) {
+          const extra = Math.min(2, Math.floor(amount - fullAmount));
+          for (let i = 0; i < extra; i++) {
+            const t = Math.PI - (2 * Math.PI * Math.random());
+            const posRaw = pointOnHeart(t);
+            const spawnX = canvasW / 2 + posRaw.x;
+            const spawnY = canvasH / 2 - posRaw.y;
+            let dir = new Point(posRaw.x, -posRaw.y);
+            const lenDir = dir.length();
+            if (lenDir > 0.01) { dir.x /= lenDir; dir.y /= lenDir; }
+            const speed = SETTINGS.particles.velocity * (0.6 + Math.random() * 0.9);
+            particleSystem.add(spawnX, spawnY, dir.x * speed, dir.y * speed);
+          }
+        }
+      }
+      
+      // =========  RENDER LOOP (time delta, drawing) =========
+      let previousTimestamp = null;
+      
+      function render(nowMs) {
+        if (!canvasElem || !ctx) return;
+        
+        const now = nowMs / 1000; // seconds
+        let delta = 0.016; // default fallback
+        
+        if (previousTimestamp !== null && now > previousTimestamp) {
+          delta = Math.min(0.033, now - previousTimestamp); // cap to ~33ms for stability
+        }
+        previousTimestamp = now;
+        
+        // update canvas dimensions only if needed & resize flag (but consistent)
+        const currentWidth = canvasElem.clientWidth;
+        const currentHeight = canvasElem.clientHeight;
+        if (canvasElem.width !== currentWidth || canvasElem.height !== currentHeight) {
+          resizeCanvasAndReset();
+        }
+        
+        const w = canvasElem.width;
+        const h = canvasElem.height;
+        if (w === 0 || h === 0) {
+          animationFrameId = requestAnimationFrame(render);
+          return;
+        }
+        
+        // clear canvas with dreamy, semi-transparent dark overlay for trail effect (smooth fade)
+        ctx.clearRect(0, 0, w, h);
+        // Optional: soft "afterglow" to blend particles -> use transparent fill for fading trail (makes motion elegant)
+        ctx.fillStyle = 'rgba(8, 4, 14, 0.28)';
+        ctx.fillRect(0, 0, w, h);
+        
+        // create new particles from the glowing heart contour
+        spawnParticles(delta, w, h);
+        
+        // update & draw all active particles
+        particleSystem.update(delta);
+        
+        // blending setting for luminous look
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        particleSystem.draw(ctx, heartTexture);
+        ctx.restore();
+        
+        // draw additional soft heart silhouette / central glow (optional: ghost heart)
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        ctx.shadowBlur = 0;
+        // subtle transparent heart outline for depth
+        ctx.beginPath();
+        const heartGuidePoints = [];
+        for (let t = -Math.PI; t <= Math.PI; t += 0.08) {
+          const raw = pointOnHeart(t);
+          const px = w/2 + raw.x;
+          const py = h/2 - raw.y;
+          heartGuidePoints.push({x: px, y: py});
+        }
+        ctx.beginPath();
+        if (heartGuidePoints.length) {
+          ctx.moveTo(heartGuidePoints[0].x, heartGuidePoints[0].y);
+          for (let i=1; i<heartGuidePoints.length; i++) {
+            ctx.lineTo(heartGuidePoints[i].x, heartGuidePoints[i].y);
+          }
+          ctx.closePath();
+          ctx.fillStyle = 'rgba(255, 80, 110, 0.06)';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 140, 170, 0.2)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+        ctx.restore();
+        
+        animationFrameId = requestAnimationFrame(render);
+      }
+      
+      // =========  BOOTSTRAP EVENT HANDLERS =========
+      function init() {
+        resizeCanvasAndReset();
+        // attach resize listener with passive flag for mobile performance
+        window.addEventListener('resize', handleResize, { passive: true });
+        window.addEventListener('orientationchange', () => {
+          setTimeout(handleResize, 30);
+        });
+        // start animation loop
+        previousTimestamp = null;
+        animationFrameId = requestAnimationFrame(render);
+      }
+      
+      // safety: if image texture not yet fully loaded, but it's dataURL created synchronously, it's ready
+      if (heartTexture && heartTexture.complete !== false) {
+        init();
+      } else {
+        heartTexture.onload = () => init();
+        // fallback in case of edge
+        setTimeout(() => {
+          if (!animationFrameId) init();
+        }, 80);
+      }
+      
+      // optional: cleanup on page hide (reduce battery) but not necessary, fine
+      window.addEventListener('beforeunload', () => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      });
+    })();
+  </script>
+</body>
+</html>

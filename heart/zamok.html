@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Цифровой замок | Элегантный ввод</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #1e2b3a, #0b1219);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+            padding: 1.5rem;
+        }
+
+        /* Основная карточка — стиль glassmorphism + мягкое свечение */
+        .lock-card {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(22, 30, 40, 0.55);
+            backdrop-filter: blur(18px);
+            border-radius: 3rem;
+            border: 1px solid rgba(255, 215, 150, 0.3);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,240,0.1);
+            padding: 2.2rem 1.8rem 2.5rem;
+            transition: transform 0.25s ease;
+            text-align: center;
+        }
+
+        /* Иконка замка с анимацией */
+        .lock-icon {
+            font-size: 4.8rem;
+            background: linear-gradient(135deg, #f9e0a0, #e4b83e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3));
+            transition: all 0.2s;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            background: linear-gradient(120deg, #fff2dd, #ffe0b5);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.3rem;
+        }
+
+        .sub {
+            color: rgba(255, 235, 195, 0.8);
+            font-size: 0.9rem;
+            border-bottom: 1px dashed rgba(255,200,100,0.5);
+            display: inline-block;
+            padding-bottom: 0.3rem;
+            margin-bottom: 1.8rem;
+        }
+
+        /* 4 поля для цифр — аккуратные, с фокусом */
+        .digits-panel {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin: 2rem 0 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .code-digit {
+            width: 85px;
+            height: 100px;
+            background: rgba(10, 18, 28, 0.7);
+            border-radius: 2rem;
+            text-align: center;
+            font-size: 3.8rem;
+            font-weight: 700;
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+            color: #fff0cf;
+            border: 2px solid rgba(220, 180, 80, 0.7);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,210,0.2);
+            transition: all 0.2s ease;
+            outline: none;
+            caret-color: #ffcd7e;
+        }
+
+        .code-digit:focus {
+            border-color: #ffcd7e;
+            transform: scale(1.02);
+            background: rgba(25, 38, 55, 0.9);
+            box-shadow: 0 0 0 4px rgba(255, 205, 126, 0.3), 0 8px 18px black;
+        }
+
+        /* Для touch — увеличиваем область нажатия, но через padding */
+        .code-digit::-webkit-inner-spin-button,
+        .code-digit::-webkit-outer-spin-button {
+            display: none;
+        }
+
+        /* Стиль сообщения */
+        .message-area {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: 0.9rem 1rem;
+            margin: 1rem 0 1.2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #fbe5bf;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.2s;
+            border: 0.5px solid rgba(255,220,130,0.3);
+        }
+
+        /* Кнопка открытия — сияющая */
+        .unlock-btn {
+            background: linear-gradient(105deg, #e2b73a, #f5cf77);
+            border: none;
+            width: 85%;
+            margin: 0.5rem auto 0;
+            padding: 1rem 1.2rem;
+            border-radius: 3rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #1d2b2f;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            font-family: inherit;
+        }
+
+        .unlock-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 4px 12px black;
+        }
+
+        /* Хинт с тестовым кодом */
+        .demo-hint {
+            margin-top: 1.4rem;
+            font-size: 0.75rem;
+            background: rgba(0,0,0,0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            color: #ffdfae;
+            backdrop-filter: blur(4px);
+        }
+
+        footer {
+            font-size: 0.7rem;
+            margin-top: 1.2rem;
+            opacity: 0.6;
+            color: #c7b68c;
+        }
+
+        /* Анимация тряски */
+        .shake {
+            animation: shakeEffect 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+
+        @keyframes shakeEffect {
+            0%,100% { transform: translateX(0); }
+            20% { transform: translateX(-7px); }
+            40% { transform: translateX(7px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(3px); }
+        }
+
+        /* Адаптивность для телефонов */
+        @media (max-width: 550px) {
+            .lock-card {
+                padding: 1.8rem 1.2rem 2rem;
+            }
+            .code-digit {
+                width: 70px;
+                height: 85px;
+                font-size: 3rem;
+            }
+            .digits-panel {
+                gap: 0.9rem;
+            }
+            .unlock-btn {
+                width: 100%;
+                padding: 0.85rem;
+                font-size: 1.2rem;
+            }
+            h2 {
+                font-size: 1.7rem;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .code-digit {
+                width: 60px;
+                height: 75px;
+                font-size: 2.6rem;
+            }
+            .digits-panel {
+                gap: 0.7rem;
+            }
+        }
+
+        /* дополнительная красота при полном вводе */
+        .code-digit.full-effect {
+            border-color: #f7d44a;
+            text-shadow: 0 0 5px rgba(255,215,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="lock-card">
+    <div class="lock-icon">
+        <i class="fas fa-lock" id="lockIcon"></i>
+    </div>
+    <h2>🔐 ЗАМОК ДОСТУПА</h2>
+    <div class="sub">这是给您的 <br> напиши код😉</div>
+
+    <!-- 4 поля для ручного ввода (вызывает нативную клавиатуру) -->
+    <div class="digits-panel" id="digitsContainer">
+        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="\d*" autocomplete="off" aria-label="Цифра 1">
+        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="\d*" autocomplete="off" aria-label="Цифра 2">
+        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="\d*" autocomplete="off" aria-label="Цифра 3">
+        <input type="text" class="code-digit" maxlength="1" inputmode="numeric" pattern="\d*" autocomplete="off" aria-label="Цифра 4">
+    </div>
+
+    <div class="message-area" id="messageBox">
+        <i class="fas fa-shield-alt"></i> Введите код
+    </div>
+
+    <button class="unlock-btn" id="unlockBtn">
+        <i class="fas fa-key"></i> открыть ЗАМОК
+    </button>
+
+    <div class="demo-hint">
+        <i class="fas fa-info-circle"></i> 
+    </div>
+    <footer>Zhè shì gěi nín de</footer>
+</div>
+
+<script>
+    (function() {
+        // === НАСТРОЙКИ ===
+        const CORRECT_CODE = "2007";                // правильная комбинация
+        const REDIRECT_URL = "./heart.html";        // другой файл (можно переименовать в success.html, page.html)
+
+        // DOM элементы
+        const digitInputs = document.querySelectorAll('.code-digit');
+        const unlockButton = document.getElementById('unlockBtn');
+        const messageDiv = document.getElementById('messageBox');
+        const lockIconElem = document.getElementById('lockIcon');
+
+        // Вспомогательные функции
+        function updateMessage(text, icon = 'fa-shield-alt', color = '#fbe5bf') {
+            messageDiv.innerHTML = `<i class="fas ${icon}"></i> ${text}`;
+            messageDiv.style.color = color;
+        }
+
+        // Очистка всех полей
+        function clearAllDigits() {
+            digitInputs.forEach(input => {
+                input.value = '';
+            });
+            digitInputs[0].focus();
+            updateMessage('Код очищен', 'fa-eraser', '#ffdfaa');
+            // сброс визуального эффекта на полях
+            digitInputs.forEach(inp => inp.classList.remove('full-effect'));
+        }
+
+        // Получить введённую строку кода
+        function getEnteredCode() {
+            let code = '';
+            for (let inp of digitInputs) {
+                code += inp.value;
+            }
+            return code;
+        }
+
+        // Визуальная тряска контейнера
+        function shakePanel() {
+            const panel = document.querySelector('.digits-panel');
+            panel.classList.add('shake');
+            setTimeout(() => panel.classList.remove('shake'), 500);
+        }
+
+        // Проверка и редирект (основная логика)
+        function verifyAndRedirect() {
+            const entered = getEnteredCode();
+            if (entered.length !== 4) {
+                shakePanel();
+                updateMessage('❌ Введите все 4 цифры!', 'fa-exclamation-triangle', '#ffb995');
+                // подсветка пустых полей
+                digitInputs.forEach(inp => {
+                    if (inp.value === '') {
+                        inp.style.borderColor = '#ff8a6f';
+                        setTimeout(() => inp.style.borderColor = '', 600);
+                    }
+                });
+                return false;
+            }
+
+            if (entered === CORRECT_CODE) {
+                // Успех! меняем иконку замка и блокируем повторные попытки
+                updateMessage('✅ Код верный! 1 секунд...', 'fa-unlock-alt', '#c6ffb7');
+                if (lockIconElem) {
+                    lockIconElem.className = 'fas fa-unlock-alt';
+                    lockIconElem.style.background = 'linear-gradient(135deg, #b9f6ca, #7ed957)';
+                    lockIconElem.style.webkitBackgroundClip = 'text';
+                    lockIconElem.style.backgroundClip = 'text';
+                }
+                unlockButton.disabled = true;
+                unlockButton.style.opacity = '0.7';
+                unlockButton.style.cursor = 'default';
+
+                // Короткая задержка для визуального эффекта, затем редирект на другой файл
+                setTimeout(() => {
+                    window.location.href = REDIRECT_URL;
+                }, 700);
+                return true;
+            } else {
+                // Неверный код
+                shakePanel();
+                updateMessage('⛔ Неверный код! Попробуйте снова', 'fa-lock', '#ffa69e');
+                digitInputs.forEach(inp => {
+                    inp.style.borderColor = '#ff7a5c';
+                    setTimeout(() => inp.style.borderColor = '', 500);
+                });
+                // дополнительно очищаем все поля для удобства? (лучше не очищать, чтобы видел свой ввод)
+                // но выделим их красноватым оттенком
+                return false;
+            }
+        }
+
+        // Автоматический переход к следующему полю
+        function moveToNext(currentIndex) {
+            if (currentIndex < digitInputs.length - 1) {
+                digitInputs[currentIndex + 1].focus();
+            } else {
+                // Если это последняя цифра - можно убрать фокус или оставить (пользователь сам нажмёт кнопку)
+                digitInputs[currentIndex].blur();
+                // дополнительно проверим заполненность и подсветим кнопку (но красиво)
+                const allFilled = Array.from(digitInputs).every(inp => /^\d$/.test(inp.value));
+                if (allFilled) {
+                    updateMessage('🔓 Все цифры введены. Нажмите "ОТПЕРЕТЬ"', 'fa-check-circle', '#e9ffb4');
+                }
+            }
+        }
+
+        // Обработка ручного ввода (нативная клавиатура)
+        function onDigitInput(event, idx) {
+            const input = event.target;
+            let val = input.value;
+            // Оставляем только одну цифру
+            if (val.length > 0 && !/^\d$/.test(val)) {
+                input.value = '';
+                return;
+            }
+            // Если ввели цифру и длина стала 1
+            if (val.length === 1 && /^\d$/.test(val)) {
+                moveToNext(idx);
+                // проверка на полноту полей
+                const allFilled = Array.from(digitInputs).every(inp => /^\d/.test(inp.value) && inp.value.length === 1);
+                if (allFilled) {
+                    updateMessage('🔢 Код набран. Нажмите кнопку открытия', 'fa-check', '#dcffb0');
+                } else {
+                    updateMessage('🔢 Продолжайте ввод', 'fa-keyboard', '#ffe0aa');
+                }
+            }
+            // Обработка удаления через backspace (если поле пустое и нажат backspace)
+        }
+
+        // Обработка клавиш (backspace, стрелки, enter)
+        function onKeyDown(event, idx) {
+            const input = event.target;
+            if (event.key === 'Backspace') {
+                if (input.value === '') {
+                    // если поле пустое — удаляем значение предыдущего и фокусируемся на нём
+                    if (idx > 0) {
+                        digitInputs[idx - 1].value = '';
+                        digitInputs[idx - 1].focus();
+                        event.preventDefault();
+                    }
+                } else {
+                    // очищаем текущее поле
+                    input.value = '';
+                    event.preventDefault();
+                }
+                // после удаления сбросим подсветку сообщения
+                updateMessage('⌫ Цифра удалена', 'fa-backspace', '#ffe0aa');
+                return;
+            }
+            
+            if (event.key === 'ArrowLeft' && idx > 0) {
+                digitInputs[idx - 1].focus();
+                event.preventDefault();
+            }
+            if (event.key === 'ArrowRight' && idx < digitInputs.length - 1) {
+                digitInputs[idx + 1].focus();
+                event.preventDefault();
+            }
+            // Разрешаем ввод только цифр (и служебные клавиши)
+            if (!/^\d$/.test(event.key) && event.key !== 'Backspace' && event.key !== 'Delete' && event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' && event.key !== 'Tab' && event.key !== 'Enter') {
+                event.preventDefault();
+            }
+            // Если нажат Enter — проверить код
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                verifyAndRedirect();
+            }
+        }
+
+        // Обработка вставки (paste) — позволяет вставить 4 цифры сразу
+        function onPaste(e, idx) {
+            e.preventDefault();
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            const onlyDigits = pasteData.replace(/\D/g, '');
+            if (onlyDigits.length === 0) return;
+            // Распределяем цифры по полям начиная с текущего индекса
+            let currentIdx = idx;
+            for (let i = 0; i < onlyDigits.length && currentIdx < digitInputs.length; i++) {
+                digitInputs[currentIdx].value = onlyDigits[i];
+                currentIdx++;
+            }
+            // Фокусируемся на следующем свободном или последнем
+            if (currentIdx < digitInputs.length) {
+                digitInputs[currentIdx].focus();
+            } else {
+                digitInputs[digitInputs.length - 1].focus();
+            }
+            // Если все поля заполнены — сообщение
+            const allFilled = Array.from(digitInputs).every(inp => /^\d$/.test(inp.value));
+            if (allFilled) {
+                updateMessage('✔️ Код вставлен, нажмите "Отпереть"', 'fa-paste', '#d8ffb0');
+            } else {
+                updateMessage('📋 Вставлены цифры', 'fa-paste', '#ffe0aa');
+            }
+        }
+
+        // Эффект при полном заполнении полей (просто визуальный)
+        function updateFullHighlight() {
+            const allFilled = Array.from(digitInputs).every(inp => inp.value.length === 1 && /^\d$/.test(inp.value));
+            if (allFilled) {
+                digitInputs.forEach(inp => inp.classList.add('full-effect'));
+                // но не перебиваем сообщение, если оно про ошибку
+                if (messageDiv.innerHTML.includes('неверный') || messageDiv.innerHTML.includes('Введите все')) {
+                    // ничего
+                } else {
+                    updateMessage('🔑 Код готов. Жмите открыть!', 'fa-door-open', '#fef7cf');
+                }
+            } else {
+                digitInputs.forEach(inp => inp.classList.remove('full-effect'));
+            }
+        }
+
+        // Инициализация событий для каждого поля
+        function bindEvents() {
+            digitInputs.forEach((input, idx) => {
+                input.addEventListener('input', (e) => onDigitInput(e, idx));
+                input.addEventListener('keydown', (e) => onKeyDown(e, idx));
+                input.addEventListener('paste', (e) => onPaste(e, idx));
+                // Также при изменении вручную следим за полнотой
+                input.addEventListener('input', () => {
+                    updateFullHighlight();
+                });
+                input.addEventListener('blur', () => {
+                    // легкий сброс границы, если была ошибка
+                    setTimeout(() => {
+                        if (input.style.borderColor === 'rgb(255, 122, 92)' || input.style.borderColor === '#ff7a5c') {
+                            input.style.borderColor = '';
+                        }
+                    }, 300);
+                });
+            });
+        }
+
+        // Доп. кнопка очистки (можно добавить плавающую? но красивее сделать жестом? добавим маленькую ссылку "Очистить" в сообщении? 
+        // но для удобства — добавим скрытую возможность: двойной клик по иконке замка очищает поля, но это не мешает. 
+        // А чтобы было юзер-френдли — сделаем небольшую кнопку очистки внутри message? нет, пусть остаётся чистый функционал.
+        // Для полного удобства добавим жест: долгое нажатие на сообщение - очистка, но сперва стандартная кнопка? 
+        // Однако требование "красиво" — создадим невидимую иконку? нет, лучше добавим мини-кнопку очистки рядом с полями, но чтобы не перегружать.
+        // Сделаем аккуратный текст "Очистить всё" под кнопкой? Не обязательно, пользователи могут стереть через backspace.
+        // Но согласно духу минимализма — добавим кнопку "Очистить" в виде иконки внутри карточки? да, но без нарушения дизайна.
+        // Вставим деликатный элемент в углу? Я лучше добавлю небольшую плашку "Сбросить код" под кнопкой, но чтобы было не громоздко.
+        // Создам дополнительный стильный элемент "Очистить" с лёгким стилем, так как некоторые пользователи хотят сбросить все поля.
+        // Это улучшит UX и не нарушит чистоту.
+        
+        const clearButton = document.createElement('button');
+        clearButton.innerHTML = '<i class="fas fa-trash-alt"></i> Очистить всё';
+        clearButton.style.background = 'rgba(40, 45, 60, 0.7)';
+        clearButton.style.border = 'none';
+        clearButton.style.color = '#ffdfb0';
+        clearButton.style.padding = '8px 20px';
+        clearButton.style.borderRadius = '3rem';
+        clearButton.style.fontSize = '0.85rem';
+        clearButton.style.marginTop = '0.8rem';
+        clearButton.style.cursor = 'pointer';
+        clearButton.style.backdropFilter = 'blur(6px)';
+        clearButton.style.fontWeight = '500';
+        clearButton.style.transition = '0.15s';
+        clearButton.style.boxShadow = 'none';
+        clearButton.style.border = '1px solid rgba(255,210,120,0.4)';
+        clearButton.onmouseover = () => clearButton.style.backgroundColor = 'rgba(70, 60, 50, 0.8)';
+        clearButton.onmouseout = () => clearButton.style.backgroundColor = 'rgba(40, 45, 60, 0.7)';
+        clearButton.onclick = () => {
+            clearAllDigits();
+            // также сбросим иконку замка на закрытый (если была открыта)
+            if (lockIconElem && lockIconElem.className !== 'fas fa-lock') {
+                lockIconElem.className = 'fas fa-lock';
+                lockIconElem.style.background = '';
+            }
+            unlockButton.disabled = false;
+            unlockButton.style.opacity = '1';
+            unlockButton.style.cursor = 'pointer';
+        };
+        // Вставим после кнопки открытия или внутри? Добавим под сообщением, но над футером
+        const footerElem = document.querySelector('footer');
+        const lockCard = document.querySelector('.lock-card');
+        // вставим перед footer
+        lockCard.insertBefore(clearButton, footerElem);
+        
+        // Завершающая настройка: первый фокус, сообщение
+        function init() {
+            bindEvents();
+            clearAllDigits();   // фокус + пустые поля
+            updateMessage('🔒 Введите 4-значный код', 'fa-shield-alt', '#ffe0b0');
+            // обработчик кнопки
+            unlockButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                verifyAndRedirect();
+            });
+            // стили для кнопки очистки
+            updateFullHighlight();
+        }
+        
+        init();
+    })();
+</script>
+</body>
+</html>
