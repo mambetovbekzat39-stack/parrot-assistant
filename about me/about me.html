@@ -2,11 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>mambetovv - Frontend разработчик</title>
     <link rel="icon" href="./ava_telegram.jpg" type="image/jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== CSS Variables ===== */
         :root {
             --primary: #8A2BE2;
             --secondary: #4B0082;
@@ -17,8 +18,11 @@
             --dark-border: #333333;
             --shadow: 0 10px 30px rgba(0,0,0,0.3);
             --glow: 0 0 15px rgba(138, 43, 226, 0.5);
+            --radius: 20px;
+            --transition: all 0.3s ease;
         }
 
+        /* ===== Reset & Base ===== */
         * {
             margin: 0;
             padding: 0;
@@ -35,47 +39,43 @@
         body {
             background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1a2e 100%);
             color: var(--dark-text);
-            line-height: 1.6;
+            line-height: 1.7;
             min-height: 100vh;
             overflow-x: hidden;
-            -webkit-user-drag: none;
-            -khtml-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
             position: relative;
         }
 
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(75, 0, 130, 0.1) 0%, transparent 20%),
-                radial-gradient(circle at 50% 50%, rgba(0, 206, 209, 0.05) 0%, transparent 30%);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(138, 43, 226, 0.10) 0%, transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(75, 0, 130, 0.10) 0%, transparent 30%),
+                radial-gradient(circle at 50% 50%, rgba(0, 206, 209, 0.05) 0%, transparent 40%);
             z-index: -1;
+            pointer-events: none;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 20px;
         }
 
+        /* ===== Header ===== */
         header {
             text-align: center;
-            padding: 40px 0;
-            color: var(--dark-text);
-            position: relative;
+            padding: 40px 0 30px;
         }
 
         .profile-container {
             position: relative;
             display: inline-block;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .profile-img {
@@ -84,23 +84,16 @@
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid var(--primary);
-            margin-bottom: 20px;
             box-shadow: var(--shadow), var(--glow);
-            position: relative;
-            z-index: 2;
-            transition: all 0.5s ease;
+            transition: var(--transition);
             pointer-events: none;
             -webkit-user-drag: none;
-            -khtml-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
-            user-drag: none;
             filter: brightness(1.05);
         }
 
         .profile-img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 25px rgba(138, 43, 226, 0.6);
+            transform: scale(1.04);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 30px rgba(138, 43, 226, 0.7);
         }
 
         .image-protection {
@@ -116,44 +109,46 @@
         }
 
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            letter-spacing: 1px;
+            font-size: 2.8rem;
+            margin-bottom: 8px;
             font-weight: 700;
             background: linear-gradient(90deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: 1px;
         }
 
         .title {
-            font-size: 1.4em;
-            margin-bottom: 10px;
+            font-size: 1.4rem;
             color: var(--accent);
             font-weight: bold;
             background: rgba(30, 30, 30, 0.7);
             display: inline-block;
-            padding: 8px 20px;
+            padding: 8px 24px;
             border-radius: 30px;
             border: 1px solid var(--dark-border);
+            backdrop-filter: blur(4px);
+            margin-bottom: 10px;
         }
 
         .subtitle {
-            font-size: 1.1em;
+            font-size: 1.1rem;
             opacity: 0.9;
-            max-width: 500px;
+            max-width: 550px;
             margin: 0 auto;
-            background: rgba(30, 30, 30, 0.7);
+            background: rgba(30, 30, 30, 0.6);
             padding: 12px 25px;
-            border-radius: 20px;
+            border-radius: 30px;
             border: 1px solid var(--dark-border);
+            backdrop-filter: blur(4px);
         }
 
+        /* ===== Cards ===== */
         .main-content {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 25px;
+            gap: 30px;
             margin-top: 30px;
             max-width: 800px;
             margin-left: auto;
@@ -163,14 +158,14 @@
         .card {
             background: var(--dark-card);
             padding: 30px;
-            border-radius: 20px;
+            border-radius: var(--radius);
             box-shadow: var(--shadow);
-            transition: all 0.4s ease;
-            opacity: 0;
-            transform: translateY(30px);
             border: 1px solid var(--dark-border);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
         }
 
         .card::before {
@@ -189,85 +184,93 @@
         }
 
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4), var(--glow);
-        }
-
-        .contact-section {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: var(--dark-text);
-            text-align: center;
-            border: 1px solid rgba(0, 206, 209, 0.3);
-        }
-
-        .contact-section h2 {
-            color: var(--accent);
-        }
-
-        .contact-section .btn {
-            background: linear-gradient(135deg, var(--accent), #008B8B);
-            color: var(--dark-bg);
-            margin: 10px;
-            font-weight: bold;
-        }
-
-        .contact-section .btn:hover {
-            background: linear-gradient(135deg, #00E5E5, #009999);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 206, 209, 0.3);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5), var(--glow);
         }
 
         h2 {
             color: var(--primary);
             margin-bottom: 20px;
-            font-size: 1.6em;
+            font-size: 1.7rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         h2 i {
-            font-size: 1.2em;
             color: var(--accent);
+            font-size: 1.3rem;
         }
 
-        .btn {
-            display: inline-flex;
+        .card p {
+            margin-bottom: 12px;
+            opacity: 0.95;
+        }
+
+        /* ===== Contact Buttons ===== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .contact-btn {
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 14px 28px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--dark-text);
-            text-decoration: none;
+            gap: 12px;
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.05);
             border-radius: 50px;
-            text-align: center;
+            text-decoration: none;
+            color: var(--dark-text);
             font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            font-size: 1rem;
+            border: 1px solid var(--dark-border);
+            transition: var(--transition);
+            backdrop-filter: blur(4px);
         }
 
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.4);
+        .contact-btn i {
+            font-size: 1.5rem;
+            width: 30px;
+            text-align: center;
         }
 
+        .contact-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .contact-btn.whatsapp:hover {
+            background: #25D366;
+            color: #fff;
+            border-color: #25D366;
+        }
+
+        .contact-btn.telegram:hover {
+            background: #0088cc;
+            color: #fff;
+            border-color: #0088cc;
+        }
+
+        .contact-btn.email:hover {
+            background: #D44638;
+            color: #fff;
+            border-color: #D44638;
+        }
+
+        /* ===== CTA Section ===== */
         .cta-section {
             text-align: center;
-            margin: 40px 0;
-            padding: 30px;
+            padding: 30px 20px;
             background: rgba(30, 30, 30, 0.7);
-            border-radius: 20px;
+            border-radius: var(--radius);
             border: 1px solid var(--dark-border);
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.6s ease;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            backdrop-filter: blur(4px);
         }
 
         .cta-section.visible {
@@ -276,27 +279,54 @@
         }
 
         .cta-text {
-            font-size: 1.4em;
+            font-size: 1.4rem;
             margin-bottom: 20px;
             color: var(--accent);
             font-weight: 600;
         }
 
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark-text);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(138, 43, 226, 0.5);
+        }
+
+        .btn i {
+            font-size: 1.2rem;
+        }
+
+        /* ===== Quote ===== */
         .quote {
             font-style: italic;
             text-align: center;
-            padding: 25px;
+            padding: 25px 30px;
             background: rgba(30, 30, 30, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             color: var(--dark-text);
             margin-top: 40px;
-            font-size: 1.1em;
+            font-size: 1.15rem;
             border-left: 4px solid var(--accent);
+            border: 1px solid var(--dark-border);
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.6s ease;
-            border: 1px solid var(--dark-border);
+            transition: opacity 0.6s ease, transform 0.6s ease;
         }
 
         .quote.visible {
@@ -304,473 +334,417 @@
             transform: translateY(0);
         }
 
-        .contact-info {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-            text-align: left;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: rgba(30, 30, 30, 0.7);
-            border-radius: 10px;
-            border: 1px solid var(--dark-border);
-            transition: transform 0.3s ease;
-        }
-
-        .contact-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .contact-icon {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            font-size: 1.2em;
-        }
-
-        .contact-text {
-            flex: 1;
-        }
-
-        .contact-label {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-
-        .contact-value {
-            font-weight: 600;
-            color: var(--accent);
-        }
-
+        /* ===== Social Links ===== */
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 18px;
+            margin-top: 35px;
+            flex-wrap: wrap;
         }
 
         .social-link {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: rgba(30, 30, 30, 0.7);
             color: var(--dark-text);
-            font-size: 1.3em;
-            transition: all 0.3s ease;
+            font-size: 1.6rem;
+            transition: var(--transition);
             text-decoration: none;
-            position: relative;
-            overflow: hidden;
             border: 1px solid var(--dark-border);
-        }
-
-        .social-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: scale(0);
-            border-radius: 50%;
-            transition: transform 0.3s ease;
-        }
-
-        .social-link:hover::before {
-            transform: scale(1);
+            backdrop-filter: blur(4px);
         }
 
         .social-link:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
 
         .social-link.telegram:hover {
             background: #0088cc;
-            color: white;
-            box-shadow: 0 5px 15px rgba(0, 136, 204, 0.4);
-        }
-
-        .social-link.tiktok:hover {
-            background: #000000;
-            color: #ff0050;
-            box-shadow: 0 5px 15px rgba(255, 0, 80, 0.4);
+            color: #fff;
+            border-color: #0088cc;
         }
 
         .social-link.instagram:hover {
             background: #e4405f;
-            color: white;
-            box-shadow: 0 5px 15px rgba(228, 64, 95, 0.4);
+            color: #fff;
+            border-color: #e4405f;
         }
 
-        /* Защитное сообщение */
+        /* ===== Protection Message ===== */
         .protection-message {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(0, 0, 0, 0.92);
             color: white;
-            padding: 20px 30px;
-            border-radius: 10px;
+            padding: 25px 35px;
+            border-radius: 15px;
             z-index: 10000;
             display: none;
             text-align: center;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
-            animation: pulse 0.5s;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
             border: 2px solid #ff4444;
+            backdrop-filter: blur(6px);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90%;
         }
 
-        /* Анимации */
-        @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-            70% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+        .protection-message i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #ff4444;
+        }
+
+        .protection-message h3 {
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
-        /* Адаптивность */
+        /* ===== Responsive ===== */
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
             }
-            
+
             header {
-                padding: 30px 0;
+                padding: 25px 0;
             }
-            
+
             h1 {
-                font-size: 2em;
+                font-size: 2.2rem;
             }
-            
+
             .title {
-                font-size: 1.2em;
+                font-size: 1.2rem;
+                padding: 6px 18px;
             }
-            
+
+            .subtitle {
+                font-size: 1rem;
+                padding: 10px 18px;
+            }
+
             .profile-img {
-                width: 170px;
-                height: 170px;
+                width: 160px;
+                height: 160px;
             }
-            
+
             .card {
-                padding: 20px;
-                border-radius: 15px;
+                padding: 22px;
+                border-radius: 16px;
             }
-            
+
             h2 {
-                font-size: 1.4em;
+                font-size: 1.4rem;
             }
-            
-            .contact-info {
-                gap: 10px;
+
+            .contact-grid {
+                grid-template-columns: 1fr 1fr;
             }
-            
-            .contact-item {
-                padding: 12px;
-            }
-            
+
             .cta-text {
-                font-size: 1.2em;
+                font-size: 1.2rem;
+            }
+
+            .btn {
+                padding: 12px 28px;
+                font-size: 0.95rem;
+            }
+
+            .quote {
+                font-size: 1rem;
+                padding: 20px;
+            }
+
+            .social-link {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
             }
         }
 
         @media (max-width: 480px) {
-            header {
-                padding: 20px 0;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .profile-img {
-                width: 150px;
-                height: 150px;
-            }
-            
-            .btn {
-                padding: 12px 22px;
-                font-size: 0.9em;
-            }
-            
-            .quote {
-                padding: 20px;
-                font-size: 1em;
-            }
-            
-            .social-links {
-                gap: 10px;
-            }
-            
-            .social-link {
-                width: 45px;
-                height: 45px;
-                font-size: 1.2em;
-            }
-            
-            .contact-item {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
-            
-            .cta-section {
-                padding: 20px;
-            }
-            
-            .cta-text {
-                font-size: 1.1em;
-            }
-        }
-
-        /* Улучшения для очень маленьких экранов */
-        @media (max-width: 360px) {
             .container {
-                padding: 10px;
+                padding: 12px;
             }
-            
+
             h1 {
-                font-size: 1.6em;
+                font-size: 1.8rem;
             }
-            
-            .title {
-                font-size: 1.1em;
-            }
-            
-            .subtitle {
-                font-size: 0.95em;
-            }
-            
-            .card {
-                padding: 15px;
-            }
-            
-            h2 {
-                font-size: 1.3em;
-            }
-            
+
             .profile-img {
-                width: 130px;
-                height: 130px;
+                width: 140px;
+                height: 140px;
+            }
+
+            .title {
+                font-size: 1rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .contact-btn {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+
+            .contact-btn i {
+                font-size: 1.3rem;
+                width: 26px;
+            }
+
+            .cta-text {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .quote {
+                font-size: 0.95rem;
+                padding: 16px;
+            }
+
+            .social-link {
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+
+            .protection-message {
+                padding: 20px 25px;
+                font-size: 0.9rem;
             }
         }
 
-        /* Отключение выделения текста */
-        p, span, div, h1, h2, h3 {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .profile-img {
+                width: 120px;
+                height: 120px;
+            }
+
+            .subtitle {
+                font-size: 0.8rem;
+                padding: 8px 14px;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            .contact-btn {
+                font-size: 0.8rem;
+                padding: 10px 12px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .contact-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* ===== Print protection (subtle) ===== */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .protection-message {
+                display: block !important;
+            }
         }
     </style>
 </head>
 <body>
+
+    <!-- ===== Protection Overlay ===== -->
     <div class="protection-message" id="protectionMessage">
-        <i class="fas fa-shield-alt" style="font-size: 2em; margin-bottom: 10px;"></i>
+        <i class="fas fa-shield-alt"></i>
         <h3>Защищено</h3>
         <p>Копирование контента запрещено</p>
     </div>
 
+    <!-- ===== Main Container ===== -->
     <div class="container">
+
+        <!-- ===== Header ===== -->
         <header>
             <div class="profile-container">
                 <!-- Замените src на путь к вашему фото -->
-                <img src="./image.png" alt="Мое фото" class="profile-img">
+                <img src="./image.png" alt="Фото mambetovv" class="profile-img">
                 <div class="image-protection" id="imageProtection"></div>
             </div>
             <h1>mambetovv</h1>
             <div class="title">Frontend разработчик</div>
-            <p class="subtitle"> Только начинаю свой путь в IT</p>
+            <p class="subtitle">Только начинаю свой путь в IT</p>
         </header>
 
+        <!-- ===== Main Content ===== -->
         <div class="main-content">
+
+            <!-- About Card -->
             <div class="card" id="about-card">
                 <h2><i class="fas fa-user"></i> Обо мне</h2>
-                <p>Привет! Я Frontend разработчик, который создает красивые и функциональные веб-интерфейсы.
-                Только начинаю свой путь в IT. Увлекаюсь веб-разработкой и постоянно учусь чему-то новому</p>
-                <p>Страстно увлечен веб-разработкой и постоянно совершенствую свои навыки. Верю, что хороший дизайн и качественный код могут изменить пользовательский опыт к лучшему.</p>
-                <p>Люблю решать сложные задачи и создавать продукты, которые приносят реальную пользу людям.</p>
+                <p>Недавно завершил обучение и начинаю свой путь в сфере веб-разработки. Активно развиваюсь, набираюсь практического опыта и открыт к новым знаниям и профессиональному росту.</p>
+                <p>Имею знания и навыки работы с HTML, CSS, JavaScript, React(средний уровень), Node.js(средний уровень), Python,(средний уровень) PHP, 50% Git 50% и GitHub 50%. Также умею создавать адаптивные веб-сайты и размещать проекты через Netlify. Есть понимание структуры разработки веб-приложений и опыт создания сайтов без серверной части (frontend).</p>
+                <p>Ответственно подхожу к работе, быстро обучаюсь и стремлюсь постоянно развивать свои навыки. В будущем планирую также изучать кибербезопасность и расширять свои знания в IT-сфере..</p>
             </div>
 
+            <!-- Contact Card (NEW) -->
+            <div class="card" id="contact-card">
+                <h2><i class="fas fa-address-card"></i> Контакты</h2>
+                <div class="contact-grid">
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/996505694279" target="_blank" class="contact-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <!-- Telegram -->
+                    <a href="https://t.me/mambetovv_404" target="_blank" class="contact-btn telegram">
+                        <i class="fab fa-telegram-plane"></i> Telegram
+                    </a>
+                    <!-- Email (замените адрес на свой) -->
+                    <a href="mailto:ваш-email@example.com" class="contact-btn email">
+                        <i class="fas fa-envelope"></i> Email
+                    </a>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
             <div class="cta-section" id="cta-section">
-                <div class="cta-text">Если есть вопросы? Напишите мне в личку!</div>
-                <a href="https://t.me/mambetovv_CODE" class="btn" target="_blank">
+                <div class="cta-text">📩 Есть вопросы? Напишите мне!</div>
+                <a href="https://t.me/mambetovv_404" class="btn" target="_blank">
                     <i class="fab fa-telegram"></i> Написать в Telegram
                 </a>
             </div>
 
-            
-
-        <div class="quote" id="quote">
-            <p>"Мы вместе будем всё изучать! Давайте расти и развиваться в Frontend разработке вместе! 🚀"</p>
         </div>
 
+        <!-- ===== Quote ===== -->
+        <div class="quote" id="quote">
+            <p>«Мы вместе будем всё изучать! Давайте расти и развиваться в Frontend разработке вместе! 🚀»</p>
+        </div>
+
+        <!-- ===== Social Links ===== -->
         <div class="social-links">
-            <a href="https://t.me/mambetovv_CODE" class="social-link telegram" target="_blank">
+            <!-- Telegram -->
+            <a href="https://t.me/mambetovv_404" class="social-link telegram" target="_blank" aria-label="Telegram">
                 <i class="fab fa-telegram"></i>
             </a>
-            <a href="https://www.tiktok.com/@gym_mambetovv" class="social-link tiktok" target="_blank">
-                <i class="fab fa-tiktok"></i>
-            </a>
-            <a href="https://www.instagram.com/webstore_com/" class="social-link instagram" target="_blank">
+            <!-- Instagram (оставлен) -->
+            <a href="https://www.instagram.com/webstore_com/" class="social-link instagram" target="_blank" aria-label="Instagram">
                 <i class="fab fa-instagram"></i>
             </a>
+            <!-- TikTok УДАЛЁН -->
         </div>
+
     </div>
 
+    <!-- ===== Scripts ===== -->
     <script>
-        // Защита от копирования и сохранения
         document.addEventListener('DOMContentLoaded', function() {
-            const protectionMessage = document.getElementById('protectionMessage');
-            const imageProtection = document.getElementById('imageProtection');
-            
-            // Блокировка контекстного меню
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                showProtectionMessage();
-                return false;
-            });
-            
-            // Блокировка перетаскивания
-            document.addEventListener('dragstart', function(e) {
-                e.preventDefault();
-                return false;
-            });
-            
-            // Блокировка выделения текста
-            document.addEventListener('selectstart', function(e) {
-                e.preventDefault();
-                return false;
-            });
-            
-            // Блокировка клавиш Print Screen, Ctrl+C, Ctrl+U и др.
-            document.addEventListener('keydown', function(e) {
-                // Ctrl+U (просмотр исходного кода)
-                if (e.ctrlKey && e.keyCode === 85) {
-                    e.preventDefault();
-                    showProtectionMessage();
-                    return false;
-                }
-                // Ctrl+S (сохранение)
-                if (e.ctrlKey && e.keyCode === 83) {
-                    e.preventDefault();
-                    showProtectionMessage();
-                    return false;
-                }
-                // Ctrl+C (копирование)
-                if (e.ctrlKey && e.keyCode === 67) {
-                    e.preventDefault();
-                    showProtectionMessage();
-                    return false;
-                }
-                // Print Screen
-                if (e.keyCode === 44) {
-                    e.preventDefault();
-                    showProtectionMessage();
-                    return false;
-                }
-                // F12 (инструменты разработчика)
-                if (e.keyCode === 123) {
-                    e.preventDefault();
-                    showProtectionMessage();
-                    return false;
-                }
-                // Ctrl+Shift+I (инструменты разработчика)
-                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
-                    e.preventDefault();
-                    showProtectionMessage();
-                    return false;
-                }
-            });
-            
-            // Защита изображения
-            imageProtection.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                showProtectionMessage();
-                return false;
-            });
-            
-            // Дополнительная защита для изображения
-            const images = document.querySelectorAll('img');
-            images.forEach(img => {
-                img.setAttribute('draggable', 'false');
-                img.addEventListener('dragstart', function(e) {
-                    e.preventDefault();
-                    return false;
-                });
-            });
-            
-            // Функция показа сообщения защиты
-            function showProtectionMessage() {
-                protectionMessage.style.display = 'block';
-                setTimeout(function() {
-                    protectionMessage.style.display = 'none';
-                }, 2000);
+            const protectionMsg = document.getElementById('protectionMessage');
+
+            // ---- Protection ----
+            function showProtection() {
+                protectionMsg.style.display = 'block';
+                setTimeout(() => { protectionMsg.style.display = 'none'; }, 2000);
             }
-            
-            // Добавляем анимацию для карточек при скролле
+
+            // Блокировка контекстного меню
+            document.addEventListener('contextmenu', e => { e.preventDefault(); showProtection(); });
+
+            // Блокировка перетаскивания
+            document.addEventListener('dragstart', e => { e.preventDefault(); });
+
+            // Блокировка выделения
+            document.addEventListener('selectstart', e => { e.preventDefault(); });
+
+            // Клавиши: Ctrl+U, Ctrl+S, Ctrl+C, PrintScreen, F12, Ctrl+Shift+I
+            document.addEventListener('keydown', e => {
+                const ctrl = e.ctrlKey || e.metaKey;
+                const key = e.keyCode || e.which;
+                if ((ctrl && (key === 85 || key === 83 || key === 67)) ||
+                    key === 44 || key === 123 ||
+                    (ctrl && e.shiftKey && key === 73)) {
+                    e.preventDefault();
+                    showProtection();
+                }
+            });
+
+            // Защита изображения
+            const imgProtect = document.getElementById('imageProtection');
+            imgProtect.addEventListener('contextmenu', e => { e.preventDefault(); showProtection(); });
+
+            document.querySelectorAll('img').forEach(img => {
+                img.setAttribute('draggable', 'false');
+                img.addEventListener('dragstart', e => { e.preventDefault(); });
+            });
+
+            // ---- Scroll animation ----
             const cards = document.querySelectorAll('.card');
             const quote = document.getElementById('quote');
-            const ctaSection = document.getElementById('cta-section');
-            
+            const cta = document.getElementById('cta-section');
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
                     }
                 });
-            }, { threshold: 0.1 });
+            }, { threshold: 0.15 });
 
-            cards.forEach(card => {
-                observer.observe(card);
-            });
-            
+            cards.forEach(card => observer.observe(card));
             observer.observe(quote);
-            observer.observe(ctaSection);
+            observer.observe(cta);
 
-            // Добавляем небольшую задержку для появления элементов
+            // Немедленно показываем первую карточку (если уже видна)
             setTimeout(() => {
                 document.getElementById('about-card').classList.add('visible');
-            }, 300);
-            
-            setTimeout(() => {
-                document.getElementById('cta-section').classList.add('visible');
-            }, 500);
-            
+            }, 200);
             setTimeout(() => {
                 document.getElementById('contact-card').classList.add('visible');
-            }, 700);
-            
+            }, 400);
+            setTimeout(() => {
+                cta.classList.add('visible');
+            }, 600);
             setTimeout(() => {
                 quote.classList.add('visible');
-            }, 900);
-        });
-
-        // Плавный скролл для якорей (если понадобится в будущем)
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
+            }, 800);
         });
     </script>
+
 </body>
 </html>
