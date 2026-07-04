@@ -1,4 +1,4 @@
-const CACHE_NAME = "tahajjud-v2";
+const CACHE_NAME = "tahajjud-v3";
 
 const urlsToCache = [
   "/tahajjud_tracker/",
