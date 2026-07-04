@@ -1,21 +1,21 @@
-const CACHE = "tahajjud-v1";
+const CACHE_NAME = "tahajjud-v1";
 
-self.addEventListener("install", e=>{
-e.waitUntil(
-caches.open(CACHE).then(cache=>{
-return cache.addAll([
-"/tahajjud_tracker/",
-"/tahajjud_tracker/index.html",
-"/tahajjud_tracker/style.css",
-"/tahajjud_tracker/script.js",
-"/tahajjud_tracker/icon.png"
-]);
-})
-);
+const urlsToCache = [
+  "/tahajjud_tracker/",
+  "/tahajjud_tracker/index.html",
+  "/tahajjud_tracker/icon.png"
+];
+
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
+  );
 });
 
-self.addEventListener("fetch",e=>{
-e.respondWith(
-caches.match(e.request).then(r=>r||fetch(e.request))
-);
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
+  );
 });

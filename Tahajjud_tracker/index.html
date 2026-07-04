@@ -747,12 +747,13 @@
 
   render();
 })();
-</script>
-<script>
-if("serviceWorker" in navigator){
-navigator.serviceWorker.register("./service-worker.js");
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/tahajjud_tracker/service-worker.js")
+    .then(() => console.log("Service Worker работает"));
 }
 </script>
+
 
 </body>
 </html>
