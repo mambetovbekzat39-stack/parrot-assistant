@@ -1,15 +1,16 @@
 {
-  "name": "Tahajjud tracker",
-  "short_name": "TahajjudTracker",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
-  "icons": [
+  "name":"TahajjudTracker",
+  "short_name":"Tahajjud",
+  "start_url":"/tahajjud_tracker/",
+  "display":"standalone",
+  "background_color":"#000000",
+  "theme_color":"#000000",
+  "description":"Приложение для отслеживания тахаджуда",
+  "icons":[
     {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src":"assets/icon.png",
+      "sizes":"512x512",
+      "type":"image/png"
     }
   ]
 }
