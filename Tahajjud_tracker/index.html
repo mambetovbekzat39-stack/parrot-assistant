@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тахаджуд · Трекер ночного намаза</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#080b16;
+    --bg-1:#0e1526;
+    --bg-2:#141d34;
+    --card:#151f3a;
+    --card-border:rgba(228,199,122,0.14);
+    --gold:#c9a227;
+    --gold-soft:#e4c77a;
+    --gold-dim:rgba(201,162,39,0.28);
+    --cream:#ece4d3;
+    --muted:#8a91ad;
+    --done:#6f9c86;
+    --done-bg:rgba(111,156,134,0.16);
+    --missed:#b06a63;
+    --missed-bg:rgba(176,106,99,0.16);
+    --shadow:0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html,body{
+    min-height:100%;
+    background:
+      radial-gradient(ellipse 900px 500px at 85% -10%, rgba(201,162,39,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 10% 110%, rgba(111,156,134,0.06), transparent 60%),
+      linear-gradient(180deg, var(--bg-0), var(--bg-1) 40%, var(--bg-0));
+    color:var(--cream);
+    font-family:'Manrope',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  .stars{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20% 15%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 65% 8%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1.5px 1.5px at 80% 25%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 45% 40%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1.5px 1.5px at 90% 60%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1px 1px at 10% 70%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1.5px 1.5px at 30% 85%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 75% 90%, rgba(255,255,255,0.3), transparent);
+    background-repeat:no-repeat;
+    opacity:0.8;
+  }
+
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:760px;
+    margin:0 auto;
+    padding:36px 20px 60px;
+  }
+
+  header{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    margin-bottom:30px;
+  }
+
+  .moon{
+    width:48px;
+    height:48px;
+    margin-bottom:12px;
+    filter:drop-shadow(0 0 18px rgba(228,199,122,0.35));
+  }
+
+  .arabic{
+    font-family:'Cormorant',serif;
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:0.12em;
+    color:var(--gold-soft);
+    opacity:0.85;
+    margin-bottom:6px;
+  }
+
+  h1{
+    font-family:'Cormorant',serif;
+    font-weight:700;
+    font-size:clamp(28px,6vw,40px);
+    color:var(--cream);
+  }
+
+  .subtitle{
+    margin-top:6px;
+    font-size:13.5px;
+    color:var(--muted);
+  }
+
+  /* stats */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-bottom:24px;
+  }
+
+  .stat{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:16px 8px;
+    text-align:center;
+    box-shadow:var(--shadow);
+  }
+
+  .stat .num{
+    font-family:'Cormorant',serif;
+    font-weight:700;
+    font-size:clamp(22px,5vw,30px);
+    color:var(--gold-soft);
+    line-height:1;
+  }
+
+  .stat .label{
+    margin-top:6px;
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:0.02em;
+    text-transform:uppercase;
+  }
+
+  /* calendar card */
+  .cal-card{
+    background:linear-gradient(180deg, var(--card), var(--bg-2));
+    border:1px solid var(--card-border);
+    border-radius:22px;
+    padding:22px 18px;
+    box-shadow:var(--shadow);
+    margin-bottom:22px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .cal-card::before{
+    content:"";
+    position:absolute;
+    top:-40%;
+    right:-20%;
+    width:260px;
+    height:260px;
+    background:radial-gradient(circle, var(--gold-dim), transparent 70%);
+    pointer-events:none;
+  }
+
+  .cal-nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:16px;
+    position:relative;
+    z-index:1;
+  }
+
+  .cal-nav button{
+    background:rgba(228,199,122,0.08);
+    border:1px solid var(--card-border);
+    color:var(--gold-soft);
+    width:36px;
+    height:36px;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:none;
+  }
+
+  .cal-nav button:hover{background:rgba(228,199,122,0.16);}
+
+  .cal-title{
+    font-family:'Cormorant',serif;
+    font-weight:700;
+    font-size:20px;
+    color:var(--cream);
+    text-transform:capitalize;
+  }
+
+  .cal-weekdays{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:4px;
+    margin-bottom:6px;
+    position:relative;
+    z-index:1;
+  }
+
+  .cal-weekdays span{
+    text-align:center;
+    font-size:11px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+  }
+
+  .cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:4px;
+    position:relative;
+    z-index:1;
+  }
+
+  .cal-cell{
+    aspect-ratio:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--cream);
+    cursor:pointer;
+    background:rgba(255,255,255,0.02);
+    border:1px solid transparent;
+    position:relative;
+    transition:transform 0.1s ease;
+    user-select:none;
+  }
+
+  .cal-cell:active{transform:scale(0.93);}
+
+  .cal-cell.empty{visibility:hidden;cursor:default;}
+
+  .cal-cell.future{
+    color:rgba(138,145,173,0.4);
+    cursor:not-allowed;
+  }
+
+  .cal-cell.done{
+    background:linear-gradient(180deg, var(--gold-soft), var(--gold));
+    color:#241a04;
+  }
+
+  .cal-cell.missed{
+    background:var(--missed-bg);
+    color:var(--missed);
+    border:1px solid rgba(176,106,99,0.4);
+  }
+
+  .cal-cell.is-today{
+    box-shadow:0 0 0 2px var(--gold-soft);
+  }
+
+  .cal-cell.selected{
+    box-shadow:0 0 0 2px var(--cream);
+  }
+
+  .cal-cell:not(.future):not(.empty):hover{
+    background:rgba(228,199,122,0.14);
+  }
+
+  .cal-legend{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    margin-top:14px;
+    flex-wrap:wrap;
+    font-size:11.5px;
+    color:var(--muted);
+    position:relative;
+    z-index:1;
+  }
+  .cal-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .dot.done{background:var(--gold);}
+  .dot.missed{background:var(--missed);}
+  .dot.today{background:transparent;border:2px solid var(--gold-soft);}
+
+  /* selected day panel */
+  .day-panel{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:18px;
+    padding:20px;
+    box-shadow:var(--shadow);
+    margin-bottom:26px;
+  }
+
+  .day-panel .day-label{
+    font-size:12px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-bottom:4px;
+  }
+
+  .day-panel .day-title{
+    font-family:'Cormorant',serif;
+    font-weight:600;
+    font-size:22px;
+    color:var(--cream);
+    margin-bottom:14px;
+  }
+
+  .day-status-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 14px;
+    border-radius:999px;
+    font-size:12.5px;
+    font-weight:700;
+    margin-bottom:16px;
+  }
+  .day-status-badge.pending{background:rgba(138,145,173,0.12);color:var(--muted);}
+  .day-status-badge.done{background:var(--done-bg);color:var(--done);}
+  .day-status-badge.missed{background:var(--missed-bg);color:var(--missed);}
+
+  .btn-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  button.action{
+    font-family:'Manrope',sans-serif;
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+    font-size:14px;
+    border-radius:14px;
+    padding:13px 18px;
+    flex:1;
+    min-width:130px;
+    transition:transform 0.15s ease, opacity 0.15s ease;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+
+  button.action:active{transform:scale(0.97);}
+  button.action:focus-visible{outline:2px solid var(--gold-soft);outline-offset:2px;}
+
+  .btn-done{
+    background:linear-gradient(180deg, #7dab93, #5f8a76);
+    color:#0c1a14;
+    box-shadow:0 10px 24px -10px rgba(111,156,134,0.6);
+  }
+  .btn-done.active{box-shadow:0 0 0 2px var(--done) inset;}
+
+  .btn-missed{
+    background:rgba(176,106,99,0.16);
+    color:var(--missed);
+    border:1px solid rgba(176,106,99,0.35);
+  }
+  .btn-missed.active{
+    background:linear-gradient(180deg, #c07f77, #a4645d);
+    color:#1a0c0c;
+    box-shadow:0 10px 24px -10px rgba(176,106,99,0.55);
+  }
+
+  .btn-clear{
+    background:none;
+    border:1px solid var(--card-border);
+    color:var(--muted);
+    flex:none;
+    min-width:0;
+    padding:13px 16px;
+  }
+  .btn-clear:hover{color:var(--cream);}
+
+  .btn-done:not(.active):hover{opacity:0.92;}
+  .btn-missed:not(.active):hover{opacity:0.92;}
+
+  /* history */
+  section.section{margin-bottom:26px;}
+
+  .section-title{
+    font-family:'Cormorant',serif;
+    font-weight:600;
+    font-size:19px;
+    color:var(--cream);
+    margin-bottom:4px;
+  }
+
+  .section-desc{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:14px;
+  }
+
+  .history-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    max-height:340px;
+    overflow-y:auto;
+  }
+
+  .history-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:14px;
+    padding:12px 16px;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  .history-row:hover{border-color:var(--gold-dim);}
+
+  .history-date{color:var(--cream);font-weight:600;}
+  .history-day{color:var(--muted);font-size:12px;margin-left:6px;}
+
+  .history-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-weight:700;
+    font-size:12.5px;
+    padding:5px 12px;
+    border-radius:999px;
+  }
+  .history-badge.done{background:var(--done-bg);color:var(--done);}
+  .history-badge.missed{background:var(--missed-bg);color:var(--missed);}
+
+  .empty-state{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    padding:24px 0;
+  }
+
+  footer{text-align:center;margin-top:6px;}
+
+  .reset-link{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:12px;
+    text-decoration:underline;
+    cursor:pointer;
+    padding:8px;
+  }
+  .reset-link:hover{color:var(--missed);}
+
+  @media (max-width:480px){
+    .wrap{padding:26px 14px 48px;}
+    .stat{padding:14px 4px;}
+    .cal-cell{font-size:12px;}
+    button.action{min-width:0;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<div class="wrap">
+
+  <header>
+    <svg class="moon" viewBox="0 0 100 100" fill="none">
+      <path d="M62 12C40 16 26 36 26 58C26 80 44 96 66 92C80 89 90 79 94 68C88 74 79 78 70 76C50 71 38 52 44 32C47 22 54 15 62 12Z" fill="url(#g)"/>
+      <defs>
+        <linearGradient id="g" x1="26" y1="12" x2="94" y2="92" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#e4c77a"/>
+          <stop offset="100%" stop-color="#c9a227"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="arabic">تهجد</div>
+    <h1>Тахаджуд</h1>
+    <div class="subtitle">Трекер ночного намаза — выберите любой день</div>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num" id="streakNum">0</div>
+      <div class="label">Серия дней</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="doneNum">0</div>
+      <div class="label">Прочитал</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="missedNum">0</div>
+      <div class="label">Не читал</div>
+    </div>
+  </div>
+
+  <div class="cal-card">
+    <div class="cal-nav">
+      <button id="prevMonth" aria-label="Предыдущий месяц">‹</button>
+      <div class="cal-title" id="calTitle"></div>
+      <button id="nextMonth" aria-label="Следующий месяц">›</button>
+    </div>
+    <div class="cal-weekdays" id="calWeekdays"></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <span><i class="dot done"></i>Прочитал</span>
+      <span><i class="dot missed"></i>Не читал</span>
+      <span><i class="dot today"></i>Сегодня</span>
+    </div>
+  </div>
+
+  <div class="day-panel">
+    <div class="day-label">Выбранный день</div>
+    <div class="day-title" id="selDayTitle"></div>
+    <div class="day-status-badge pending" id="selDayBadge">Ожидает отметки</div>
+    <div class="btn-row">
+      <button class="action btn-done" id="btnDone">✓ Я выполнил</button>
+      <button class="action btn-missed" id="btnMissed">✕ Не читал</button>
+      <button class="action btn-clear" id="btnClear">Сбросить</button>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-title">История</div>
+    <div class="section-desc">Нажмите на запись, чтобы открыть этот день в календаре выше.</div>
+    <div class="history-list" id="historyList"></div>
+  </section>
+
+  <footer>
+    <button class="reset-link" id="resetBtn">Сбросить всю историю</button>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'tahajjud_tracker_v2';
+  const RU_MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  const RU_MONTHS_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const RU_DAYS = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+  const RU_DAYS_SHORT = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const RU_WEEK_MON_FIRST = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+
+  function fmtKey(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function keyToDate(key){
+    const [y,m,d] = key.split('-').map(Number);
+    return new Date(y, m-1, d);
+  }
+  function startOfDay(d){
+    const c = new Date(d);
+    c.setHours(0,0,0,0);
+    return c;
+  }
+
+  function loadData(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    }catch(e){ return {}; }
+  }
+  function saveData(data){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+  }
+
+  let data = loadData();
+  const todayDate = startOfDay(new Date());
+  const todayKey = fmtKey(todayDate);
+
+  let viewYear = todayDate.getFullYear();
+  let viewMonth = todayDate.getMonth();
+  let selectedKey = todayKey;
+
+  function computeStreak(){
+    let streak = 0;
+    let cursor = new Date(todayDate);
+    while(true){
+      const key = fmtKey(cursor);
+      if(data[key] === 'done'){
+        streak++;
+        cursor.setDate(cursor.getDate()-1);
+      }else break;
+    }
+    return streak;
+  }
+
+  function renderStats(){
+    const values = Object.values(data);
+    document.getElementById('doneNum').textContent = values.filter(v=>v==='done').length;
+    document.getElementById('missedNum').textContent = values.filter(v=>v==='missed').length;
+    document.getElementById('streakNum').textContent = computeStreak();
+  }
+
+  function renderCalendar(){
+    document.getElementById('calTitle').textContent = RU_MONTHS_NOM[viewMonth] + ' ' + viewYear;
+
+    const weekdaysEl = document.getElementById('calWeekdays');
+    weekdaysEl.innerHTML = RU_WEEK_MON_FIRST.map(d => '<span>'+d+'</span>').join('');
+
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    const firstOfMonth = new Date(viewYear, viewMonth, 1);
+    let jsDay = firstOfMonth.getDay(); // 0 = Sun
+    let offset = (jsDay === 0) ? 6 : jsDay - 1; // Monday-first offset
+
+    const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+
+    for(let i=0;i<offset;i++){
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell empty';
+      grid.appendChild(cell);
+    }
+
+    for(let day=1; day<=daysInMonth; day++){
+      const cellDate = new Date(viewYear, viewMonth, day);
+      const key = fmtKey(cellDate);
+      const status = data[key];
+      const isFuture = startOfDay(cellDate) > todayDate;
+
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell';
+      cell.textContent = day;
+      if(status === 'done') cell.classList.add('done');
+      if(status === 'missed') cell.classList.add('missed');
+      if(key === todayKey) cell.classList.add('is-today');
+      if(key === selectedKey) cell.classList.add('selected');
+      if(isFuture) cell.classList.add('future');
+
+      if(!isFuture){
+        cell.addEventListener('click', () => {
+          selectedKey = key;
+          render();
+        });
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  function renderDayPanel(){
+    const d = keyToDate(selectedKey);
+    const isToday = selectedKey === todayKey;
+    document.getElementById('selDayTitle').textContent =
+      d.getDate() + ' ' + RU_MONTHS[d.getMonth()] + ' ' + d.getFullYear() +
+      ' · ' + RU_DAYS[d.getDay()] + (isToday ? ' (сегодня)' : '');
+
+    const status = data[selectedKey];
+    const badge = document.getElementById('selDayBadge');
+    if(status === 'done'){
+      badge.className = 'day-status-badge done';
+      badge.textContent = '✓ Намаз прочитан';
+    }else if(status === 'missed'){
+      badge.className = 'day-status-badge missed';
+      badge.textContent = '✕ Отмечено как не прочитан';
+    }else{
+      badge.className = 'day-status-badge pending';
+      badge.textContent = 'Ожидает отметки';
+    }
+
+    document.getElementById('btnDone').classList.toggle('active', status === 'done');
+    document.getElementById('btnMissed').classList.toggle('active', status === 'missed');
+  }
+
+  function renderHistory(){
+    const list = document.getElementById('historyList');
+    const keys = Object.keys(data).sort().reverse();
+    if(keys.length === 0){
+      list.innerHTML = '<div class="empty-state">Пока нет отметок. Выберите день в календаре и отметьте его.</div>';
+      return;
+    }
+    list.innerHTML = '';
+    keys.slice(0,90).forEach(key=>{
+      const d = keyToDate(key);
+      const status = data[key];
+      const row = document.createElement('div');
+      row.className = 'history-row';
+      row.innerHTML =
+        '<span><span class="history-date">'+d.getDate()+' '+RU_MONTHS[d.getMonth()]+' '+d.getFullYear()+'</span>'+
+        '<span class="history-day">'+RU_DAYS_SHORT[d.getDay()]+'</span></span>'+
+        '<span class="history-badge '+status+'">'+(status==='done' ? '✓ Прочитал' : '✕ Не читал')+'</span>';
+      row.addEventListener('click', () => {
+        viewYear = d.getFullYear();
+        viewMonth = d.getMonth();
+        selectedKey = key;
+        render();
+        document.querySelector('.cal-card').scrollIntoView({behavior:'smooth', block:'center'});
+      });
+      list.appendChild(row);
+    });
+  }
+
+  function render(){
+    renderStats();
+    renderCalendar();
+    renderDayPanel();
+    renderHistory();
+  }
+
+  function setStatus(status){
+    if(data[selectedKey] === status){
+      delete data[selectedKey];
+    }else{
+      data[selectedKey] = status;
+    }
+    saveData(data);
+    render();
+  }
+
+  document.getElementById('btnDone').addEventListener('click', () => setStatus('done'));
+  document.getElementById('btnMissed').addEventListener('click', () => setStatus('missed'));
+  document.getElementById('btnClear').addEventListener('click', () => {
+    delete data[selectedKey];
+    saveData(data);
+    render();
+  });
+
+  document.getElementById('prevMonth').addEventListener('click', () => {
+    viewMonth--;
+    if(viewMonth < 0){ viewMonth = 11; viewYear--; }
+    render();
+  });
+  document.getElementById('nextMonth').addEventListener('click', () => {
+    viewMonth++;
+    if(viewMonth > 11){ viewMonth = 0; viewYear++; }
+    render();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if(confirm('Удалить всю историю отметок? Это действие нельзя отменить.')){
+      data = {};
+      saveData(data);
+      render();
+    }
+  });
+
+  render();
+})();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js");
+}
+</script>
+
+</body>
+</html>
