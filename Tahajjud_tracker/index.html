@@ -1157,8 +1157,10 @@
 })();
 
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/tahajjud_tracker/service-worker.js")
-    .then(() => console.log("Service Worker работает"));
+  navigator.serviceWorker.register("/tahajjud_tracker/service-worker.js")
+    .then(reg => {
+      reg.update();
+    });
 }
 </script>
 
