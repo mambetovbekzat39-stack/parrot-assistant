@@ -47,7 +47,7 @@
   *{margin:0;padding:0;box-sizing:border-box;}
 
   html,body{
-    min-height:100%;
+    height:100%;
     background:
       radial-gradient(ellipse 1000px 560px at 88% -8%, rgba(201,162,76,0.14), transparent 62%),
       radial-gradient(ellipse 760px 520px at 6% 8%, rgba(132,183,154,0.06), transparent 60%),
@@ -57,7 +57,7 @@
     font-family:'Manrope',sans-serif;
     -webkit-font-smoothing:antialiased;
     position:relative;
-    overflow-x:hidden;
+    overflow:hidden;
   }
 
   /* небо со звёздами: два слоя разного размера, лёгкое мерцание */
@@ -107,8 +107,13 @@
     position:relative;
     z-index:1;
     max-width:640px;
+    height:100vh;
+    height:100dvh;
     margin:0 auto;
-    padding:18px 16px 24px;
+    padding:12px 16px 10px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
   }
 
   header{
@@ -116,7 +121,8 @@
     flex-direction:column;
     align-items:center;
     text-align:center;
-    margin-bottom:16px;
+    margin-bottom:10px;
+    flex:none;
   }
 
   .moon-halo{
@@ -181,7 +187,8 @@
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:8px;
-    margin-bottom:14px;
+    margin-bottom:10px;
+    flex:none;
   }
 
   .stat{
@@ -216,12 +223,13 @@
     background:linear-gradient(165deg, var(--glass-strong) 0%, var(--bg-elevated) 100%);
     border:1px solid var(--border-glass);
     border-radius:var(--radius-lg);
-    padding:14px 12px;
+    padding:12px 12px;
     box-shadow:var(--shadow-lift);
-    margin-bottom:12px;
+    margin-bottom:10px;
     position:relative;
     overflow:hidden;
     backdrop-filter:blur(8px);
+    flex:none;
   }
 
   .cal-card::before{
@@ -372,10 +380,11 @@
     background:linear-gradient(160deg, var(--glass-strong), var(--glass));
     border:1px solid var(--border-glass-soft);
     border-radius:var(--radius-lg);
-    padding:14px 16px;
+    padding:12px 16px;
     box-shadow:var(--shadow-soft);
-    margin-bottom:14px;
+    margin-bottom:10px;
     backdrop-filter:blur(6px);
+    flex:none;
   }
 
   .day-panel .day-label{
@@ -469,27 +478,11 @@
   .btn-clear:hover{color:var(--cream);border-color:var(--border-glass);}
 
   /* history */
-  section.section{margin-bottom:10px;}
-
-  .section-title{
-    font-family:'Cormorant Garamond',serif;
-    font-weight:600;
-    font-size:16px;
-    color:var(--cream);
-    margin-bottom:2px;
-  }
-
-  .section-desc{
-    font-size:11px;
-    color:var(--muted);
-    margin-bottom:8px;
-  }
-
   .history-list{
     display:flex;
     flex-direction:column;
-    gap:6px;
-    max-height:180px;
+    gap:8px;
+    max-height:60vh;
     overflow-y:auto;
     padding-right:2px;
   }
@@ -535,7 +528,7 @@
     border-radius:var(--radius-md);
   }
 
-  footer{text-align:center;margin-top:2px;}
+  footer{text-align:center;margin-top:2px;flex:none;}
 
   .reset-link{
     background:none;
@@ -550,15 +543,226 @@
   }
   .reset-link:hover{color:var(--rose);}
 
+  /* guide button + modal */
+  .top-btn-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+    flex:none;
+  }
+  .guide-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    width:100%;
+    flex:1;
+    background:linear-gradient(160deg, var(--glass-strong), var(--glass));
+    border:1px solid var(--border-glass);
+    color:var(--gold-bright);
+    font-family:'Manrope',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.01em;
+    border-radius:var(--radius-md);
+    padding:11px 12px;
+    cursor:pointer;
+    box-shadow:var(--shadow-soft);
+    transition:transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+  .guide-btn:hover{background:rgba(239,212,151,0.1);border-color:var(--gold-dim);transform:translateY(-1px);}
+  .guide-btn:active{transform:scale(0.98);}
+  .guide-btn .book-icon{font-size:15px;}
+
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    background:rgba(3,4,10,0.72);
+    backdrop-filter:blur(3px);
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.2s ease;
+  }
+  .modal-overlay.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+  @media (min-width:640px){
+    .modal-overlay{align-items:center;padding:20px;}
+  }
+
+  .modal-sheet{
+    width:100%;
+    max-width:640px;
+    max-height:86vh;
+    background:linear-gradient(165deg, var(--bg-elevated) 0%, var(--bg-mid) 100%);
+    border:1px solid var(--border-glass);
+    border-radius:22px 22px 0 0;
+    box-shadow:var(--shadow-lift);
+    padding:18px 18px 22px;
+    overflow-y:auto;
+    transform:translateY(24px);
+    transition:transform 0.25s ease;
+    position:relative;
+  }
+  .modal-overlay.open .modal-sheet{transform:translateY(0);}
+  @media (min-width:640px){
+    .modal-sheet{border-radius:22px;}
+  }
+
+  .modal-sheet::-webkit-scrollbar{width:6px;}
+  .modal-sheet::-webkit-scrollbar-track{background:transparent;}
+  .modal-sheet::-webkit-scrollbar-thumb{background:var(--border-glass);border-radius:6px;}
+
+  .modal-handle{
+    width:36px;
+    height:4px;
+    border-radius:4px;
+    background:var(--border-glass);
+    margin:0 auto 14px;
+  }
+  @media (min-width:640px){ .modal-handle{display:none;} }
+
+  .modal-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:4px;
+  }
+
+  .modal-title{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    font-size:24px;
+    color:var(--cream);
+    line-height:1.15;
+  }
+
+  .modal-close{
+    flex:none;
+    width:32px;
+    height:32px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--border-glass-soft);
+    color:var(--muted);
+    font-size:16px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .modal-close:hover{color:var(--cream);border-color:var(--border-glass);}
+
+  .modal-sub{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:18px;
+  }
+
+  .guide-block{
+    margin-bottom:16px;
+  }
+  .guide-block:last-child{margin-bottom:0;}
+
+  .guide-block-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    font-size:16.5px;
+    color:var(--gold-bright);
+    margin-bottom:8px;
+  }
+  .guide-num{
+    flex:none;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:var(--gold-dim);
+    color:var(--gold-bright);
+    font-family:'Manrope',sans-serif;
+    font-size:11.5px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .guide-block p{
+    font-size:13.5px;
+    line-height:1.6;
+    color:var(--cream);
+    opacity:0.92;
+    margin-bottom:6px;
+  }
+  .guide-block p:last-child{margin-bottom:0;}
+
+  .guide-block ul{
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .guide-block ul li{
+    font-size:13.5px;
+    line-height:1.55;
+    color:var(--cream);
+    opacity:0.92;
+    padding-left:16px;
+    position:relative;
+  }
+  .guide-block ul li::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:8px;
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--gold);
+  }
+
+  .guide-note{
+    margin-top:14px;
+    padding:12px 14px;
+    background:var(--sage-bg);
+    border:1px solid var(--sage-line);
+    border-radius:var(--radius-sm);
+    font-size:12.5px;
+    line-height:1.55;
+    color:var(--sage);
+  }
+
   @media (max-width:480px){
-    .wrap{padding:12px 10px 16px;}
-    .stat{padding:8px 4px;}
+    .wrap{padding:8px 10px 8px;}
+    .stat{padding:7px 4px;}
     .cal-cell{font-size:10.5px;}
     button.action{min-width:0;font-size:11.5px;padding:9px 8px;}
-    .cal-card{padding:10px 8px;}
-    .day-panel{padding:12px 12px;}
-    .history-list{max-height:150px;}
-    h1{font-size:20px;}
+    .cal-card{padding:9px 8px;}
+    .day-panel{padding:10px 12px;}
+    h1{font-size:19px;}
+  }
+  @media (max-height:700px){
+    .moon-halo{width:32px;height:32px;}
+    .moon{width:20px;height:20px;}
+    h1{font-size:19px;}
+    .subtitle{font-size:11px;}
+    header{margin-bottom:6px;}
+    .guide-btn{padding:8px 10px;font-size:11.5px;}
+    .top-btn-row{margin-bottom:6px;}
+    .stats{margin-bottom:6px;}
+    .stat{padding:6px 4px;}
+    .cal-card{padding:8px 10px;margin-bottom:6px;}
+    .day-panel{padding:8px 14px;margin-bottom:6px;}
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -588,6 +792,11 @@
     <h1>Тахаджуд</h1>
     <div class="subtitle">Трекер ночного намаза — выберите любой день</div>
   </header>
+
+  <div class="top-btn-row">
+    <button class="guide-btn" id="guideBtn"><span class="book-icon">📖</span>Как читать</button>
+    <button class="guide-btn" id="historyBtn"><span class="book-icon">📜</span>История</button>
+  </div>
 
   <div class="stats">
     <div class="stat">
@@ -630,16 +839,74 @@
     </div>
   </div>
 
-  <section class="section">
-    <div class="section-title">История</div>
-    <div class="section-desc">Нажмите на запись, чтобы открыть этот день в календаре выше.</div>
-    <div class="history-list" id="historyList"></div>
-  </section>
-
   <footer>
     <button class="reset-link" id="resetBtn">Сбросить всю историю</button>
   </footer>
 
+</div>
+
+<div class="modal-overlay" id="guideOverlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title">Тахаджуд с нуля</div>
+      <button class="modal-close" id="guideClose" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="modal-sub">Простое пошаговое руководство для тех, кто только начинает</div>
+
+    <div class="guide-block">
+      <div class="guide-block-title"><span class="guide-num">1</span>Что такое Тахаджуд</div>
+      <p>Тахаджуд — добровольный ночной намаз, который совершается после сна, перед рассветным (Фаджр) намазом. Он не входит в число обязательных пяти намазов, но считается одним из самых любимых Аллахом добровольных поклонений.</p>
+    </div>
+
+    <div class="guide-block">
+      <div class="guide-block-title"><span class="guide-num">2</span>Когда его читать</div>
+      <p>Лучшее время — последняя треть ночи, ближе к утру. Если сложно рассчитать точное время, ориентируйтесь просто: любое время после полноценного сна и до наступления времени Фаджра уже подходит.</p>
+      <ul>
+        <li>Проснулись за 30–60 минут до Фаджра — этого достаточно</li>
+        <li>Не обязательно спать полночи заранее, можно поставить будильник</li>
+      </ul>
+    </div>
+
+    <div class="guide-block">
+      <div class="guide-block-title"><span class="guide-num">3</span>Сколько ракятов</div>
+      <p>Для начала достаточно 2 ракята — этого хватит, чтобы намаз засчитался. Со временем можно увеличивать: 4, 8 или больше, по 2 ракята за раз.</p>
+    </div>
+
+    <div class="guide-block">
+      <div class="guide-block-title"><span class="guide-num">4</span>Как совершить (шаги)</div>
+      <ul>
+        <li>Проснитесь, сделайте вуду (омовение), как перед обычным намазом</li>
+        <li>Сделайте ният (намерение) в сердце: «Я совершаю добровольный ночной намаз Тахаджуд ради Аллаха»</li>
+        <li>Встаньте в направлении киблы и произнесите такбир «Аллаху Акбар», начиная намаз</li>
+        <li>Прочитайте суру Аль-Фатиха, затем любую другую суру или несколько аятов, которые знаете</li>
+        <li>Совершите руку (поясной поклон), затем два сажда (земных поклона) — так же, как в обычном намазе</li>
+        <li>Это первый ракят. Встаньте и повторите те же действия для второго ракята</li>
+        <li>После второго ракята сядьте и прочитайте ташаххуд, затем завершите намаз приветствием (салям) в обе стороны</li>
+      </ul>
+    </div>
+
+    <div class="guide-block">
+      <div class="guide-block-title"><span class="guide-num">5</span>После намаза</div>
+      <p>После намаза хорошо провести немного времени в мольбе (дуа) — своими словами, на любом языке, попросить о том, что важно для вас. Это время считается одним из лучших для принятия молитв.</p>
+    </div>
+
+    <div class="guide-note">
+      Совет: не гонитесь за количеством ракятов с первого дня. Начните с 2 ракятов несколько раз в неделю — регулярность важнее объёма. Отмечайте выполненные дни в трекере выше, чтобы видеть свой прогресс.
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="historyOverlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title">История</div>
+      <button class="modal-close" id="historyClose" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="modal-sub">Нажмите на запись, чтобы открыть этот день в календаре</div>
+    <div class="history-list" id="historyList"></div>
+  </div>
 </div>
 
 <script>
@@ -845,13 +1112,54 @@
   });
 
   render();
+
+  const guideOverlay = document.getElementById('guideOverlay');
+  const guideBtn = document.getElementById('guideBtn');
+  const guideClose = document.getElementById('guideClose');
+
+  function openGuide(){
+    guideOverlay.classList.add('open');
+  }
+  function closeGuide(){
+    guideOverlay.classList.remove('open');
+  }
+
+  guideBtn.addEventListener('click', openGuide);
+  guideClose.addEventListener('click', closeGuide);
+  guideOverlay.addEventListener('click', (e) => {
+    if(e.target === guideOverlay) closeGuide();
+  });
+
+  const historyOverlay = document.getElementById('historyOverlay');
+  const historyBtn = document.getElementById('historyBtn');
+  const historyClose = document.getElementById('historyClose');
+
+  function openHistory(){
+    historyOverlay.classList.add('open');
+  }
+  function closeHistory(){
+    historyOverlay.classList.remove('open');
+  }
+
+  historyBtn.addEventListener('click', openHistory);
+  historyClose.addEventListener('click', closeHistory);
+  historyOverlay.addEventListener('click', (e) => {
+    if(e.target === historyOverlay) closeHistory();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){
+      closeGuide();
+      closeHistory();
+    }
+  });
+
 })();
 
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/tahajjud_tracker/service-worker.js")
     .then(() => console.log("Service Worker работает"));
 }
-
 </script>
 
 
