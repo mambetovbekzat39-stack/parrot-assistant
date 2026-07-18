@@ -545,7 +545,8 @@
 
   /* guide button + modal */
   .top-btn-row{
-    display:flex;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
     gap:8px;
     margin-bottom:10px;
     flex:none;
@@ -742,6 +743,149 @@
     color:var(--sage);
   }
 
+  /* qibla compass */
+  .qibla-compass-wrap{
+    display:flex;
+    justify-content:center;
+    margin:6px 0 14px;
+  }
+  .qibla-dial{
+    position:relative;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 40%, rgba(255,255,255,0.05), transparent 70%), var(--bg-mid);
+    box-shadow:inset 0 0 0 1px var(--border-glass-soft), var(--shadow-soft);
+  }
+  .qibla-ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    border:1px solid var(--border-glass);
+    transition:transform 0.25s ease-out;
+  }
+  .qibla-ring::before{
+    content:"";
+    position:absolute;
+    inset:14px;
+    border-radius:50%;
+    border:1px dashed var(--border-glass-soft);
+  }
+  .qibla-cardinal{
+    position:absolute;
+    font-family:'Manrope',sans-serif;
+    font-size:12.5px;
+    font-weight:800;
+    color:var(--gold-bright);
+  }
+  .qibla-cardinal.n{top:8px;left:50%;transform:translateX(-50%);}
+  .qibla-cardinal.e{right:8px;top:50%;transform:translateY(-50%);}
+  .qibla-cardinal.s{bottom:8px;left:50%;transform:translateX(-50%);}
+  .qibla-cardinal.w{left:8px;top:50%;transform:translateY(-50%);}
+
+  .qibla-needle{
+    position:absolute;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    transform-origin:50% 50%;
+    transition:transform 0.25s ease-out;
+    pointer-events:none;
+  }
+  .qibla-needle .arrow{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin-top:10px;
+    gap:1px;
+  }
+  .qibla-needle .arrow-tip{
+    width:0;height:0;
+    border-left:9px solid transparent;
+    border-right:9px solid transparent;
+    border-bottom:18px solid var(--gold-bright);
+    filter:drop-shadow(0 0 8px rgba(239,212,151,0.5));
+  }
+  .qibla-needle .kaaba-emoji{
+    font-size:20px;
+    margin-top:2px;
+  }
+  .qibla-center-dot{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:10px;
+    height:10px;
+    margin:-5px 0 0 -5px;
+    border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 12px var(--gold-glow);
+  }
+
+  .qibla-info{
+    text-align:center;
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.6;
+    min-height:60px;
+  }
+  .qibla-info .big{
+    display:block;
+    font-family:'Cormorant Garamond',serif;
+    font-size:26px;
+    font-weight:700;
+    color:var(--gold-bright);
+  }
+
+  /* stat sub-line (best streak) */
+  .stat-sub{
+    margin-top:2px;
+    font-size:9px;
+    color:var(--muted-soft);
+    letter-spacing:0.02em;
+  }
+
+  /* month progress line */
+  .cal-month-progress{
+    text-align:center;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:8px;
+    position:relative;
+    z-index:1;
+  }
+
+  /* share button */
+  .share-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    width:100%;
+    flex:none;
+    background:linear-gradient(135deg, rgba(201,162,76,0.22), rgba(201,162,76,0.06));
+    border:1px solid var(--gold-dim);
+    color:var(--gold-bright);
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:13.5px;
+    letter-spacing:0.01em;
+    border-radius:var(--radius-md);
+    padding:12px 16px;
+    cursor:pointer;
+    box-shadow:0 12px 26px -14px rgba(201,162,76,0.5);
+    transition:transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    margin-bottom:8px;
+  }
+  .share-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 16px 30px -14px rgba(201,162,76,0.6);
+    background:linear-gradient(135deg, rgba(201,162,76,0.3), rgba(201,162,76,0.1));
+  }
+  .share-btn:active{transform:scale(0.98);}
+  .share-btn .book-icon{font-size:15px;}
+
   @media (max-width:480px){
     .wrap{padding:8px 10px 8px;}
     .stat{padding:7px 4px;}
@@ -796,12 +940,14 @@
   <div class="top-btn-row">
     <button class="guide-btn" id="guideBtn"><span class="book-icon">📖</span>Как читать</button>
     <button class="guide-btn" id="historyBtn"><span class="book-icon">📜</span>История</button>
+    <button class="guide-btn" id="qiblaBtn"><span class="book-icon">🧭</span>Кибла</button>
   </div>
 
   <div class="stats">
     <div class="stat">
       <div class="num" id="streakNum">0</div>
       <div class="label">Серия дней</div>
+      <div class="stat-sub" id="bestStreakSub">рекорд 0</div>
     </div>
     <div class="stat">
       <div class="num" id="doneNum">0</div>
@@ -826,6 +972,7 @@
       <span><i class="dot missed"></i>Не читал</span>
       <span><i class="dot today"></i>Сегодня</span>
     </div>
+    <div class="cal-month-progress" id="calMonthProgress"></div>
   </div>
 
   <div class="day-panel">
@@ -838,6 +985,8 @@
       <button class="action btn-clear" id="btnClear">Сбросить</button>
     </div>
   </div>
+
+  <button class="share-btn" id="shareBtn"><span class="book-icon">📤</span>Поделиться прогрессом</button>
 
   <footer>
     <button class="reset-link" id="resetBtn">Сбросить всю историю</button>
@@ -909,6 +1058,46 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="qiblaOverlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title">Направление киблы</div>
+      <button class="modal-close" id="qiblaClose" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="modal-sub">Держите телефон горизонтально экраном вверх — стрелка покажет направление на Каабу</div>
+
+    <div class="qibla-compass-wrap">
+      <div class="qibla-dial">
+        <div class="qibla-ring" id="qiblaRing">
+          <span class="qibla-cardinal n">С</span>
+          <span class="qibla-cardinal e">В</span>
+          <span class="qibla-cardinal s">Ю</span>
+          <span class="qibla-cardinal w">З</span>
+        </div>
+        <div class="qibla-needle" id="qiblaNeedle">
+          <div class="arrow">
+            <span class="arrow-tip"></span>
+            <span class="kaaba-emoji">🕋</span>
+          </div>
+        </div>
+        <div class="qibla-center-dot"></div>
+      </div>
+    </div>
+
+    <div class="qibla-info" id="qiblaInfo">Определяем ваше местоположение…</div>
+
+    <div class="btn-row">
+      <button class="action btn-done" id="qiblaEnableBtn">🧭 Включить компас</button>
+      <button class="action btn-clear" id="qiblaRefreshBtn">↻ Обновить</button>
+    </div>
+
+    <div class="guide-note" style="margin-top:14px;">
+      Если стрелка не поворачивается сами, устройство не поддерживает компас-датчик — ориентируйтесь по указанному углу от севера с помощью отдельного компаса. Для точности отойдите от металла и электроники.
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   const STORAGE_KEY = 'tahajjud_tracker_v2';
@@ -945,6 +1134,10 @@
   const todayDate = startOfDay(new Date());
   const todayKey = fmtKey(todayDate);
 
+  function vibrate(ms){
+    try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
+  }
+
   let viewYear = todayDate.getFullYear();
   let viewMonth = todayDate.getMonth();
   let selectedKey = todayKey;
@@ -962,11 +1155,24 @@
     return streak;
   }
 
+  function computeBestStreak(){
+    const doneKeys = Object.keys(data).filter(k => data[k] === 'done').sort();
+    if(doneKeys.length === 0) return 0;
+    let best = 1, current = 1;
+    for(let i=1;i<doneKeys.length;i++){
+      const diffDays = Math.round((keyToDate(doneKeys[i]) - keyToDate(doneKeys[i-1])) / 86400000);
+      current = (diffDays === 1) ? current + 1 : 1;
+      if(current > best) best = current;
+    }
+    return best;
+  }
+
   function renderStats(){
     const values = Object.values(data);
     document.getElementById('doneNum').textContent = values.filter(v=>v==='done').length;
     document.getElementById('missedNum').textContent = values.filter(v=>v==='missed').length;
     document.getElementById('streakNum').textContent = computeStreak();
+    document.getElementById('bestStreakSub').textContent = 'рекорд ' + computeBestStreak();
   }
 
   function renderCalendar(){
@@ -1008,11 +1214,32 @@
       if(!isFuture){
         cell.addEventListener('click', () => {
           selectedKey = key;
+          vibrate(8);
           render();
         });
       }
       grid.appendChild(cell);
     }
+
+    renderCalMonthProgress();
+  }
+
+  function renderCalMonthProgress(){
+    const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+    const isCurrentMonth = viewYear === todayDate.getFullYear() && viewMonth === todayDate.getMonth();
+    const isFutureMonth = new Date(viewYear, viewMonth, 1) > todayDate;
+
+    const el = document.getElementById('calMonthProgress');
+    if(isFutureMonth){
+      el.textContent = 'Месяц ещё не наступил';
+      return;
+    }
+    const elapsedDays = isCurrentMonth ? todayDate.getDate() : daysInMonth;
+    let doneCount = 0;
+    for(let day=1; day<=elapsedDays; day++){
+      if(data[fmtKey(new Date(viewYear, viewMonth, day))] === 'done') doneCount++;
+    }
+    el.textContent = 'В этом месяце: ' + doneCount + ' из ' + elapsedDays;
   }
 
   function renderDayPanel(){
@@ -1080,6 +1307,7 @@
     }else{
       data[selectedKey] = status;
     }
+    vibrate(12);
     saveData(data);
     render();
   }
@@ -1108,6 +1336,41 @@
       data = {};
       saveData(data);
       render();
+    }
+  });
+
+  document.getElementById('shareBtn').addEventListener('click', async () => {
+    vibrate(8);
+    const streak = computeStreak();
+    const best = computeBestStreak();
+    const doneTotal = Object.values(data).filter(v => v === 'done').length;
+
+    const lines = [
+      '🌙 Тахаджуд — мой прогресс',
+      '',
+      '🔥 Текущая серия: ' + streak + ' ' + (streak === 1 ? 'день' : 'дней'),
+      '🏆 Рекорд: ' + best + ' ' + (best === 1 ? 'день' : 'дней'),
+      '✓ Всего прочитано: ' + doneTotal,
+      '',
+      'Отслеживаю ночной намаз каждый день 🤲'
+    ];
+    const shareText = lines.join('\n');
+
+    if(navigator.share){
+      try{
+        await navigator.share({ title: 'Тахаджуд — мой прогресс', text: shareText });
+      }catch(err){
+        // пользователь отменил — ничего не делаем
+      }
+    }else if(navigator.clipboard){
+      try{
+        await navigator.clipboard.writeText(shareText);
+        alert('Прогресс скопирован в буфер обмена — можно вставить в любой чат.');
+      }catch(err){
+        alert(shareText);
+      }
+    }else{
+      alert(shareText);
     }
   });
 
@@ -1147,20 +1410,221 @@
     if(e.target === historyOverlay) closeHistory();
   });
 
+  /* ===== Кибла: направление на Каабу ===== */
+  const KAABA_LAT = 21.4225;
+  const KAABA_LNG = 39.8262;
+  let qiblaBearing = null;
+  let smoothedHeading = null;
+  let headingAvailable = false;
+
+  // непрерывные (не обрезанные по модулю) углы поворота,
+  // чтобы стрелка не "прокручивалась" рывком через границу 0°/360°
+  let ringRotationContinuous = 0;
+  let needleRotationContinuous = 0;
+  let ringInit = false;
+  let needleInit = false;
+
+  function toRad(d){ return d * Math.PI / 180; }
+  function toDeg(r){ return r * 180 / Math.PI; }
+
+  function calcQiblaBearing(lat, lng){
+    const phi1 = toRad(lat), phi2 = toRad(KAABA_LAT);
+    const dLambda = toRad(KAABA_LNG - lng);
+    const y = Math.sin(dLambda) * Math.cos(phi2);
+    const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLambda);
+    return (toDeg(Math.atan2(y, x)) + 360) % 360;
+  }
+
+  function haversineKm(lat1, lng1, lat2, lng2){
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function cardinalName(deg){
+    const dirs = ['С','СВ','В','ЮВ','Ю','ЮЗ','З','СЗ'];
+    return dirs[Math.round(deg / 45) % 8];
+  }
+
+  // кратчайший поворот к target с учётом уже накопленного значения current,
+  // без скачка на границе 0/360
+  function unwrapRotation(current, target){
+    const targetMod = ((target % 360) + 360) % 360;
+    const currentMod = ((current % 360) + 360) % 360;
+    let delta = targetMod - currentMod;
+    if(delta > 180) delta -= 360;
+    if(delta < -180) delta += 360;
+    return current + delta;
+  }
+
+  const qiblaRing = document.getElementById('qiblaRing');
+  const qiblaNeedle = document.getElementById('qiblaNeedle');
+  const qiblaInfo = document.getElementById('qiblaInfo');
+  const qiblaEnableBtn = document.getElementById('qiblaEnableBtn');
+
+  function updateQiblaUI(){
+    if(qiblaBearing === null) return;
+    const targetRing = headingAvailable ? -smoothedHeading : 0;
+    const targetNeedle = headingAvailable ? (qiblaBearing - smoothedHeading + 360) % 360 : qiblaBearing;
+
+    ringRotationContinuous = ringInit ? unwrapRotation(ringRotationContinuous, targetRing) : targetRing;
+    needleRotationContinuous = needleInit ? unwrapRotation(needleRotationContinuous, targetNeedle) : targetNeedle;
+    ringInit = true;
+    needleInit = true;
+
+    qiblaRing.style.transform = 'rotate(' + ringRotationContinuous + 'deg)';
+    qiblaNeedle.style.transform = 'rotate(' + needleRotationContinuous + 'deg)';
+  }
+
+  function locateAndCalcQibla(){
+    qiblaInfo.innerHTML = 'Определяем ваше местоположение…';
+
+    if(window.isSecureContext === false){
+      qiblaInfo.innerHTML =
+        'Браузер блокирует геолокацию и компас на этой странице, потому что она открыта не по HTTPS.<br>' +
+        'Загрузите файл на любой бесплатный хостинг (например, GitHub Pages, Netlify, Vercel) и откройте его оттуда — тогда всё заработает.';
+      return;
+    }
+    if(!navigator.geolocation){
+      qiblaInfo.textContent = 'Геолокация не поддерживается этим браузером.';
+      return;
+    }
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      qiblaBearing = calcQiblaBearing(lat, lng);
+      const dist = Math.round(haversineKm(lat, lng, KAABA_LAT, KAABA_LNG));
+      const acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
+      qiblaInfo.innerHTML =
+        '<span class="big">' + Math.round(qiblaBearing) + '°</span>' +
+        'от севера · ' + cardinalName(qiblaBearing) + ' · ≈ ' + dist.toLocaleString('ru-RU') + ' км до Каабы' +
+        (acc ? '<br>точность геолокации: ±' + acc + ' м' : '') +
+        (headingAvailable ? '<br><span style="color:var(--sage)">● живой компас активен</span>' : '');
+      updateQiblaUI();
+    }, (err) => {
+      let msg = 'Не удалось определить местоположение.';
+      if(err && err.code === 1) msg = 'Доступ к геолокации запрещён. Разрешите его в настройках браузера/сайта и попробуйте снова.';
+      else if(err && err.code === 2) msg = 'Не удалось получить координаты (нет сигнала GPS). Попробуйте выйти на улицу или включить геолокацию в настройках телефона.';
+      else if(err && err.code === 3) msg = 'Определение местоположения заняло слишком много времени. Нажмите «Обновить», чтобы попробовать снова.';
+      qiblaInfo.textContent = msg;
+    }, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
+  }
+
+  function applyHeading(rawHeading){
+    // экспоненциальное сглаживание, чтобы стрелка не дрожала от шума датчика,
+    // а плавно и точно останавливалась в нужном положении
+    if(smoothedHeading === null){
+      smoothedHeading = rawHeading;
+    }else{
+      let delta = rawHeading - smoothedHeading;
+      if(delta > 180) delta -= 360;
+      if(delta < -180) delta += 360;
+      smoothedHeading = (smoothedHeading + delta * 0.18 + 360) % 360;
+    }
+    headingAvailable = true;
+    updateQiblaUI();
+  }
+
+  let sawAbsoluteEvent = false;
+
+  function handleOrientationAbsolute(e){
+    let heading;
+    if(typeof e.webkitCompassHeading === 'number' && !isNaN(e.webkitCompassHeading)){
+      heading = e.webkitCompassHeading;
+    }else if(e.absolute && e.alpha !== null){
+      heading = (360 - e.alpha) % 360;
+    }else{
+      return;
+    }
+    sawAbsoluteEvent = true;
+    applyHeading(heading);
+  }
+
+  // запасной вариант: если браузер не шлёт "абсолютные" события ориентации,
+  // используем обычное deviceorientation — на большинстве телефонов alpha
+  // всё равно достаточно близко к компасу для практической точности
+  function handleOrientationFallback(e){
+    if(sawAbsoluteEvent) return;
+    if(typeof e.webkitCompassHeading === 'number' && !isNaN(e.webkitCompassHeading)) return;
+    if(e.alpha === null) return;
+    applyHeading((360 - e.alpha) % 360);
+  }
+
+  function enableCompass(){
+    if(typeof DeviceOrientationEvent === 'undefined'){
+      qiblaInfo.innerHTML += '<br>Этот браузер/устройство не поддерживает датчик компаса — работает только числовое направление.';
+      return;
+    }
+    if(window.isSecureContext === false){
+      qiblaInfo.innerHTML += '<br>Компас-датчик заблокирован без HTTPS. Загрузите файл на хостинг и откройте по https://.';
+      return;
+    }
+
+    if(typeof DeviceOrientationEvent.requestPermission === 'function'){
+      DeviceOrientationEvent.requestPermission().then((state) => {
+        if(state === 'granted'){
+          window.addEventListener('deviceorientation', handleOrientationAbsolute, true);
+          watchCompassArrival();
+        }else{
+          qiblaInfo.innerHTML += '<br>Доступ к датчику ориентации не предоставлен (отклонено пользователем).';
+        }
+      }).catch((err) => {
+        qiblaInfo.innerHTML += '<br>Не удалось запросить доступ к датчику: ' + (err && err.message ? err.message : 'неизвестная ошибка') + '.';
+      });
+    }else{
+      window.addEventListener('deviceorientationabsolute', handleOrientationAbsolute, true);
+      window.addEventListener('deviceorientation', handleOrientationFallback, true);
+      watchCompassArrival();
+    }
+  }
+
+  function watchCompassArrival(){
+    setTimeout(() => {
+      if(!headingAvailable){
+        qiblaInfo.innerHTML += '<br>Датчик компаса не отвечает на этом устройстве/браузере. Ориентируйтесь по указанному углу от севера вручную.';
+      }
+    }, 2500);
+  }
+
+  qiblaEnableBtn.addEventListener('click', enableCompass);
+
+  const qiblaRefreshBtn = document.getElementById('qiblaRefreshBtn');
+  qiblaRefreshBtn.addEventListener('click', () => {
+    vibrate(8);
+    locateAndCalcQibla();
+  });
+
+  const qiblaOverlay = document.getElementById('qiblaOverlay');
+  const qiblaBtn = document.getElementById('qiblaBtn');
+  const qiblaCloseBtn = document.getElementById('qiblaClose');
+
+  function openQibla(){
+    qiblaOverlay.classList.add('open');
+    locateAndCalcQibla();
+  }
+  function closeQibla(){
+    qiblaOverlay.classList.remove('open');
+  }
+  qiblaBtn.addEventListener('click', openQibla);
+  qiblaCloseBtn.addEventListener('click', closeQibla);
+  qiblaOverlay.addEventListener('click', (e) => {
+    if(e.target === qiblaOverlay) closeQibla();
+  });
+
   document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape'){
       closeGuide();
       closeHistory();
+      closeQibla();
     }
   });
 
 })();
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/tahajjud_tracker/service-worker.js")
-    .then(reg => {
-      reg.update();
-    });
+    navigator.serviceWorker.register("/tahajjud_tracker/service-worker.js")
+    .then(() => console.log("Service Worker работает"));
 }
 </script>
 
