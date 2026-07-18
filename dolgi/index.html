@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Мои финансы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #000000;
+    --surface: #0a0a0a;
+    --surface-2: #131313;
+    --surface-3: #1c1c1c;
+    --line: #262626;
+    --text: #f5f5f5;
+    --text-dim: #8a8a8a;
+    --gold: #e0a458;
+    --gold-dim: #362a19;
+    --green: #56b98a;
+    --green-dim: #142720;
+    --red: #d1615a;
+    --red-dim: #2b1615;
+    --purple: #9d8cd6;
+    --purple-dim: #241f38;
+    --radius: 14px;
+  }
+
+  *{ box-sizing: border-box; }
+  ::selection{ background: var(--gold-dim); color: var(--gold); }
+  html{ scroll-behavior: smooth; }
+
+  html, body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', system-ui, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body{
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: 110px;
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(224,164,88,0.07), transparent 60%),
+      var(--bg);
+  }
+
+  a, button, .card, .tab, .icon-btn, .app-tab{
+    transition: background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease, transform .12s ease;
+  }
+
+  .mono{ font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  button, input, textarea{ -webkit-tap-highlight-color: transparent; }
+
+  /* -------- app switcher -------- */
+  .app-switch-wrap{
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(16px) saturate(1.3);
+    -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    padding: max(12px, env(safe-area-inset-top)) 20px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .app-switch{
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .app-tab{
+    flex: 1;
+    text-align: center;
+    padding: 11px 8px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-dim);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+  }
+  .app-tab.active{ background: var(--gold-dim); color: var(--gold); box-shadow: 0 2px 10px rgba(224,164,88,0.15); }
+  .app-tab.active[data-screen="expenses"]{ background: var(--purple-dim); color: var(--purple); box-shadow: 0 2px 10px rgba(157,140,214,0.18); }
+
+  header{
+    padding: 20px 20px 16px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .top-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    gap: 8px;
+  }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .icon-btn{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .icon-btn:active{ transform: scale(0.94); }
+
+  h1{
+    margin: 4px 0 20px;
+    font-size: clamp(24px, 6vw, 32px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    background: linear-gradient(180deg, #ffffff, #c9c9c9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .summary{
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #111 0%, var(--surface) 100%);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px 20px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .summary::after{
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, rgba(224,164,88,0.16), transparent 70%);
+    pointer-events: none;
+  }
+  .summary.expenses::after{ background: radial-gradient(circle, rgba(157,140,214,0.16), transparent 70%); }
+  .summary .label{
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .summary .value{
+    font-size: clamp(26px, 7.5vw, 34px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--gold);
+    position: relative;
+  }
+  .summary.expenses .value{ color: var(--purple); }
+  .summary.expenses .value.over{ color: var(--red); }
+  .summary .sub{
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-top: 8px;
+  }
+  .summary .sub b{ color: var(--green); font-weight: 700; }
+
+  main{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .search-wrap{ position: relative; margin-top: 20px; }
+  .search-wrap input{
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 11px 14px 11px 38px;
+    font-family: inherit;
+    font-size: 14.5px;
+    outline: none;
+  }
+  .search-wrap input:focus{ border-color: var(--gold); }
+  .search-wrap::before{
+    content: '⌕';
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-52%);
+    color: var(--text-dim);
+    font-size: 17px;
+    pointer-events: none;
+  }
+
+  .tabs{
+    display: flex;
+    gap: 6px;
+    margin: 14px 0 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px;
+  }
+  .tab{
+    flex: 1;
+    text-align: center;
+    padding: 9px 8px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+  }
+  .tab.active{ background: var(--surface-3); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+
+  .list{ display: flex; flex-direction: column; gap: 12px; }
+
+  .group-label{
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 18px 2px 2px;
+  }
+  .group-label:first-child{ margin-top: 2px; }
+
+  .card{
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0d0d0d 0%, var(--surface) 100%);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 16px 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.02);
+  }
+  .card:active{ border-color: var(--surface-3); transform: scale(0.99); }
+  .card.returned{ opacity: 0.5; }
+  .card.overdue{ border-color: rgba(209,97,90,0.45); box-shadow: 0 4px 16px rgba(209,97,90,0.08), inset 0 1px 0 rgba(255,255,255,0.02); }
+
+  .card-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .card-name{ font-size: 16px; font-weight: 700; }
+  .card-sub{ font-size: 12.5px; color: var(--text-dim); margin-top: 3px; }
+  .card-sub .overdue-tag{ color: var(--red); font-weight: 700; }
+
+  .card-amount-wrap{ text-align: right; white-space: nowrap; }
+  .card-amount{ font-size: 19px; font-weight: 700; color: var(--gold); }
+  .card.returned .card-amount{ color: var(--text-dim); }
+  .card-amount-total{ font-size: 11.5px; color: var(--text-dim); margin-top: 1px; }
+
+  /* expense card variant */
+  .exp-card .card-amount{ color: var(--purple); }
+
+  .progress-track{
+    margin-top: 12px;
+    height: 7px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+  }
+  .progress-fill{
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #3d9e73, var(--green));
+    transition: width .3s ease;
+  }
+  .progress-fill.purple{ background: linear-gradient(90deg, #7c68c4, var(--purple)); }
+  .progress-fill.over{ background: linear-gradient(90deg, #a8443d, var(--red)); }
+  .progress-label{
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 5px;
+  }
+  .progress-label .paid{ color: var(--green); font-weight: 600; }
+
+  .requisites-row{
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 11px;
+  }
+  .requisites-row .req-text{
+    font-size: 12.5px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .requisites-row .req-label{
+    font-size: 10.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .copy-btn{
+    background: var(--surface-3);
+    border: none;
+    color: var(--text-dim);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .copy-btn:active{ transform: scale(0.94); }
+  .copy-btn.copied{ color: var(--green); }
+
+  .payments-log{
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .payment-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  .payment-row .amt{ color: var(--green); font-weight: 600; }
+  .payment-row .undo-payment{
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+  .payment-row .undo-payment:hover{ color: var(--red); }
+
+  .card-note{
+    margin-top: 10px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.4;
+    border-top: 1px dashed var(--line);
+    padding-top: 10px;
+  }
+
+  .card-actions{ display: flex; gap: 8px; margin-top: 12px; }
+
+  .btn{
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+  .btn:active{ transform: scale(0.96); }
+
+  .btn-pay{ background: var(--green-dim); color: var(--green); flex: 1; }
+  .btn-full{ background: var(--surface-2); color: var(--text-dim); flex: 1; }
+  .btn-undo{ background: var(--surface-2); color: var(--text-dim); flex: 1; }
+  .btn-delete{ background: transparent; color: var(--red); border: 1px solid var(--red-dim); padding: 10px 12px; }
+
+  .stamp{
+    position: absolute;
+    top: 14px; right: -30px;
+    transform: rotate(28deg);
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1.5px solid var(--green);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 3px 34px;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  .empty{ text-align: center; padding: 60px 20px; color: var(--text-dim); }
+  .empty .big{ font-size: 34px; margin-bottom: 10px; }
+  .empty p{ font-size: 14px; margin: 4px 0; }
+
+  .fab{
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: max(20px, env(safe-area-inset-bottom));
+    max-width: 720px;
+    width: calc(100% - 40px);
+    background: linear-gradient(135deg, #f0b876, var(--gold));
+    color: #221a0f;
+    border: none;
+    border-radius: 16px;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    padding: 16px;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(224,164,88,0.28), 0 4px 14px rgba(0,0,0,0.5);
+    z-index: 20;
+  }
+  .fab:active{ transform: translateX(-50%) scale(0.98); }
+  .fab.expenses{ background: linear-gradient(135deg, #b3a3ea, var(--purple)); color: #1a1530; box-shadow: 0 10px 30px rgba(157,140,214,0.28), 0 4px 14px rgba(0,0,0,0.5); }
+
+  .sheet-backdrop{
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 30;
+    animation: fadeIn .15s ease;
+  }
+  .sheet-backdrop.open{ display: flex; }
+
+  .sheet{
+    background: var(--surface);
+    width: 100%;
+    max-width: 640px;
+    border-radius: 20px 20px 0 0;
+    padding: 10px 20px calc(20px + env(safe-area-inset-bottom));
+    max-height: 88vh;
+    overflow-y: auto;
+    border: 1px solid var(--line);
+    border-bottom: none;
+    animation: slideUp .2s ease;
+  }
+
+  .sheet-handle{ width: 36px; height: 4px; background: var(--surface-3); border-radius: 2px; margin: 6px auto 14px; }
+  .sheet-head{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .sheet h2{ margin: 0; font-size: 19px; font-weight: 800; }
+
+  .field{ margin-bottom: 14px; }
+  .field label{ display:block; font-size: 12.5px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; }
+  .field input, .field textarea{
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 12px 13px;
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    color-scheme: dark;
+  }
+  .field input:focus, .field textarea:focus{ border-color: var(--gold); }
+  .field textarea{ resize: vertical; min-height: 60px; font-family: inherit; }
+
+  .row2{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .quick-dates{ display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .quick-dates button{
+    font-size: 11.5px; font-weight: 600; padding: 5px 10px;
+    border-radius: 999px; border: 1px solid var(--line);
+    background: var(--surface-2); color: var(--text-dim); cursor: pointer;
+  }
+
+  .method-chips{ display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .method-chips button{
+    font-size: 12px; font-weight: 700; padding: 6px 12px;
+    border-radius: 999px; border: 1px solid var(--line);
+    background: var(--surface-2); color: var(--text-dim); cursor: pointer;
+  }
+  .method-chips button.active{ border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+
+  .quick-amounts{ display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .quick-amounts button{
+    font-size: 12px; font-weight: 700; padding: 6px 12px;
+    border-radius: 999px; border: 1px solid var(--line);
+    background: var(--surface-2); color: var(--gold); cursor: pointer;
+  }
+
+  .sheet-actions{ display: flex; gap: 10px; margin-top: 6px; }
+  .btn-save{ flex: 1; background: var(--gold); color: #221a0f; font-weight: 800; padding: 13px; border-radius: 10px; font-size: 15px; }
+  .btn-save.purple{ background: var(--purple); color: #1a1530; }
+  .btn-cancel{ background: var(--surface-2); color: var(--text-dim); padding: 13px 18px; border-radius: 10px; font-size: 15px; }
+
+  .confirm-backdrop{
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    display: none; align-items: center; justify-content: center;
+    z-index: 40; padding: 20px;
+    animation: fadeIn .15s ease;
+  }
+  .confirm-backdrop.open{ display: flex; }
+  .confirm-box{
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 16px; padding: 20px; max-width: 340px; width: 100%;
+  }
+  .confirm-box h3{ margin: 0 0 12px; font-size: 16px; font-weight: 800; }
+  .confirm-box p{ margin: 0 0 14px; font-size: 14px; line-height: 1.4; color: var(--text-dim); }
+  .confirm-box .row{ display: flex; gap: 10px; margin-top: 4px; }
+  .confirm-box .row button{ flex: 1; padding: 11px; border-radius: 10px; border: none; font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; }
+  .confirm-cancel{ background: var(--surface-2); color: var(--text-dim); }
+  .confirm-ok{ background: var(--red); color: #2a0f0d; }
+  .confirm-ok.positive{ background: var(--green); color: #0e2018; }
+  .confirm-ok.purple{ background: var(--purple); color: #1a1530; }
+
+  .pay-input-wrap{ margin-bottom: 4px; }
+  .pay-input-wrap input{
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 12px 13px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    outline: none;
+    text-align: center;
+  }
+  .pay-input-wrap input:focus{ border-color: var(--green); }
+
+  .toast{
+    position: fixed; bottom: 92px; left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--surface-3);
+    color: var(--text);
+    border: 1px solid var(--line);
+    padding: 11px 18px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    white-space: nowrap;
+    max-width: calc(100% - 40px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .toast.show{ opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @keyframes slideUp{ from{ transform: translateY(30px); opacity: 0; } to{ transform: translateY(0); opacity: 1; } }
+  @keyframes fadeIn{ from{ opacity: 0; } to{ opacity: 1; } }
+
+  @media (max-width: 380px){ .row2{ grid-template-columns: 1fr; } }
+
+  @media (min-width: 640px){
+    .list{ display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 12px; }
+    .group-label{ grid-column: 1 / -1; }
+  }
+  @media (min-width: 900px){
+    header, main, .app-switch{ max-width: 860px; }
+    .fab{ max-width: 820px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-switch-wrap">
+  <div class="app-switch">
+    <button class="app-tab active" data-screen="debts">💰 Долги</button>
+    <button class="app-tab" data-screen="expenses">🛒 Расходы</button>
+  </div>
+</div>
+
+<!-- ================= ЭКРАН: ДОЛГИ ================= -->
+<div id="screenDebts" class="screen">
+  <header>
+    <div class="top-row">
+      <p class="eyebrow">Учёт долгов</p>
+      <button class="icon-btn" id="clearAllBtn" title="Очистить все долги">⋯</button>
+    </div>
+    <h1>Мои долги</h1>
+    <div class="summary">
+      <div class="label">Я должен (осталось)</div>
+      <div class="value mono" id="sumOwe">0 сом</div>
+      <div class="sub" id="returnedNote"></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Найти по имени…">
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-filter="all">Все</button>
+      <button class="tab" data-filter="active">Активные</button>
+      <button class="tab" data-filter="returned">Возвращено</button>
+    </div>
+
+    <div class="list" id="list"></div>
+
+    <div class="empty" id="emptyState" style="display:none;">
+      <div class="big">🗒️</div>
+      <p id="emptyTitle"><strong>Пока пусто</strong></p>
+      <p id="emptyText">Нажмите «Добавить долг», чтобы начать</p>
+    </div>
+  </main>
+</div>
+
+<!-- ================= ЭКРАН: РАСХОДЫ ================= -->
+<div id="screenExpenses" class="screen" hidden>
+  <header>
+    <div class="top-row">
+      <p class="eyebrow">Бюджет на неделю</p>
+      <button class="icon-btn" id="editBudgetBtn" title="Изменить бюджет">✎</button>
+    </div>
+    <h1>Мои расходы</h1>
+    <div class="summary expenses">
+      <div class="label" id="weekRangeLabel">эта неделя</div>
+      <div class="value mono" id="remainingBudget">0 сом</div>
+      <div class="sub" id="budgetSub">из 2500 сом</div>
+      <div class="progress-track"><div class="progress-fill purple" id="budgetProgress" style="width:0%"></div></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="tabs">
+      <button class="tab active" data-expfilter="week">Эта неделя</button>
+      <button class="tab" data-expfilter="all">Все покупки</button>
+    </div>
+
+    <div class="list" id="expenseList"></div>
+
+    <div class="empty" id="expenseEmpty" style="display:none;">
+      <div class="big">🛍️</div>
+      <p id="expenseEmptyTitle"><strong>Пока нет покупок</strong></p>
+      <p id="expenseEmptyText">Нажмите «Добавить покупку», чтобы начать</p>
+    </div>
+  </main>
+</div>
+
+<button class="fab" id="openSheet">+ Добавить долг</button>
+<button class="fab expenses" id="openExpenseSheet" hidden>+ Добавить покупку</button>
+
+<!-- ---------- Форма долга ---------- -->
+<div class="sheet-backdrop" id="backdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><h2 id="sheetTitle">Новый долг</h2></div>
+
+    <div class="field">
+      <label>У кого взял</label>
+      <input type="text" id="fName" placeholder="Например: Андрей">
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Сумма (сом)</label>
+        <input type="number" id="fAmount" placeholder="0" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label>Дата взятия</label>
+        <input type="date" id="fDate">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Вернуть до</label>
+      <input type="date" id="fDue">
+      <div class="quick-dates">
+        <button type="button" data-days="7">+7 дней</button>
+        <button type="button" data-days="14">+14 дней</button>
+        <button type="button" data-days="30">+30 дней</button>
+        <button type="button" data-days="clear">Убрать</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Способ перевода</label>
+      <div class="method-chips" id="methodChips">
+        <button type="button" data-m="MBank">MBank</button>
+        <button type="button" data-m="O!Dengi">O!Dengi</button>
+        <button type="button" data-m="Карта">Карта</button>
+        <button type="button" data-m="Наличные">Наличные</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Номер / реквизиты получателя</label>
+      <input type="text" id="fRequisites" placeholder="Например: +996 700 123 456 (MBank)">
+    </div>
+
+    <div class="field">
+      <label>Заметка (необязательно)</label>
+      <textarea id="fNote" placeholder="За что, при каких условиях и т.д."></textarea>
+    </div>
+
+    <div class="sheet-actions">
+      <button class="btn-cancel" id="cancelBtn">Отмена</button>
+      <button class="btn-save" id="saveBtn">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Форма покупки ---------- -->
+<div class="sheet-backdrop" id="expenseBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><h2 id="expenseSheetTitle">Новая покупка</h2></div>
+
+    <div class="field">
+      <label>Что купил</label>
+      <input type="text" id="eName" placeholder="Например: продукты">
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Сумма (сом)</label>
+        <input type="number" id="eAmount" placeholder="0" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label>Дата и время</label>
+        <input type="datetime-local" id="eDateTime">
+      </div>
+    </div>
+
+    <div class="sheet-actions">
+      <button class="btn-cancel" id="expenseCancelBtn">Отмена</button>
+      <button class="btn-save purple" id="expenseSaveBtn">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Модалка частичного платежа по долгу ---------- -->
+<div class="confirm-backdrop" id="payBackdrop">
+  <div class="confirm-box">
+    <h3 id="payTitle">Внести возврат</h3>
+    <p id="payHint">Сколько уже отдали?</p>
+    <div class="pay-input-wrap">
+      <input type="number" id="payAmountInput" inputmode="decimal" placeholder="0">
+    </div>
+    <div class="quick-amounts" id="quickAmounts"></div>
+    <div class="row" style="margin-top:16px;">
+      <button class="confirm-cancel" id="payCancel">Отмена</button>
+      <button class="confirm-ok positive" id="payOk">Внести</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Модалка изменения бюджета ---------- -->
+<div class="confirm-backdrop" id="budgetBackdrop">
+  <div class="confirm-box">
+    <h3>Бюджет на неделю</h3>
+    <p>Сколько сом у вас на неделю?</p>
+    <div class="pay-input-wrap">
+      <input type="number" id="budgetInput" inputmode="decimal" placeholder="2500">
+    </div>
+    <div class="row" style="margin-top:16px;">
+      <button class="confirm-cancel" id="budgetCancel">Отмена</button>
+      <button class="confirm-ok purple" id="budgetSave">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Модалка подтверждения удаления ---------- -->
+<div class="confirm-backdrop" id="confirmBackdrop">
+  <div class="confirm-box">
+    <p id="confirmText">Удалить эту запись?</p>
+    <div class="row">
+      <button class="confirm-cancel" id="confirmCancel">Отмена</button>
+      <button class="confirm-ok" id="confirmOk">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const DEBTS_KEY = 'dolgi_app_data_v3';
+  const EXPENSES_KEY = 'dolgi_app_expenses_v1';
+  const BUDGET_KEY = 'dolgi_app_budget_v1';
+  const DEFAULT_BUDGET = 2500;
+
+  const MONTHS = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+
+  let debts = [];
+  let expenses = [];
+  let weeklyBudget = DEFAULT_BUDGET;
+
+  let currentFilter = 'all';
+  let currentMethod = 'MBank';
+  let editingId = null;
+  let searchQuery = '';
+  let pendingDeleteId = null;
+  let pendingDeleteType = null; // 'debt' | 'debts-all' | 'expense' | 'expenses-all'
+  let payingId = null;
+  let toastTimer = null;
+
+  let currentExpFilter = 'week';
+  let editingExpenseId = null;
+
+  // ---------- shared elements ----------
+  const toast = document.getElementById('toast');
+  const confirmBackdrop = document.getElementById('confirmBackdrop');
+  const confirmText = document.getElementById('confirmText');
+  const confirmCancel = document.getElementById('confirmCancel');
+  const confirmOk = document.getElementById('confirmOk');
+
+  function showToast(msg){
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.classList.add('show');
+    toastTimer = setTimeout(()=> toast.classList.remove('show'), 2200);
+  }
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+  function formatDate(iso){
+    if(!iso) return '';
+    const [y,m,d] = iso.split('-');
+    return `${d}.${m}.${y}`;
+  }
+  function formatMoney(n){
+    return new Intl.NumberFormat('ru-RU').format(Math.round(n*100)/100) + ' сом';
+  }
+
+  // ================= APP SWITCH =================
+  const screenDebts = document.getElementById('screenDebts');
+  const screenExpenses = document.getElementById('screenExpenses');
+  const openSheetBtn = document.getElementById('openSheet');
+  const openExpenseSheetBtn = document.getElementById('openExpenseSheet');
+
+  document.querySelectorAll('.app-tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('.app-tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const screen = t.dataset.screen;
+      screenDebts.hidden = screen !== 'debts';
+      screenExpenses.hidden = screen !== 'expenses';
+      openSheetBtn.hidden = screen !== 'debts';
+      openExpenseSheetBtn.hidden = screen !== 'expenses';
+    });
+  });
+
+  /* =====================================================
+     ================   ДОЛГИ   ==========================
+     ===================================================== */
+
+  const list = document.getElementById('list');
+  const emptyState = document.getElementById('emptyState');
+  const emptyTitle = document.getElementById('emptyTitle');
+  const emptyText = document.getElementById('emptyText');
+  const backdrop = document.getElementById('backdrop');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const sheetTitle = document.getElementById('sheetTitle');
+  const searchInput = document.getElementById('searchInput');
+  const clearAllBtn = document.getElementById('clearAllBtn');
+  const methodChips = document.getElementById('methodChips');
+
+  const fName = document.getElementById('fName');
+  const fAmount = document.getElementById('fAmount');
+  const fDate = document.getElementById('fDate');
+  const fDue = document.getElementById('fDue');
+  const fRequisites = document.getElementById('fRequisites');
+  const fNote = document.getElementById('fNote');
+
+  const payBackdrop = document.getElementById('payBackdrop');
+  const payHint = document.getElementById('payHint');
+  const payAmountInput = document.getElementById('payAmountInput');
+  const quickAmounts = document.getElementById('quickAmounts');
+  const payCancel = document.getElementById('payCancel');
+  const payOk = document.getElementById('payOk');
+
+  function loadDebts(){
+    try{
+      const raw = localStorage.getItem(DEBTS_KEY);
+      if(raw) debts = JSON.parse(raw).map(d => ({ payments: [], method: '', requisites: '', ...d }));
+    }catch(e){ debts = []; }
+  }
+  function saveDebts(){
+    try{ localStorage.setItem(DEBTS_KEY, JSON.stringify(debts)); }catch(e){}
+  }
+
+  function paidOf(d){ return (d.payments || []).reduce((s,p)=> s + p.amount, 0); }
+  function remainingOf(d){ return Math.max(0, Math.round((d.amount - paidOf(d)) * 100) / 100); }
+  function isDone(d){ return remainingOf(d) <= 0; }
+  function isOverdue(d){ return !isDone(d) && d.due && d.due < todayISO(); }
+
+  function setMethod(m){
+    currentMethod = m;
+    document.querySelectorAll('.method-chips button').forEach(b=>{
+      b.classList.toggle('active', b.dataset.m === m);
+    });
+  }
+  methodChips.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button');
+    if(btn) setMethod(btn.dataset.m);
+  });
+
+  function openSheetForNew(){
+    editingId = null;
+    fDate.value = todayISO();
+    fDue.value = '';
+    fName.value = '';
+    fAmount.value = '';
+    fRequisites.value = '';
+    fNote.value = '';
+    setMethod('MBank');
+    sheetTitle.textContent = 'Новый долг';
+    backdrop.classList.add('open');
+    setTimeout(()=> fName.focus(), 250);
+  }
+
+  function openSheetForEdit(id){
+    const item = debts.find(d => d.id === id);
+    if(!item) return;
+    editingId = id;
+    fName.value = item.name;
+    fAmount.value = item.amount;
+    fDate.value = item.date;
+    fDue.value = item.due || '';
+    fRequisites.value = item.requisites || '';
+    fNote.value = item.note || '';
+    setMethod(item.method || 'MBank');
+    sheetTitle.textContent = 'Редактировать долг';
+    backdrop.classList.add('open');
+  }
+
+  function closeSheet(){ backdrop.classList.remove('open'); }
+
+  document.querySelectorAll('.quick-dates button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      if(b.dataset.days === 'clear'){ fDue.value = ''; return; }
+      const base = fDate.value ? new Date(fDate.value) : new Date();
+      base.setDate(base.getDate() + parseInt(b.dataset.days, 10));
+      fDue.value = base.toISOString().slice(0,10);
+    });
+  });
+
+  openSheetBtn.addEventListener('click', openSheetForNew);
+  cancelBtn.addEventListener('click', closeSheet);
+  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeSheet(); });
+
+  saveBtn.addEventListener('click', ()=>{
+    const name = fName.value.trim();
+    const amount = parseFloat(fAmount.value);
+    if(!name){ fName.focus(); return; }
+    if(!amount || amount <= 0){ fAmount.focus(); return; }
+
+    if(editingId){
+      const item = debts.find(d => d.id === editingId);
+      Object.assign(item, {
+        name, amount,
+        date: fDate.value || todayISO(),
+        due: fDue.value || '',
+        method: currentMethod,
+        requisites: fRequisites.value.trim(),
+        note: fNote.value.trim()
+      });
+      showToast('Изменения сохранены');
+    } else {
+      debts.unshift({
+        id: Date.now(),
+        name, amount,
+        date: fDate.value || todayISO(),
+        due: fDue.value || '',
+        method: currentMethod,
+        requisites: fRequisites.value.trim(),
+        note: fNote.value.trim(),
+        payments: []
+      });
+      showToast('Долг добавлен');
+    }
+
+    saveDebts();
+    closeSheet();
+    renderDebts();
+  });
+
+  function openPayModal(id){
+    payingId = id;
+    const item = debts.find(d => d.id === id);
+    if(!item) return;
+    const remaining = remainingOf(item);
+    payHint.textContent = `Осталось: ${formatMoney(remaining)}. Введите сумму, которую вы отдали.`;
+    payAmountInput.value = '';
+
+    quickAmounts.innerHTML = '';
+    const half = Math.round(remaining/2*100)/100;
+    const opts = [
+      { label: `Половина · ${formatMoney(half)}`, value: half },
+      { label: `Всё · ${formatMoney(remaining)}`, value: remaining }
+    ];
+    opts.forEach(o=>{
+      if(o.value > 0){
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = o.label;
+        b.addEventListener('click', ()=> payAmountInput.value = o.value);
+        quickAmounts.appendChild(b);
+      }
+    });
+
+    payBackdrop.classList.add('open');
+    setTimeout(()=> payAmountInput.focus(), 200);
+  }
+  function closePayModal(){ payBackdrop.classList.remove('open'); payingId = null; }
+
+  payCancel.addEventListener('click', closePayModal);
+  payBackdrop.addEventListener('click', (e)=>{ if(e.target === payBackdrop) closePayModal(); });
+
+  payOk.addEventListener('click', ()=>{
+    const item = debts.find(d => d.id === payingId);
+    if(!item) return;
+    let amt = parseFloat(payAmountInput.value);
+    if(!amt || amt <= 0){ payAmountInput.focus(); return; }
+    const remaining = remainingOf(item);
+    if(amt > remaining) amt = remaining;
+
+    item.payments = item.payments || [];
+    item.payments.push({ id: Date.now(), amount: amt, date: todayISO() });
+
+    saveDebts();
+    closePayModal();
+    renderDebts();
+    showToast(remainingOf(item) <= 0 ? 'Долг полностью возвращён 🎉' : `Внесено ${formatMoney(amt)}`);
+  });
+
+  function undoPayment(debtId, paymentId){
+    const item = debts.find(d => d.id === debtId);
+    if(!item) return;
+    item.payments = (item.payments || []).filter(p => p.id !== paymentId);
+    saveDebts();
+    renderDebts();
+    showToast('Платёж отменён');
+  }
+
+  function markFullyDone(id){
+    const item = debts.find(d => d.id === id);
+    if(!item) return;
+    const remaining = remainingOf(item);
+    if(remaining > 0){
+      item.payments = item.payments || [];
+      item.payments.push({ id: Date.now(), amount: remaining, date: todayISO() });
+      saveDebts();
+      renderDebts();
+      showToast('Долг полностью возвращён 🎉');
+    }
+  }
+
+  function askDeleteDebt(id){
+    pendingDeleteId = id;
+    pendingDeleteType = 'debt';
+    confirmText.textContent = 'Удалить эту запись? Это действие нельзя отменить.';
+    confirmBackdrop.classList.add('open');
+  }
+
+  clearAllBtn.addEventListener('click', ()=>{
+    if(!debts.length){ showToast('Список уже пуст'); return; }
+    pendingDeleteId = null;
+    pendingDeleteType = 'debts-all';
+    confirmText.textContent = 'Удалить все долги без возможности восстановления?';
+    confirmBackdrop.classList.add('open');
+  });
+
+  document.querySelectorAll('#screenDebts .tabs .tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('#screenDebts .tabs .tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      currentFilter = t.dataset.filter;
+      renderDebts();
+    });
+  });
+  searchInput.addEventListener('input', ()=>{
+    searchQuery = searchInput.value.trim().toLowerCase();
+    renderDebts();
+  });
+
+  function copyText(text, btn){
+    const done = ()=>{
+      const old = btn.textContent;
+      btn.textContent = 'Скопировано';
+      btn.classList.add('copied');
+      setTimeout(()=>{ btn.textContent = old; btn.classList.remove('copied'); }, 1500);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(done);
+    } else { done(); }
+  }
+
+  function buildDebtCard(d){
+    const remaining = remainingOf(d);
+    const paid = paidOf(d);
+    const done = isDone(d);
+    const pct = d.amount > 0 ? Math.min(100, Math.round((paid / d.amount) * 100)) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'card' + (done ? ' returned' : '') + (isOverdue(d) ? ' overdue' : '');
+
+    let sub = `Взял · ${formatDate(d.date)}`;
+    if(d.due && !done){
+      sub += isOverdue(d)
+        ? ` · <span class="overdue-tag">просрочено (${formatDate(d.due)})</span>`
+        : ` · вернуть до ${formatDate(d.due)}`;
+    }
+    if(done && d.payments.length) sub += ` · возвращено ${formatDate(d.payments[d.payments.length-1].date)}`;
+
+    let paymentsHtml = '';
+    if(d.payments && d.payments.length){
+      paymentsHtml = '<div class="payments-log">' + d.payments.map(p => `
+        <div class="payment-row">
+          <span>${formatDate(p.date)} — внесено <span class="amt">${formatMoney(p.amount)}</span></span>
+          <button class="undo-payment" data-action="undo-payment" data-pid="${p.id}" title="Отменить этот платёж">✕</button>
+        </div>
+      `).join('') + '</div>';
+    }
+
+    let requisitesHtml = '';
+    if(d.requisites){
+      requisitesHtml = `
+        <div class="requisites-row">
+          <span class="req-label">${escapeHtml(d.method || 'Реквизиты')}</span>
+          <span class="req-text mono">${escapeHtml(d.requisites)}</span>
+          <button class="copy-btn" data-action="copy">Копировать</button>
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      ${done ? '<div class="stamp">Возвращено</div>' : ''}
+      <div class="card-top">
+        <div>
+          <div class="card-name">${escapeHtml(d.name)}</div>
+          <div class="card-sub">${sub}</div>
+        </div>
+        <div class="card-amount-wrap">
+          <div class="card-amount mono">${formatMoney(remaining)}</div>
+          ${paid > 0 ? `<div class="card-amount-total mono">из ${formatMoney(d.amount)}</div>` : ''}
+        </div>
+      </div>
+
+      ${paid > 0 ? `
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="progress-label"><span class="paid">возвращено ${pct}%</span><span>осталось ${formatMoney(remaining)}</span></div>
+      ` : ''}
+
+      ${requisitesHtml}
+      ${paymentsHtml}
+      ${d.note ? `<div class="card-note">${escapeHtml(d.note)}</div>` : ''}
+
+      <div class="card-actions">
+        ${done
+          ? `<button class="btn btn-undo" data-action="undo-last">Отменить возврат</button>`
+          : `<button class="btn btn-pay" data-action="pay">Внести частично</button>
+             <button class="btn btn-full" data-action="full">Вернул всё</button>`
+        }
+        <button class="btn btn-delete" data-action="delete">Удалить</button>
+      </div>
+    `;
+
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-action]')) return;
+      openSheetForEdit(d.id);
+    });
+
+    const payBtn = card.querySelector('[data-action="pay"]');
+    if(payBtn) payBtn.addEventListener('click', (e)=>{ e.stopPropagation(); openPayModal(d.id); });
+
+    const fullBtn = card.querySelector('[data-action="full"]');
+    if(fullBtn) fullBtn.addEventListener('click', (e)=>{ e.stopPropagation(); markFullyDone(d.id); });
+
+    const undoLastBtn = card.querySelector('[data-action="undo-last"]');
+    if(undoLastBtn) undoLastBtn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(d.payments.length){
+        const last = d.payments[d.payments.length - 1];
+        undoPayment(d.id, last.id);
+      }
+    });
+
+    card.querySelectorAll('[data-action="undo-payment"]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        undoPayment(d.id, Number(btn.dataset.pid));
+      });
+    });
+
+    const copyBtn = card.querySelector('[data-action="copy"]');
+    if(copyBtn) copyBtn.addEventListener('click', (e)=>{ e.stopPropagation(); copyText(d.requisites, copyBtn); });
+
+    card.querySelector('[data-action="delete"]').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      askDeleteDebt(d.id);
+    });
+
+    return card;
+  }
+
+  function renderDebts(){
+    let filtered = debts;
+    if(currentFilter === 'active') filtered = filtered.filter(d => !isDone(d));
+    if(currentFilter === 'returned') filtered = filtered.filter(d => isDone(d));
+    if(searchQuery) filtered = filtered.filter(d => d.name.toLowerCase().includes(searchQuery));
+
+    list.innerHTML = '';
+
+    if(!filtered.length){
+      emptyState.style.display = 'block';
+      if(searchQuery){
+        emptyTitle.innerHTML = '<strong>Ничего не найдено</strong>';
+        emptyText.textContent = 'Попробуйте другое имя';
+      } else if(currentFilter === 'returned'){
+        emptyTitle.innerHTML = '<strong>Возвращённых долгов пока нет</strong>';
+        emptyText.textContent = 'Они появятся здесь после полного возврата';
+      } else if(currentFilter === 'active'){
+        emptyTitle.innerHTML = '<strong>Активных долгов нет</strong>';
+        emptyText.textContent = 'Все долги возвращены — отлично!';
+      } else {
+        emptyTitle.innerHTML = '<strong>Пока пусто</strong>';
+        emptyText.textContent = 'Нажмите «Добавить долг», чтобы начать';
+      }
+    } else {
+      emptyState.style.display = 'none';
+
+      const overdue = filtered.filter(d => isOverdue(d));
+      const activeWithDue = filtered.filter(d => !isDone(d) && !isOverdue(d) && d.due).sort((a,b)=> a.due.localeCompare(b.due));
+      const activeNoDue = filtered.filter(d => !isDone(d) && !d.due);
+      const done = filtered.filter(d => isDone(d));
+
+      if(currentFilter !== 'returned' && overdue.length){
+        const label = document.createElement('div');
+        label.className = 'group-label';
+        label.textContent = '⚠ Просрочено';
+        list.appendChild(label);
+        overdue.forEach(d => list.appendChild(buildDebtCard(d)));
+      }
+
+      const rest = [...activeWithDue, ...activeNoDue];
+      if(rest.length){
+        if(overdue.length && currentFilter !== 'returned'){
+          const label = document.createElement('div');
+          label.className = 'group-label';
+          label.textContent = 'Остальные';
+          list.appendChild(label);
+        }
+        rest.forEach(d => list.appendChild(buildDebtCard(d)));
+      }
+
+      if(done.length && currentFilter !== 'active'){
+        if(currentFilter === 'all'){
+          const label = document.createElement('div');
+          label.className = 'group-label';
+          label.textContent = 'Возвращено';
+          list.appendChild(label);
+        }
+        done.forEach(d => list.appendChild(buildDebtCard(d)));
+      }
+    }
+
+    const oweSum = debts.filter(d => !isDone(d)).reduce((s,d)=> s + remainingOf(d), 0);
+    const doneCount = debts.filter(d => isDone(d)).length;
+
+    document.getElementById('sumOwe').textContent = formatMoney(oweSum);
+    document.getElementById('returnedNote').innerHTML = doneCount
+      ? `Полностью возвращено: <b>${doneCount}</b>`
+      : '';
+  }
+
+  /* =====================================================
+     ================   РАСХОДЫ   ========================
+     ===================================================== */
+
+  const expenseList = document.getElementById('expenseList');
+  const expenseEmpty = document.getElementById('expenseEmpty');
+  const expenseEmptyTitle = document.getElementById('expenseEmptyTitle');
+  const expenseEmptyText = document.getElementById('expenseEmptyText');
+  const expenseBackdrop = document.getElementById('expenseBackdrop');
+  const expenseSheetTitle = document.getElementById('expenseSheetTitle');
+  const expenseCancelBtn = document.getElementById('expenseCancelBtn');
+  const expenseSaveBtn = document.getElementById('expenseSaveBtn');
+  const eName = document.getElementById('eName');
+  const eAmount = document.getElementById('eAmount');
+  const eDateTime = document.getElementById('eDateTime');
+
+  const editBudgetBtn = document.getElementById('editBudgetBtn');
+  const budgetBackdrop = document.getElementById('budgetBackdrop');
+  const budgetInput = document.getElementById('budgetInput');
+  const budgetCancel = document.getElementById('budgetCancel');
+  const budgetSave = document.getElementById('budgetSave');
+
+  function loadExpenses(){
+    try{
+      const raw = localStorage.getItem(EXPENSES_KEY);
+      if(raw) expenses = JSON.parse(raw);
+    }catch(e){ expenses = []; }
+    try{
+      const b = localStorage.getItem(BUDGET_KEY);
+      if(b) weeklyBudget = parseFloat(b) || DEFAULT_BUDGET;
+    }catch(e){}
+  }
+  function saveExpenses(){
+    try{ localStorage.setItem(EXPENSES_KEY, JSON.stringify(expenses)); }catch(e){}
+  }
+  function saveBudget(){
+    try{ localStorage.setItem(BUDGET_KEY, String(weeklyBudget)); }catch(e){}
+  }
+
+  function nowLocalDateTimeValue(){
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0,16);
+  }
+
+  function getWeekRange(date = new Date()){
+    const d = new Date(date);
+    const day = d.getDay(); // 0=Sun..6=Sat
+    const diffToMonday = (day === 0 ? -6 : 1) - day;
+    const monday = new Date(d);
+    monday.setDate(d.getDate() + diffToMonday);
+    monday.setHours(0,0,0,0);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23,59,59,999);
+    return { start: monday, end: sunday };
+  }
+
+  function formatShortDate(d){
+    return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+  }
+
+  function formatDateTime(iso){
+    const d = new Date(iso);
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const hh = String(d.getHours()).padStart(2,'0');
+    const min = String(d.getMinutes()).padStart(2,'0');
+    return `${dd}.${mm} в ${hh}:${min}`;
+  }
+
+  function openExpenseSheetForNew(){
+    editingExpenseId = null;
+    eName.value = '';
+    eAmount.value = '';
+    eDateTime.value = nowLocalDateTimeValue();
+    expenseSheetTitle.textContent = 'Новая покупка';
+    expenseBackdrop.classList.add('open');
+    setTimeout(()=> eName.focus(), 250);
+  }
+
+  function openExpenseSheetForEdit(id){
+    const item = expenses.find(x => x.id === id);
+    if(!item) return;
+    editingExpenseId = id;
+    eName.value = item.name;
+    eAmount.value = item.amount;
+    const d = new Date(item.dateTime);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    eDateTime.value = d.toISOString().slice(0,16);
+    expenseSheetTitle.textContent = 'Редактировать покупку';
+    expenseBackdrop.classList.add('open');
+  }
+
+  function closeExpenseSheet(){ expenseBackdrop.classList.remove('open'); }
+
+  openExpenseSheetBtn.addEventListener('click', openExpenseSheetForNew);
+  expenseCancelBtn.addEventListener('click', closeExpenseSheet);
+  expenseBackdrop.addEventListener('click', (e)=>{ if(e.target === expenseBackdrop) closeExpenseSheet(); });
+
+  expenseSaveBtn.addEventListener('click', ()=>{
+    const name = eName.value.trim();
+    const amount = parseFloat(eAmount.value);
+    if(!name){ eName.focus(); return; }
+    if(!amount || amount <= 0){ eAmount.focus(); return; }
+    const dtVal = eDateTime.value || nowLocalDateTimeValue();
+    const iso = new Date(dtVal).toISOString();
+
+    if(editingExpenseId){
+      const item = expenses.find(x => x.id === editingExpenseId);
+      Object.assign(item, { name, amount, dateTime: iso });
+      showToast('Покупка обновлена');
+    } else {
+      expenses.unshift({ id: Date.now(), name, amount, dateTime: iso });
+      showToast('Покупка добавлена');
+    }
+
+    saveExpenses();
+    closeExpenseSheet();
+    renderExpenses();
+  });
+
+  function askDeleteExpense(id){
+    pendingDeleteId = id;
+    pendingDeleteType = 'expense';
+    confirmText.textContent = 'Удалить эту покупку?';
+    confirmBackdrop.classList.add('open');
+  }
+
+  document.querySelectorAll('#screenExpenses .tabs .tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('#screenExpenses .tabs .tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      currentExpFilter = t.dataset.expfilter;
+      renderExpenses();
+    });
+  });
+
+  editBudgetBtn.addEventListener('click', ()=>{
+    budgetInput.value = weeklyBudget;
+    budgetBackdrop.classList.add('open');
+    setTimeout(()=> budgetInput.focus(), 200);
+  });
+  budgetCancel.addEventListener('click', ()=> budgetBackdrop.classList.remove('open'));
+  budgetBackdrop.addEventListener('click', (e)=>{ if(e.target === budgetBackdrop) budgetBackdrop.classList.remove('open'); });
+  budgetSave.addEventListener('click', ()=>{
+    const val = parseFloat(budgetInput.value);
+    if(!val || val <= 0){ budgetInput.focus(); return; }
+    weeklyBudget = val;
+    saveBudget();
+    budgetBackdrop.classList.remove('open');
+    renderExpenses();
+    showToast('Бюджет обновлён');
+  });
+
+  function buildExpenseCard(x){
+    const card = document.createElement('div');
+    card.className = 'card exp-card';
+    card.innerHTML = `
+      <div class="card-top">
+        <div>
+          <div class="card-name">${escapeHtml(x.name)}</div>
+          <div class="card-sub">${formatDateTime(x.dateTime)}</div>
+        </div>
+        <div class="card-amount-wrap">
+          <div class="card-amount mono">${formatMoney(x.amount)}</div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-delete" style="flex:1;" data-action="delete">Удалить</button>
+      </div>
+    `;
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-action]')) return;
+      openExpenseSheetForEdit(x.id);
+    });
+    card.querySelector('[data-action="delete"]').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      askDeleteExpense(x.id);
+    });
+    return card;
+  }
+
+  function renderExpenses(){
+    const { start, end } = getWeekRange();
+    document.getElementById('weekRangeLabel').textContent =
+      `${formatShortDate(start)} – ${formatShortDate(end)}`;
+
+    const weekExpenses = expenses.filter(x=>{
+      const t = new Date(x.dateTime).getTime();
+      return t >= start.getTime() && t <= end.getTime();
+    });
+
+    const spent = weekExpenses.reduce((s,x)=> s + x.amount, 0);
+    const remaining = weeklyBudget - spent;
+    const pct = weeklyBudget > 0 ? Math.min(100, Math.round((spent / weeklyBudget) * 100)) : 0;
+    const over = remaining < 0;
+
+    const remainingEl = document.getElementById('remainingBudget');
+    remainingEl.textContent = (over ? '−' : '') + formatMoney(Math.abs(remaining));
+    remainingEl.classList.toggle('over', over);
+
+    document.getElementById('budgetSub').textContent =
+      over ? `Перерасход! Потрачено ${formatMoney(spent)} из ${formatMoney(weeklyBudget)}`
+           : `Потрачено ${formatMoney(spent)} из ${formatMoney(weeklyBudget)}`;
+
+    const progressFill = document.getElementById('budgetProgress');
+    progressFill.style.width = pct + '%';
+    progressFill.classList.toggle('over', over);
+
+    let filtered = currentExpFilter === 'week' ? weekExpenses : expenses;
+    filtered = [...filtered].sort((a,b)=> new Date(b.dateTime) - new Date(a.dateTime));
+
+    expenseList.innerHTML = '';
+
+    if(!filtered.length){
+      expenseEmpty.style.display = 'block';
+      if(currentExpFilter === 'week'){
+        expenseEmptyTitle.innerHTML = '<strong>На этой неделе пока пусто</strong>';
+        expenseEmptyText.textContent = 'Добавьте первую покупку';
+      } else {
+        expenseEmptyTitle.innerHTML = '<strong>Покупок пока нет</strong>';
+        expenseEmptyText.textContent = 'Нажмите «Добавить покупку», чтобы начать';
+      }
+    } else {
+      expenseEmpty.style.display = 'none';
+      filtered.forEach(x => expenseList.appendChild(buildExpenseCard(x)));
+    }
+  }
+
+  /* =====================================================
+     ============   ОБЩЕЕ: УДАЛЕНИЕ   ====================
+     ===================================================== */
+
+  confirmCancel.addEventListener('click', ()=>{
+    pendingDeleteId = null;
+    pendingDeleteType = null;
+    confirmBackdrop.classList.remove('open');
+  });
+
+  confirmOk.addEventListener('click', ()=>{
+    if(pendingDeleteType === 'debts-all'){
+      debts = [];
+      saveDebts(); renderDebts();
+      showToast('Все долги удалены');
+    } else if(pendingDeleteType === 'debt' && pendingDeleteId !== null){
+      debts = debts.filter(d => d.id !== pendingDeleteId);
+      saveDebts(); renderDebts();
+      showToast('Долг удалён');
+    } else if(pendingDeleteType === 'expense' && pendingDeleteId !== null){
+      expenses = expenses.filter(x => x.id !== pendingDeleteId);
+      saveExpenses(); renderExpenses();
+      showToast('Покупка удалена');
+    }
+    pendingDeleteId = null;
+    pendingDeleteType = null;
+    confirmBackdrop.classList.remove('open');
+  });
+
+  // ---------- init ----------
+  loadDebts();
+  loadExpenses();
+  renderDebts();
+  renderExpenses();
+})();
+</script>
+
+</body>
+</html>
