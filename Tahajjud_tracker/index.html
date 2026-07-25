@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
   <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Тахаджуд">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
 <title>Тахаджуд · Трекер ночного намаза</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,21 +50,64 @@
     --radius-sm:11px;
   }
 
+  html[data-theme="light"]{
+    /* дневная палитра */
+    --bg-deep:#f3ecd9;
+    --bg-mid:#faf6ec;
+    --bg-elevated:#ffffff;
+    --glass:rgba(60,45,15,0.035);
+    --glass-strong:rgba(60,45,15,0.06);
+    --border-glass:rgba(180,130,40,0.22);
+    --border-glass-soft:rgba(180,130,40,0.12);
+
+    --gold:#a8781f;
+    --gold-bright:#8a611a;
+    --gold-dim:rgba(180,130,40,0.14);
+    --gold-glow:rgba(180,130,40,0.3);
+
+    --cream:#2c2612;
+    --muted:#7d7457;
+    --muted-soft:#a89d78;
+
+    --sage:#4a7a5f;
+    --sage-bg:rgba(74,122,95,0.12);
+    --sage-line:rgba(74,122,95,0.3);
+
+    --rose:#a8483d;
+    --rose-bg:rgba(168,72,61,0.12);
+    --rose-line:rgba(168,72,61,0.3);
+
+    --shadow-soft:0 18px 36px -24px rgba(60,45,15,0.25);
+    --shadow-lift:0 22px 50px -26px rgba(60,45,15,0.3);
+  }
+
   *{margin:0;padding:0;box-sizing:border-box;}
 
   html,body{
     height:100%;
     background:
-      radial-gradient(ellipse 1000px 560px at 88% -8%, rgba(201,162,76,0.14), transparent 62%),
-      radial-gradient(ellipse 760px 520px at 6% 8%, rgba(132,183,154,0.06), transparent 60%),
-      radial-gradient(ellipse 900px 700px at 50% 115%, rgba(78,66,140,0.10), transparent 65%),
+      radial-gradient(ellipse 1000px 560px at 88% -8%, rgba(201,162,76,0.16), transparent 62%),
+      radial-gradient(ellipse 760px 520px at 6% 8%, rgba(132,183,154,0.07), transparent 60%),
+      radial-gradient(ellipse 900px 700px at 50% 115%, rgba(78,66,140,0.12), transparent 65%),
+      radial-gradient(ellipse 1200px 900px at 50% 50%, transparent 55%, rgba(0,0,0,0.35) 100%),
       linear-gradient(180deg, var(--bg-deep), var(--bg-mid) 38%, var(--bg-deep) 100%);
     color:var(--cream);
     font-family:'Manrope',sans-serif;
     -webkit-font-smoothing:antialiased;
     position:relative;
     overflow:hidden;
+    transition:background 0.35s ease, color 0.35s ease;
   }
+
+  html[data-theme="light"] body{
+    background:
+      radial-gradient(ellipse 900px 520px at 88% -6%, rgba(180,130,40,0.12), transparent 62%),
+      radial-gradient(ellipse 700px 480px at 8% 10%, rgba(74,122,95,0.08), transparent 60%),
+      radial-gradient(ellipse 900px 700px at 50% 115%, rgba(180,130,40,0.06), transparent 65%),
+      linear-gradient(180deg, var(--bg-mid), var(--bg-deep) 60%, var(--bg-mid) 100%);
+  }
+
+  html[data-theme="light"] .stars{opacity:0;}
 
   /* небо со звёздами: два слоя разного размера, лёгкое мерцание */
   .stars{
@@ -67,6 +116,7 @@
     z-index:0;
     pointer-events:none;
     opacity:0.9;
+    transition:opacity 0.35s ease;
   }
   .stars::before, .stars::after{
     content:"";
@@ -110,11 +160,33 @@
     height:100vh;
     height:100dvh;
     margin:0 auto;
-    padding:12px 16px 10px;
+    padding:max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
     display:flex;
     flex-direction:column;
     overflow:hidden;
   }
+
+
+  .theme-toggle{
+    position:absolute;
+    top:max(12px, env(safe-area-inset-top));
+    right:max(14px, env(safe-area-inset-right));
+    z-index:20;
+    width:36px;
+    height:36px;
+    border-radius:11px;
+    background:rgba(239,212,151,0.08);
+    border:1px solid var(--border-glass);
+    color:var(--gold-bright);
+    font-size:17px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform 0.25s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+  .theme-toggle:hover{background:rgba(239,212,151,0.16);transform:rotate(-12deg);}
+  .theme-toggle:active{transform:scale(0.92);}
 
   header{
     display:flex;
@@ -546,7 +618,7 @@
   /* guide button + modal */
   .top-btn-row{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(auto-fit, minmax(84px, 1fr));
     gap:8px;
     margin-bottom:10px;
     flex:none;
@@ -555,25 +627,29 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:7px;
+    gap:6px;
     width:100%;
-    flex:1;
+    min-width:0;
     background:linear-gradient(160deg, var(--glass-strong), var(--glass));
     border:1px solid var(--border-glass);
     color:var(--gold-bright);
+    text-decoration:none;
     font-family:'Manrope',sans-serif;
     font-weight:700;
-    font-size:13px;
+    font-size:clamp(10.5px, 3vw, 12.5px);
     letter-spacing:0.01em;
     border-radius:var(--radius-md);
-    padding:11px 12px;
+    padding:11px 8px;
     cursor:pointer;
     box-shadow:var(--shadow-soft);
-    transition:transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    transition:transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
-  .guide-btn:hover{background:rgba(239,212,151,0.1);border-color:var(--gold-dim);transform:translateY(-1px);}
-  .guide-btn:active{transform:scale(0.98);}
-  .guide-btn .book-icon{font-size:15px;}
+  .guide-btn:hover{background:rgba(239,212,151,0.1);border-color:var(--gold-dim);transform:translateY(-1px);box-shadow:0 20px 44px -22px rgba(201,162,76,0.35);}
+  .guide-btn:active{transform:scale(0.97);}
+  .guide-btn .book-icon{font-size:clamp(13px, 3.6vw, 15px);flex:none;}
 
   .modal-overlay{
     position:fixed;
@@ -604,7 +680,7 @@
     border:1px solid var(--border-glass);
     border-radius:22px 22px 0 0;
     box-shadow:var(--shadow-lift);
-    padding:18px 18px 22px;
+    padding:18px 18px max(22px, env(safe-area-inset-bottom));
     overflow-y:auto;
     transform:translateY(24px);
     transition:transform 0.25s ease;
@@ -743,101 +819,6 @@
     color:var(--sage);
   }
 
-  /* qibla compass */
-  .qibla-compass-wrap{
-    display:flex;
-    justify-content:center;
-    margin:6px 0 14px;
-  }
-  .qibla-dial{
-    position:relative;
-    width:220px;
-    height:220px;
-    border-radius:50%;
-    background:radial-gradient(circle at 50% 40%, rgba(255,255,255,0.05), transparent 70%), var(--bg-mid);
-    box-shadow:inset 0 0 0 1px var(--border-glass-soft), var(--shadow-soft);
-  }
-  .qibla-ring{
-    position:absolute;
-    inset:0;
-    border-radius:50%;
-    border:1px solid var(--border-glass);
-    transition:transform 0.25s ease-out;
-  }
-  .qibla-ring::before{
-    content:"";
-    position:absolute;
-    inset:14px;
-    border-radius:50%;
-    border:1px dashed var(--border-glass-soft);
-  }
-  .qibla-cardinal{
-    position:absolute;
-    font-family:'Manrope',sans-serif;
-    font-size:12.5px;
-    font-weight:800;
-    color:var(--gold-bright);
-  }
-  .qibla-cardinal.n{top:8px;left:50%;transform:translateX(-50%);}
-  .qibla-cardinal.e{right:8px;top:50%;transform:translateY(-50%);}
-  .qibla-cardinal.s{bottom:8px;left:50%;transform:translateX(-50%);}
-  .qibla-cardinal.w{left:8px;top:50%;transform:translateY(-50%);}
-
-  .qibla-needle{
-    position:absolute;
-    inset:0;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    transform-origin:50% 50%;
-    transition:transform 0.25s ease-out;
-    pointer-events:none;
-  }
-  .qibla-needle .arrow{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    margin-top:10px;
-    gap:1px;
-  }
-  .qibla-needle .arrow-tip{
-    width:0;height:0;
-    border-left:9px solid transparent;
-    border-right:9px solid transparent;
-    border-bottom:18px solid var(--gold-bright);
-    filter:drop-shadow(0 0 8px rgba(239,212,151,0.5));
-  }
-  .qibla-needle .kaaba-emoji{
-    font-size:20px;
-    margin-top:2px;
-  }
-  .qibla-center-dot{
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:10px;
-    height:10px;
-    margin:-5px 0 0 -5px;
-    border-radius:50%;
-    background:var(--gold);
-    box-shadow:0 0 12px var(--gold-glow);
-  }
-
-  .qibla-info{
-    text-align:center;
-    font-size:13px;
-    color:var(--muted);
-    line-height:1.6;
-    min-height:60px;
-  }
-  .qibla-info .big{
-    display:block;
-    font-family:'Cormorant Garamond',serif;
-    font-size:26px;
-    font-weight:700;
-    color:var(--gold-bright);
-  }
-
   /* stat sub-line (best streak) */
   .stat-sub{
     margin-top:2px;
@@ -846,45 +827,165 @@
     letter-spacing:0.02em;
   }
 
-  /* month progress line */
-  .cal-month-progress{
-    text-align:center;
-    font-size:10.5px;
+  /* tasbih */
+  .tasbih-phrase-row{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    padding-bottom:6px;
+    margin-bottom:16px;
+    scrollbar-width:none;
+  }
+  .tasbih-phrase-row::-webkit-scrollbar{display:none;}
+  .tasbih-chip{
+    flex:none;
+    padding:8px 13px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--border-glass-soft);
     color:var(--muted);
-    margin-top:8px;
-    position:relative;
-    z-index:1;
+    font-family:'Manrope',sans-serif;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all 0.15s ease;
+  }
+  .tasbih-chip.active{
+    background:var(--gold-dim);
+    color:var(--gold-bright);
+    border-color:var(--gold);
   }
 
-  /* share button */
-  .share-btn{
+  .tasbih-tap-wrap{
     display:flex;
+    justify-content:center;
+    margin:6px 0 12px;
+    position:relative;
+  }
+  .tasbih-tap-circle{
+    width:clamp(160px, 46vw, 210px);
+    height:clamp(160px, 46vw, 210px);
+    border-radius:50%;
+    display:flex;
+    flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:8px;
-    width:100%;
-    flex:none;
-    background:linear-gradient(135deg, rgba(201,162,76,0.22), rgba(201,162,76,0.06));
-    border:1px solid var(--gold-dim);
-    color:var(--gold-bright);
+    background:radial-gradient(circle at 40% 30%, rgba(239,212,151,0.14), var(--bg-elevated) 70%);
+    border:2px solid var(--gold-dim);
+    cursor:pointer;
+    box-shadow:0 20px 50px -22px rgba(201,162,76,0.55), inset 0 0 30px rgba(0,0,0,0.3);
+    transition:transform 0.1s ease, box-shadow 0.15s ease;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    padding:0;
+  }
+  .tasbih-tap-circle:active{
+    transform:scale(0.95);
+    box-shadow:0 10px 30px -16px rgba(201,162,76,0.6), inset 0 0 30px rgba(0,0,0,0.4);
+  }
+  .tasbih-tap-circle.milestone{
+    animation:tasbihMilestone 0.6s ease;
+  }
+  @keyframes tasbihMilestone{
+    0%{box-shadow:0 20px 50px -22px rgba(201,162,76,0.55), inset 0 0 30px rgba(0,0,0,0.3);}
+    30%{
+      transform:scale(1.06);
+      border-color:var(--sage);
+      box-shadow:0 0 0 10px rgba(132,183,154,0.18), 0 20px 50px -22px rgba(132,183,154,0.6);
+    }
+    100%{
+      transform:scale(1);
+      border-color:var(--gold-dim);
+      box-shadow:0 20px 50px -22px rgba(201,162,76,0.55), inset 0 0 30px rgba(0,0,0,0.3);
+    }
+  }
+  .tasbih-milestone-badge{
+    position:absolute;
+    top:-6px;
+    left:50%;
+    transform:translate(-50%, -14px);
+    background:linear-gradient(180deg, var(--sage), #5f8a76);
+    color:#0c1a14;
     font-family:'Manrope',sans-serif;
     font-weight:800;
-    font-size:13.5px;
-    letter-spacing:0.01em;
-    border-radius:var(--radius-md);
-    padding:12px 16px;
-    cursor:pointer;
-    box-shadow:0 12px 26px -14px rgba(201,162,76,0.5);
-    transition:transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    font-size:12.5px;
+    padding:6px 14px;
+    border-radius:999px;
+    white-space:nowrap;
+    box-shadow:0 10px 22px -8px rgba(132,183,154,0.6);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.25s ease, transform 0.25s ease;
+    z-index:5;
+  }
+  .tasbih-milestone-badge.show{
+    opacity:1;
+    transform:translate(-50%, -28px);
+  }
+  .tasbih-count{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    font-size:clamp(38px, 11vw, 52px);
+    color:var(--gold-bright);
+    line-height:1;
+    text-shadow:0 0 24px rgba(239,212,151,0.3);
+  }
+  .tasbih-target{
+    margin-top:6px;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .tasbih-arabic{
+    text-align:center;
+    direction:rtl;
+    font-size:clamp(18px, 5vw, 23px);
+    color:var(--cream);
+    margin-bottom:14px;
+    line-height:1.4;
+  }
+  .tasbih-hint{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--muted-soft);
+    margin-top:10px;
+  }
+
+  /* dua */
+  .dua-block{margin-bottom:18px;}
+  .dua-block:last-child{margin-bottom:0;}
+  .dua-block-title{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    font-size:15.5px;
+    color:var(--gold-bright);
     margin-bottom:8px;
   }
-  .share-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 16px 30px -14px rgba(201,162,76,0.6);
-    background:linear-gradient(135deg, rgba(201,162,76,0.3), rgba(201,162,76,0.1));
+  .dua-arabic{
+    direction:rtl;
+    text-align:right;
+    font-size:clamp(17px, 4.5vw, 20px);
+    line-height:1.9;
+    color:var(--cream);
+    margin-bottom:6px;
   }
-  .share-btn:active{transform:scale(0.98);}
-  .share-btn .book-icon{font-size:15px;}
+  .dua-translit{
+    font-size:12.5px;
+    color:var(--gold-bright);
+    opacity:0.85;
+    font-style:italic;
+    margin-bottom:4px;
+    line-height:1.5;
+  }
+  .dua-meaning{
+    font-size:13px;
+    color:var(--cream);
+    opacity:0.88;
+    line-height:1.55;
+  }
 
   @media (max-width:480px){
     .wrap{padding:8px 10px 8px;}
@@ -920,6 +1021,8 @@
 
 <div class="wrap">
 
+  <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
+
   <header>
     <div class="moon-halo">
       <svg class="moon" viewBox="0 0 100 100" fill="none">
@@ -940,7 +1043,8 @@
   <div class="top-btn-row">
     <button class="guide-btn" id="guideBtn"><span class="book-icon">📖</span>Как читать</button>
     <button class="guide-btn" id="historyBtn"><span class="book-icon">📜</span>История</button>
-    <button class="guide-btn" id="qiblaBtn"><span class="book-icon">🧭</span>Кибла</button>
+    <button class="guide-btn" id="tasbihBtn"><span class="book-icon">📿</span>Тасбих</button>
+    <button class="guide-btn" id="duaBtn"><span class="book-icon">🤲</span>Дуа</button>
   </div>
 
   <div class="stats">
@@ -972,7 +1076,6 @@
       <span><i class="dot missed"></i>Не читал</span>
       <span><i class="dot today"></i>Сегодня</span>
     </div>
-    <div class="cal-month-progress" id="calMonthProgress"></div>
   </div>
 
   <div class="day-panel">
@@ -985,8 +1088,6 @@
       <button class="action btn-clear" id="btnClear">Сбросить</button>
     </div>
   </div>
-
-  <button class="share-btn" id="shareBtn"><span class="book-icon">📤</span>Поделиться прогрессом</button>
 
   <footer>
     <button class="reset-link" id="resetBtn">Сбросить всю историю</button>
@@ -1058,42 +1159,75 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="qiblaOverlay">
+<div class="modal-overlay" id="tasbihOverlay">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-title">Направление киблы</div>
-      <button class="modal-close" id="qiblaClose" aria-label="Закрыть">✕</button>
+      <div class="modal-title">Тасбих</div>
+      <button class="modal-close" id="tasbihClose" aria-label="Закрыть">✕</button>
     </div>
-    <div class="modal-sub">Держите телефон горизонтально экраном вверх — стрелка покажет направление на Каабу</div>
+    <div class="modal-sub">Нажимайте на круг, чтобы считать зикр</div>
 
-    <div class="qibla-compass-wrap">
-      <div class="qibla-dial">
-        <div class="qibla-ring" id="qiblaRing">
-          <span class="qibla-cardinal n">С</span>
-          <span class="qibla-cardinal e">В</span>
-          <span class="qibla-cardinal s">Ю</span>
-          <span class="qibla-cardinal w">З</span>
-        </div>
-        <div class="qibla-needle" id="qiblaNeedle">
-          <div class="arrow">
-            <span class="arrow-tip"></span>
-            <span class="kaaba-emoji">🕋</span>
-          </div>
-        </div>
-        <div class="qibla-center-dot"></div>
-      </div>
+    <div class="tasbih-phrase-row" id="tasbihPhraseRow"></div>
+
+    <div class="tasbih-arabic" id="tasbihArabic"></div>
+
+    <div class="tasbih-tap-wrap">
+      <div class="tasbih-milestone-badge" id="tasbihMilestoneBadge">✓ Цель достигнута</div>
+      <button class="tasbih-tap-circle" id="tasbihTapBtn" aria-label="Считать">
+        <span class="tasbih-count" id="tasbihCount">0</span>
+        <span class="tasbih-target" id="tasbihTarget">из 33</span>
+      </button>
     </div>
-
-    <div class="qibla-info" id="qiblaInfo">Определяем ваше местоположение…</div>
 
     <div class="btn-row">
-      <button class="action btn-done" id="qiblaEnableBtn">🧭 Включить компас</button>
-      <button class="action btn-clear" id="qiblaRefreshBtn">↻ Обновить</button>
+      <button class="action btn-clear" id="tasbihResetBtn">↺ Сбросить</button>
+      <button class="action btn-clear" id="tasbihTargetBtn">Цель: 33</button>
     </div>
 
-    <div class="guide-note" style="margin-top:14px;">
-      Если стрелка не поворачивается сами, устройство не поддерживает компас-датчик — ориентируйтесь по указанному углу от севера с помощью отдельного компаса. Для точности отойдите от металла и электроники.
+    <div class="tasbih-hint">Счётчик сохраняется автоматически на этом устройстве</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="duaOverlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title">Дуа для ночи</div>
+      <button class="modal-close" id="duaClose" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="modal-sub">Короткие мольбы для разных моментов ночного намаза</div>
+
+    <div class="dua-block">
+      <div class="dua-block-title">🛏️ Перед сном</div>
+      <div class="dua-arabic">بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا</div>
+      <div class="dua-translit">Бисмикя Аллахумма амуту ва ахъя</div>
+      <div class="dua-meaning">С именем Твоим, о Аллах, я умираю (сплю) и оживаю (просыпаюсь)</div>
+    </div>
+
+    <div class="dua-block">
+      <div class="dua-block-title">🌙 При пробуждении ночью</div>
+      <div class="dua-arabic">الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ</div>
+      <div class="dua-translit">Альхамду лилляхи-ллязи ахьяна ба‘да ма аматана ва иляйхи-н-нушур</div>
+      <div class="dua-meaning">Хвала Аллаху, Который оживил нас после того, как усыпил, и к Нему возвращение</div>
+    </div>
+
+    <div class="dua-block">
+      <div class="dua-block-title">🤲 После Тахаджуда</div>
+      <div class="dua-arabic">اللَّهُمَّ لَكَ الْحَمْدُ أَنْتَ نُورُ السَّمَاوَاتِ وَالْأَرْضِ</div>
+      <div class="dua-translit">Аллахумма ляка-ль-хамду анта нуру-с-самавати валь-ард</div>
+      <div class="dua-meaning">О Аллах, хвала Тебе, Ты — свет небес и земли (начало известной мольбы после ночного намаза)</div>
+    </div>
+
+    <div class="dua-block">
+      <div class="dua-block-title">🌅 Перед рассветом</div>
+      <div class="dua-arabic">اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ خَيْرِ هَذَا الْيَوْمِ</div>
+      <div class="dua-translit">Аллахумма инни асъалюка мин хайри хаза-ль-явм</div>
+      <div class="dua-meaning">О Аллах, прошу у Тебя блага этого дня</div>
+    </div>
+
+    <div class="guide-note">
+      Это лишь несколько примеров мольбы — вы можете обращаться к Аллаху и своими словами, на любом языке.
     </div>
   </div>
 </div>
@@ -1137,6 +1271,31 @@
   function vibrate(ms){
     try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
   }
+
+  /* ===== Тёмная / светлая тема ===== */
+  const THEME_KEY = 'tahajjud_theme_v1';
+  function loadTheme(){
+    try{ return localStorage.getItem(THEME_KEY) || 'dark'; }catch(e){ return 'dark'; }
+  }
+  function saveTheme(t){
+    try{ localStorage.setItem(THEME_KEY, t); }catch(e){}
+  }
+  let currentTheme = loadTheme();
+
+  const themeToggleBtn = document.getElementById('themeToggle');
+  function applyTheme(theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    themeToggleBtn.textContent = theme === 'light' ? '☀️' : '🌙';
+    themeToggleBtn.setAttribute('aria-label', theme === 'light' ? 'Включить тёмную тему' : 'Включить светлую тему');
+  }
+  applyTheme(currentTheme);
+
+  themeToggleBtn.addEventListener('click', () => {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    saveTheme(currentTheme);
+    vibrate(8);
+    applyTheme(currentTheme);
+  });
 
   let viewYear = todayDate.getFullYear();
   let viewMonth = todayDate.getMonth();
@@ -1220,26 +1379,6 @@
       }
       grid.appendChild(cell);
     }
-
-    renderCalMonthProgress();
-  }
-
-  function renderCalMonthProgress(){
-    const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
-    const isCurrentMonth = viewYear === todayDate.getFullYear() && viewMonth === todayDate.getMonth();
-    const isFutureMonth = new Date(viewYear, viewMonth, 1) > todayDate;
-
-    const el = document.getElementById('calMonthProgress');
-    if(isFutureMonth){
-      el.textContent = 'Месяц ещё не наступил';
-      return;
-    }
-    const elapsedDays = isCurrentMonth ? todayDate.getDate() : daysInMonth;
-    let doneCount = 0;
-    for(let day=1; day<=elapsedDays; day++){
-      if(data[fmtKey(new Date(viewYear, viewMonth, day))] === 'done') doneCount++;
-    }
-    el.textContent = 'В этом месяце: ' + doneCount + ' из ' + elapsedDays;
   }
 
   function renderDayPanel(){
@@ -1339,41 +1478,6 @@
     }
   });
 
-  document.getElementById('shareBtn').addEventListener('click', async () => {
-    vibrate(8);
-    const streak = computeStreak();
-    const best = computeBestStreak();
-    const doneTotal = Object.values(data).filter(v => v === 'done').length;
-
-    const lines = [
-      '🌙 Тахаджуд — мой прогресс',
-      '',
-      '🔥 Текущая серия: ' + streak + ' ' + (streak === 1 ? 'день' : 'дней'),
-      '🏆 Рекорд: ' + best + ' ' + (best === 1 ? 'день' : 'дней'),
-      '✓ Всего прочитано: ' + doneTotal,
-      '',
-      'Отслеживаю ночной намаз каждый день 🤲'
-    ];
-    const shareText = lines.join('\n');
-
-    if(navigator.share){
-      try{
-        await navigator.share({ title: 'Тахаджуд — мой прогресс', text: shareText });
-      }catch(err){
-        // пользователь отменил — ничего не делаем
-      }
-    }else if(navigator.clipboard){
-      try{
-        await navigator.clipboard.writeText(shareText);
-        alert('Прогресс скопирован в буфер обмена — можно вставить в любой чат.');
-      }catch(err){
-        alert(shareText);
-      }
-    }else{
-      alert(shareText);
-    }
-  });
-
   render();
 
   const guideOverlay = document.getElementById('guideOverlay');
@@ -1410,222 +1514,156 @@
     if(e.target === historyOverlay) closeHistory();
   });
 
-  /* ===== Кибла: направление на Каабу ===== */
-  const KAABA_LAT = 21.4225;
-  const KAABA_LNG = 39.8262;
-  let qiblaBearing = null;
-  let smoothedHeading = null;
-  let headingAvailable = false;
+  /* ===== Тасбих: счётчик зикра ===== */
+  const TASBIH_KEY = 'tahajjud_tasbih_v1';
+  const TASBIH_PHRASES = [
+    {id:'subhanallah', arabic:'سُبْحَانَ الله', label:'СубханАллах'},
+    {id:'alhamdulillah', arabic:'الْحَمْدُ لله', label:'Альхамдулиллях'},
+    {id:'allahuakbar', arabic:'اللهُ أَكْبَر', label:'Аллаху Акбар'},
+    {id:'lailaha', arabic:'لَا إِلَٰهَ إِلَّا الله', label:'Ля иляха илля Ллах'},
+    {id:'astaghfirullah', arabic:'أَسْتَغْفِرُ الله', label:'Астагфируллах'}
+  ];
+  const TASBIH_TARGETS = [33, 100, 1000];
 
-  // непрерывные (не обрезанные по модулю) углы поворота,
-  // чтобы стрелка не "прокручивалась" рывком через границу 0°/360°
-  let ringRotationContinuous = 0;
-  let needleRotationContinuous = 0;
-  let ringInit = false;
-  let needleInit = false;
-
-  function toRad(d){ return d * Math.PI / 180; }
-  function toDeg(r){ return r * 180 / Math.PI; }
-
-  function calcQiblaBearing(lat, lng){
-    const phi1 = toRad(lat), phi2 = toRad(KAABA_LAT);
-    const dLambda = toRad(KAABA_LNG - lng);
-    const y = Math.sin(dLambda) * Math.cos(phi2);
-    const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLambda);
-    return (toDeg(Math.atan2(y, x)) + 360) % 360;
+  function loadTasbih(){
+    try{
+      const raw = localStorage.getItem(TASBIH_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
   }
-
-  function haversineKm(lat1, lng1, lat2, lng2){
-    const R = 6371;
-    const dLat = toRad(lat2 - lat1);
-    const dLng = toRad(lng2 - lng1);
-    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  function saveTasbih(t){
+    try{ localStorage.setItem(TASBIH_KEY, JSON.stringify(t)); }catch(e){}
   }
+  let tasbihState = loadTasbih() || { activePhrase:'subhanallah', targetIndex:0, counts:{} };
+  if(!tasbihState.counts) tasbihState.counts = {};
 
-  function cardinalName(deg){
-    const dirs = ['С','СВ','В','ЮВ','Ю','ЮЗ','З','СЗ'];
-    return dirs[Math.round(deg / 45) % 8];
-  }
+  const tasbihPhraseRow = document.getElementById('tasbihPhraseRow');
+  const tasbihArabicEl = document.getElementById('tasbihArabic');
+  const tasbihCountEl = document.getElementById('tasbihCount');
+  const tasbihTargetEl = document.getElementById('tasbihTarget');
+  const tasbihTargetBtn = document.getElementById('tasbihTargetBtn');
 
-  // кратчайший поворот к target с учётом уже накопленного значения current,
-  // без скачка на границе 0/360
-  function unwrapRotation(current, target){
-    const targetMod = ((target % 360) + 360) % 360;
-    const currentMod = ((current % 360) + 360) % 360;
-    let delta = targetMod - currentMod;
-    if(delta > 180) delta -= 360;
-    if(delta < -180) delta += 360;
-    return current + delta;
-  }
-
-  const qiblaRing = document.getElementById('qiblaRing');
-  const qiblaNeedle = document.getElementById('qiblaNeedle');
-  const qiblaInfo = document.getElementById('qiblaInfo');
-  const qiblaEnableBtn = document.getElementById('qiblaEnableBtn');
-
-  function updateQiblaUI(){
-    if(qiblaBearing === null) return;
-    const targetRing = headingAvailable ? -smoothedHeading : 0;
-    const targetNeedle = headingAvailable ? (qiblaBearing - smoothedHeading + 360) % 360 : qiblaBearing;
-
-    ringRotationContinuous = ringInit ? unwrapRotation(ringRotationContinuous, targetRing) : targetRing;
-    needleRotationContinuous = needleInit ? unwrapRotation(needleRotationContinuous, targetNeedle) : targetNeedle;
-    ringInit = true;
-    needleInit = true;
-
-    qiblaRing.style.transform = 'rotate(' + ringRotationContinuous + 'deg)';
-    qiblaNeedle.style.transform = 'rotate(' + needleRotationContinuous + 'deg)';
-  }
-
-  function locateAndCalcQibla(){
-    qiblaInfo.innerHTML = 'Определяем ваше местоположение…';
-
-    if(window.isSecureContext === false){
-      qiblaInfo.innerHTML =
-        'Браузер блокирует геолокацию и компас на этой странице, потому что она открыта не по HTTPS.<br>' +
-        'Загрузите файл на любой бесплатный хостинг (например, GitHub Pages, Netlify, Vercel) и откройте его оттуда — тогда всё заработает.';
-      return;
-    }
-    if(!navigator.geolocation){
-      qiblaInfo.textContent = 'Геолокация не поддерживается этим браузером.';
-      return;
-    }
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const lat = pos.coords.latitude, lng = pos.coords.longitude;
-      qiblaBearing = calcQiblaBearing(lat, lng);
-      const dist = Math.round(haversineKm(lat, lng, KAABA_LAT, KAABA_LNG));
-      const acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
-      qiblaInfo.innerHTML =
-        '<span class="big">' + Math.round(qiblaBearing) + '°</span>' +
-        'от севера · ' + cardinalName(qiblaBearing) + ' · ≈ ' + dist.toLocaleString('ru-RU') + ' км до Каабы' +
-        (acc ? '<br>точность геолокации: ±' + acc + ' м' : '') +
-        (headingAvailable ? '<br><span style="color:var(--sage)">● живой компас активен</span>' : '');
-      updateQiblaUI();
-    }, (err) => {
-      let msg = 'Не удалось определить местоположение.';
-      if(err && err.code === 1) msg = 'Доступ к геолокации запрещён. Разрешите его в настройках браузера/сайта и попробуйте снова.';
-      else if(err && err.code === 2) msg = 'Не удалось получить координаты (нет сигнала GPS). Попробуйте выйти на улицу или включить геолокацию в настройках телефона.';
-      else if(err && err.code === 3) msg = 'Определение местоположения заняло слишком много времени. Нажмите «Обновить», чтобы попробовать снова.';
-      qiblaInfo.textContent = msg;
-    }, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
-  }
-
-  function applyHeading(rawHeading){
-    // экспоненциальное сглаживание, чтобы стрелка не дрожала от шума датчика,
-    // а плавно и точно останавливалась в нужном положении
-    if(smoothedHeading === null){
-      smoothedHeading = rawHeading;
-    }else{
-      let delta = rawHeading - smoothedHeading;
-      if(delta > 180) delta -= 360;
-      if(delta < -180) delta += 360;
-      smoothedHeading = (smoothedHeading + delta * 0.18 + 360) % 360;
-    }
-    headingAvailable = true;
-    updateQiblaUI();
-  }
-
-  let sawAbsoluteEvent = false;
-
-  function handleOrientationAbsolute(e){
-    let heading;
-    if(typeof e.webkitCompassHeading === 'number' && !isNaN(e.webkitCompassHeading)){
-      heading = e.webkitCompassHeading;
-    }else if(e.absolute && e.alpha !== null){
-      heading = (360 - e.alpha) % 360;
-    }else{
-      return;
-    }
-    sawAbsoluteEvent = true;
-    applyHeading(heading);
-  }
-
-  // запасной вариант: если браузер не шлёт "абсолютные" события ориентации,
-  // используем обычное deviceorientation — на большинстве телефонов alpha
-  // всё равно достаточно близко к компасу для практической точности
-  function handleOrientationFallback(e){
-    if(sawAbsoluteEvent) return;
-    if(typeof e.webkitCompassHeading === 'number' && !isNaN(e.webkitCompassHeading)) return;
-    if(e.alpha === null) return;
-    applyHeading((360 - e.alpha) % 360);
-  }
-
-  function enableCompass(){
-    if(typeof DeviceOrientationEvent === 'undefined'){
-      qiblaInfo.innerHTML += '<br>Этот браузер/устройство не поддерживает датчик компаса — работает только числовое направление.';
-      return;
-    }
-    if(window.isSecureContext === false){
-      qiblaInfo.innerHTML += '<br>Компас-датчик заблокирован без HTTPS. Загрузите файл на хостинг и откройте по https://.';
-      return;
-    }
-
-    if(typeof DeviceOrientationEvent.requestPermission === 'function'){
-      DeviceOrientationEvent.requestPermission().then((state) => {
-        if(state === 'granted'){
-          window.addEventListener('deviceorientation', handleOrientationAbsolute, true);
-          watchCompassArrival();
-        }else{
-          qiblaInfo.innerHTML += '<br>Доступ к датчику ориентации не предоставлен (отклонено пользователем).';
-        }
-      }).catch((err) => {
-        qiblaInfo.innerHTML += '<br>Не удалось запросить доступ к датчику: ' + (err && err.message ? err.message : 'неизвестная ошибка') + '.';
+  function renderTasbih(){
+    tasbihPhraseRow.innerHTML = '';
+    TASBIH_PHRASES.forEach(p => {
+      const chip = document.createElement('button');
+      chip.className = 'tasbih-chip' + (p.id === tasbihState.activePhrase ? ' active' : '');
+      chip.textContent = p.label;
+      chip.addEventListener('click', () => {
+        tasbihState.activePhrase = p.id;
+        saveTasbih(tasbihState);
+        renderTasbih();
       });
+      tasbihPhraseRow.appendChild(chip);
+    });
+
+    const phrase = TASBIH_PHRASES.find(p => p.id === tasbihState.activePhrase);
+    tasbihArabicEl.textContent = phrase.arabic;
+    const count = tasbihState.counts[tasbihState.activePhrase] || 0;
+    tasbihCountEl.textContent = count;
+    const target = TASBIH_TARGETS[tasbihState.targetIndex];
+    tasbihTargetEl.textContent = 'из ' + target;
+    tasbihTargetBtn.textContent = 'Цель: ' + target;
+  }
+
+  const tasbihTapBtn = document.getElementById('tasbihTapBtn');
+  const tasbihMilestoneBadge = document.getElementById('tasbihMilestoneBadge');
+  let milestoneTimer = null;
+
+  tasbihTapBtn.addEventListener('click', () => {
+    const key = tasbihState.activePhrase;
+    const current = (tasbihState.counts[key] || 0) + 1;
+    tasbihState.counts[key] = current;
+    saveTasbih(tasbihState);
+
+    const target = TASBIH_TARGETS[tasbihState.targetIndex];
+    const reachedMilestone = current % target === 0;
+
+    if(reachedMilestone){
+      vibrate([16,60,16]);
+
+      tasbihTapBtn.classList.remove('milestone');
+      void tasbihTapBtn.offsetWidth; // перезапуск анимации
+      tasbihTapBtn.classList.add('milestone');
+
+      tasbihMilestoneBadge.textContent = '✓ Цель ' + target + ' достигнута';
+      tasbihMilestoneBadge.classList.add('show');
+      clearTimeout(milestoneTimer);
+      milestoneTimer = setTimeout(() => {
+        tasbihMilestoneBadge.classList.remove('show');
+      }, 1600);
     }else{
-      window.addEventListener('deviceorientationabsolute', handleOrientationAbsolute, true);
-      window.addEventListener('deviceorientation', handleOrientationFallback, true);
-      watchCompassArrival();
+      vibrate(7);
     }
-  }
 
-  function watchCompassArrival(){
-    setTimeout(() => {
-      if(!headingAvailable){
-        qiblaInfo.innerHTML += '<br>Датчик компаса не отвечает на этом устройстве/браузере. Ориентируйтесь по указанному углу от севера вручную.';
-      }
-    }, 2500);
-  }
-
-  qiblaEnableBtn.addEventListener('click', enableCompass);
-
-  const qiblaRefreshBtn = document.getElementById('qiblaRefreshBtn');
-  qiblaRefreshBtn.addEventListener('click', () => {
-    vibrate(8);
-    locateAndCalcQibla();
+    renderTasbih();
   });
 
-  const qiblaOverlay = document.getElementById('qiblaOverlay');
-  const qiblaBtn = document.getElementById('qiblaBtn');
-  const qiblaCloseBtn = document.getElementById('qiblaClose');
+  document.getElementById('tasbihResetBtn').addEventListener('click', () => {
+    tasbihState.counts[tasbihState.activePhrase] = 0;
+    saveTasbih(tasbihState);
+    vibrate(10);
+    tasbihMilestoneBadge.classList.remove('show');
+    clearTimeout(milestoneTimer);
+    renderTasbih();
+  });
 
-  function openQibla(){
-    qiblaOverlay.classList.add('open');
-    locateAndCalcQibla();
+  tasbihTargetBtn.addEventListener('click', () => {
+    tasbihState.targetIndex = (tasbihState.targetIndex + 1) % TASBIH_TARGETS.length;
+    saveTasbih(tasbihState);
+    renderTasbih();
+  });
+
+  const tasbihOverlay = document.getElementById('tasbihOverlay');
+  const tasbihBtn = document.getElementById('tasbihBtn');
+  const tasbihCloseBtn = document.getElementById('tasbihClose');
+
+  function openTasbih(){
+    renderTasbih();
+    tasbihOverlay.classList.add('open');
   }
-  function closeQibla(){
-    qiblaOverlay.classList.remove('open');
+  function closeTasbih(){
+    tasbihOverlay.classList.remove('open');
   }
-  qiblaBtn.addEventListener('click', openQibla);
-  qiblaCloseBtn.addEventListener('click', closeQibla);
-  qiblaOverlay.addEventListener('click', (e) => {
-    if(e.target === qiblaOverlay) closeQibla();
+  tasbihBtn.addEventListener('click', openTasbih);
+  tasbihCloseBtn.addEventListener('click', closeTasbih);
+  tasbihOverlay.addEventListener('click', (e) => {
+    if(e.target === tasbihOverlay) closeTasbih();
+  });
+
+  /* ===== Дуа для ночи ===== */
+  const duaOverlay = document.getElementById('duaOverlay');
+  const duaBtn = document.getElementById('duaBtn');
+  const duaCloseBtn = document.getElementById('duaClose');
+
+  function openDua(){
+    duaOverlay.classList.add('open');
+  }
+  function closeDua(){
+    duaOverlay.classList.remove('open');
+  }
+  duaBtn.addEventListener('click', openDua);
+  duaCloseBtn.addEventListener('click', closeDua);
+  duaOverlay.addEventListener('click', (e) => {
+    if(e.target === duaOverlay) closeDua();
   });
 
   document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape'){
       closeGuide();
       closeHistory();
-      closeQibla();
+      closeTasbih();
+      closeDua();
     }
   });
 
 })();
 
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/tahajjud_tracker/service-worker.js")
+    navigator.serviceWorker.register("service-worker.js")
     .then(() => console.log("Service Worker работает"));
 }
+
 </script>
 
 
