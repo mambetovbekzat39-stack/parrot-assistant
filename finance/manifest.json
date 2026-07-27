@@ -1,0 +1,16 @@
+{
+  "name": "Finance",
+  "short_name": "Finance",
+  "start_url": "/finance/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "description": "Учет долгов и финансов",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
