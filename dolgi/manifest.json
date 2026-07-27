@@ -1,17 +1,16 @@
 {
-  "name": "Debt Tracker",
-  "short_name": "Debts",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4CAF50",
-  "description": "Приложение для учета долгов",
-  "icons": [
+  "name":"financeTracker",
+  "short_name":"Finances",
+  "start_url":"/dolgi/",
+  "display":"standalone",
+  "background_color":"#000000",
+  "theme_color":"#000000",
+  "description":"Приложение для отслеживания финансов",
+  "icons":[
     {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src":"assets/icon.png",
+      "sizes":"512x512",
+      "type":"image/png"
     }
   ]
 }
