@@ -1,43 +1,26 @@
-const CACHE_NAME = "financeTracker-v1";
+const CACHE_NAME = "dolgi-v1";
 
 const urlsToCache = [
   "/dolgi/",
   "/dolgi/index.html",
-  "/dolgi/icon.png",
-  "/dolgi/manifest.json"
+  "/dolgi/icon.png"
 ];
 
 self.addEventListener("install", event => {
-  self.skipWaiting();
-
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
   );
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
-  );
+  event.waitUntil(clients.claim());
 });
 
 self.addEventListener("fetch", event => {
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, copy);
-        });
-        return response;
-      })
-      .catch(() => caches.match(event.request))
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
   );
 });
