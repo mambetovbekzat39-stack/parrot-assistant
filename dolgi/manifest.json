@@ -1,16 +1,19 @@
 {
+  "id": "/dolgi/",
   "name": "dolgi",
   "short_name": "dolgi",
   "start_url": "/dolgi/",
+  "scope": "/dolgi/",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#121212",
   "description": "Учет долгов и финансов",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "/dolgi/icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

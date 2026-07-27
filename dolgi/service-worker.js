@@ -1,10 +1,10 @@
 const CACHE_NAME = "dolgi-v1";
 
 const FILES_TO_CACHE = [
-  "./",
-  "./index.html",
-  "./icon.png",
-  "./manifest.json"
+  "/dolgi/",
+  "/dolgi/index.html",
+  "/dolgi/icon.png",
+  "/dolgi/manifest.json"
 ];
 
 
