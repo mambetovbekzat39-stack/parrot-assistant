@@ -13,7 +13,7 @@
 <title>Тахаджуд · Трекер ночного намаза</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     /* ночная палитра */
@@ -151,6 +151,196 @@
   @keyframes twinkle{
     0%,100%{opacity:0.55;}
     50%{opacity:1;}
+  }
+
+  /* заставка "Бисмиллях" при входе */
+  .splash{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:24px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 900px 600px at 50% 28%, rgba(201,162,76,0.14), transparent 65%),
+      radial-gradient(ellipse 700px 500px at 15% 85%, rgba(78,66,140,0.14), transparent 60%),
+      linear-gradient(180deg, #04060d, var(--bg-mid) 45%, #04060d 100%);
+    transition:opacity 1.4s cubic-bezier(0.4,0,0.2,1), filter 1.4s ease;
+  }
+  html[data-theme="light"] .splash{
+    background:
+      radial-gradient(ellipse 900px 600px at 50% 25%, rgba(255,244,214,0.9), transparent 60%),
+      radial-gradient(ellipse 800px 600px at 80% 90%, rgba(180,130,40,0.10), transparent 60%),
+      linear-gradient(180deg, #eef2fb 0%, var(--bg-mid) 55%, #eef2fb 100%);
+  }
+  .splash.fade-out{
+    opacity:0;
+    filter:blur(6px);
+    pointer-events:none;
+  }
+
+  /* звёздное небо внутри заставки (только тёмная тема) */
+  .splash-stars{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:0;
+    animation:splashStarsIn 2s ease 0.1s forwards;
+  }
+  .splash-stars::before, .splash-stars::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-repeat:repeat;
+  }
+  .splash-stars::before{
+    background-image:
+      radial-gradient(1.5px 1.5px at 15% 20%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 35% 12%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1.6px 1.6px at 55% 30%, rgba(255,255,255,0.45), transparent),
+      radial-gradient(1px 1px at 72% 18%, rgba(255,255,255,0.35), transparent),
+      radial-gradient(1.4px 1.4px at 85% 40%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1.5px 1.5px at 25% 78%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 45% 88%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1.4px 1.4px at 65% 70%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 90% 82%, rgba(255,255,255,0.3), transparent);
+    animation:twinkle 6s ease-in-out infinite;
+  }
+  .splash-stars::after{
+    background-image:
+      radial-gradient(1px 1px at 22% 45%, rgba(239,212,151,0.4), transparent),
+      radial-gradient(1px 1px at 78% 55%, rgba(239,212,151,0.35), transparent),
+      radial-gradient(1px 1px at 50% 15%, rgba(239,212,151,0.3), transparent),
+      radial-gradient(1px 1px at 38% 92%, rgba(239,212,151,0.35), transparent);
+    animation:twinkle 8s ease-in-out infinite reverse;
+  }
+  html[data-theme="light"] .splash-stars{display:none;}
+
+  /* мягкие облака для светлой темы */
+  .splash-clouds{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:0;
+    display:none;
+  }
+  html[data-theme="light"] .splash-clouds{
+    display:block;
+    animation:splashStarsIn 2s ease 0.1s forwards;
+    background-image:
+      radial-gradient(120px 30px at 20% 25%, rgba(255,255,255,0.8), transparent 70%),
+      radial-gradient(160px 36px at 78% 18%, rgba(255,255,255,0.7), transparent 70%),
+      radial-gradient(100px 26px at 60% 82%, rgba(255,255,255,0.6), transparent 70%);
+  }
+
+  @keyframes splashStarsIn{
+    to{opacity:1;}
+  }
+
+  .splash-glow{
+    position:relative;
+    width:130px;
+    height:130px;
+    margin-bottom:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    transform:scale(0.85);
+    animation:splashGlowIn 1.1s ease 0.15s forwards;
+    z-index:1;
+  }
+  .splash-glow::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    background:radial-gradient(circle, var(--gold-glow), transparent 70%);
+    filter:blur(4px);
+    animation:breathe 4.5s ease-in-out infinite;
+  }
+  html[data-theme="light"] .splash-glow::before{
+    background:radial-gradient(circle, rgba(255,196,84,0.55), transparent 70%);
+  }
+  .splash-glow .splash-icon{
+    width:60px;
+    height:60px;
+    position:relative;
+    z-index:1;
+    filter:drop-shadow(0 0 18px rgba(239,212,151,0.5));
+  }
+  .splash-glow .splash-icon.sun{display:none;}
+  html[data-theme="light"] .splash-glow .splash-icon.moon{display:none;}
+  html[data-theme="light"] .splash-glow .splash-icon.sun{display:block;}
+
+  .splash-arabic{
+    position:relative;
+    z-index:1;
+    font-family:'Amiri', 'Cormorant Garamond', serif;
+    font-weight:700;
+    direction:rtl;
+    font-size:clamp(28px, 8vw, 44px);
+    color:var(--gold-bright);
+    text-shadow:0 0 30px rgba(239,212,151,0.35);
+    line-height:1.5;
+    opacity:0;
+    transform:translateY(10px);
+    animation:splashTextIn 1s ease 0.45s forwards;
+  }
+  .splash-translit{
+    position:relative;
+    z-index:1;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:clamp(13px, 3.2vw, 16px);
+    color:var(--muted);
+    margin-top:10px;
+    opacity:0;
+    transform:translateY(8px);
+    animation:splashTextIn 1s ease 0.72s forwards;
+  }
+  .splash-translation{
+    position:relative;
+    z-index:1;
+    font-family:'Manrope', sans-serif;
+    font-weight:600;
+    font-size:clamp(14px, 3.6vw, 17px);
+    color:var(--cream);
+    margin-top:16px;
+    max-width:320px;
+    line-height:1.5;
+    opacity:0;
+    transform:translateY(8px);
+    animation:splashTextIn 1s ease 0.95s forwards;
+  }
+  .splash-line{
+    position:relative;
+    z-index:1;
+    width:40px;
+    height:2px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin-top:22px;
+    opacity:0;
+    animation:splashTextIn 1s ease 1.18s forwards;
+  }
+  @keyframes splashGlowIn{
+    to{opacity:1; transform:scale(1);}
+  }
+  @keyframes splashTextIn{
+    to{opacity:1; transform:translateY(0);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .splash-glow, .splash-arabic, .splash-translit, .splash-translation, .splash-line, .splash-stars, .splash-clouds{
+      animation:none !important;
+      opacity:1 !important;
+      transform:none !important;
+    }
   }
 
   .wrap{
@@ -685,6 +875,7 @@
     transform:translateY(24px);
     transition:transform 0.25s ease;
     position:relative;
+    zoom:var(--text-zoom, 1);
   }
   .modal-overlay.open .modal-sheet{transform:translateY(0);}
   @media (min-width:640px){
@@ -987,6 +1178,44 @@
     line-height:1.55;
   }
 
+  /* settings */
+  .settings-section{margin-bottom:20px;}
+  .settings-section:last-child{margin-bottom:4px;}
+  .settings-label{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    font-size:15px;
+    color:var(--gold-bright);
+    margin-bottom:9px;
+  }
+  .settings-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .settings-chip{
+    flex:1;
+    min-width:84px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--border-glass-soft);
+    color:var(--muted);
+    font-family:'Manrope',sans-serif;
+    font-weight:700;
+    font-size:12.5px;
+    padding:11px 10px;
+    border-radius:var(--radius-sm);
+    cursor:pointer;
+    text-align:center;
+    transition:all 0.15s ease;
+    white-space:nowrap;
+  }
+  .settings-chip.active{
+    background:var(--gold-dim);
+    color:var(--gold-bright);
+    border-color:var(--gold);
+  }
+  .settings-chip:active{transform:scale(0.96);}
+
   @media (max-width:480px){
     .wrap{padding:8px 10px 8px;}
     .stat{padding:7px 4px;}
@@ -1017,11 +1246,50 @@
 </head>
 <body>
 
+<div class="splash" id="splash">
+  <div class="splash-stars"></div>
+  <div class="splash-clouds"></div>
+  <div class="splash-glow">
+    <svg class="splash-icon moon" viewBox="0 0 100 100" fill="none">
+      <path d="M62 12C40 16 26 36 26 58C26 80 44 96 66 92C80 89 90 79 94 68C88 74 79 78 70 76C50 71 38 52 44 32C47 22 54 15 62 12Z" fill="url(#splashG)"/>
+      <defs>
+        <linearGradient id="splashG" x1="26" y1="12" x2="94" y2="92" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#efd497"/>
+          <stop offset="100%" stop-color="#c9a24c"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <svg class="splash-icon sun" viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="22" fill="url(#splashSunG)"/>
+      <g stroke="url(#splashSunG)" stroke-width="5" stroke-linecap="round">
+        <line x1="50" y1="6" x2="50" y2="18"/>
+        <line x1="50" y1="82" x2="50" y2="94"/>
+        <line x1="6" y1="50" x2="18" y2="50"/>
+        <line x1="82" y1="50" x2="94" y2="50"/>
+        <line x1="17" y1="17" x2="25" y2="25"/>
+        <line x1="75" y1="75" x2="83" y2="83"/>
+        <line x1="83" y1="17" x2="75" y2="25"/>
+        <line x1="25" y1="75" x2="17" y2="83"/>
+      </g>
+      <defs>
+        <linearGradient id="splashSunG" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#ffd98a"/>
+          <stop offset="100%" stop-color="#e89523"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+  <div class="splash-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+  <div class="splash-translit" id="splashTranslit">Бисмилляхи-р-Рахмани-р-Рахим</div>
+  <div class="splash-translation" id="splashTranslation">Во имя Аллаха, Милостивого, Милосердного</div>
+  <div class="splash-line"></div>
+</div>
+
 <div class="stars"></div>
 
 <div class="wrap">
 
-  <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
+  <button class="theme-toggle" id="settingsBtn" aria-label="Настройки">⚙️</button>
 
   <header>
     <div class="moon-halo">
@@ -1036,30 +1304,30 @@
       </svg>
     </div>
     <div class="arabic">تهجد</div>
-    <h1>Тахаджуд</h1>
-    <div class="subtitle">Трекер ночного намаза — выберите любой день</div>
+    <h1 id="appTitle">Тахаджуд</h1>
+    <div class="subtitle" id="appSubtitle">Трекер ночного намаза — выберите любой день</div>
   </header>
 
   <div class="top-btn-row">
-    <button class="guide-btn" id="guideBtn"><span class="book-icon">📖</span>Как читать</button>
-    <button class="guide-btn" id="historyBtn"><span class="book-icon">📜</span>История</button>
-    <button class="guide-btn" id="tasbihBtn"><span class="book-icon">📿</span>Тасбих</button>
-    <button class="guide-btn" id="duaBtn"><span class="book-icon">🤲</span>Дуа</button>
+    <button class="guide-btn" id="guideBtn"><span class="book-icon">📖</span><span id="btnGuideLabel">Как читать</span></button>
+    <button class="guide-btn" id="historyBtn"><span class="book-icon">📜</span><span id="btnHistoryLabel">История</span></button>
+    <button class="guide-btn" id="tasbihBtn"><span class="book-icon">📿</span><span id="btnTasbihLabel">Тасбих</span></button>
+    <button class="guide-btn" id="duaBtn"><span class="book-icon">🤲</span><span id="btnDuaLabel">Дуа</span></button>
   </div>
 
   <div class="stats">
     <div class="stat">
       <div class="num" id="streakNum">0</div>
-      <div class="label">Серия дней</div>
+      <div class="label" id="statStreakLabel">Серия дней</div>
       <div class="stat-sub" id="bestStreakSub">рекорд 0</div>
     </div>
     <div class="stat">
       <div class="num" id="doneNum">0</div>
-      <div class="label">Прочитал</div>
+      <div class="label" id="statDoneLabel">Прочитал</div>
     </div>
     <div class="stat">
       <div class="num" id="missedNum">0</div>
-      <div class="label">Не читал</div>
+      <div class="label" id="statMissedLabel">Не читал</div>
     </div>
   </div>
 
@@ -1072,20 +1340,20 @@
     <div class="cal-weekdays" id="calWeekdays"></div>
     <div class="cal-grid" id="calGrid"></div>
     <div class="cal-legend">
-      <span><i class="dot done"></i>Прочитал</span>
-      <span><i class="dot missed"></i>Не читал</span>
-      <span><i class="dot today"></i>Сегодня</span>
+      <span><i class="dot done"></i><span id="legendDoneLabel">Прочитал</span></span>
+      <span><i class="dot missed"></i><span id="legendMissedLabel">Не читал</span></span>
+      <span><i class="dot today"></i><span id="legendTodayLabel">Сегодня</span></span>
     </div>
   </div>
 
   <div class="day-panel">
-    <div class="day-label">Выбранный день</div>
+    <div class="day-label" id="dayPanelLabel">Выбранный день</div>
     <div class="day-title" id="selDayTitle"></div>
     <div class="day-status-badge pending" id="selDayBadge">Ожидает отметки</div>
     <div class="btn-row">
-      <button class="action btn-done" id="btnDone">✓ Я выполнил</button>
-      <button class="action btn-missed" id="btnMissed">✕ Не читал</button>
-      <button class="action btn-clear" id="btnClear">Сбросить</button>
+      <button class="action btn-done" id="btnDone"><span id="btnDoneLabel">✓ Я выполнил</span></button>
+      <button class="action btn-missed" id="btnMissed"><span id="btnMissedLabel">✕ Не читал</span></button>
+      <button class="action btn-clear" id="btnClear"><span id="btnClearLabel">Сбросить</span></button>
     </div>
   </div>
 
@@ -1099,51 +1367,12 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-title">Тахаджуд с нуля</div>
+      <div class="modal-title" id="guideModalTitle">Тахаджуд с нуля</div>
       <button class="modal-close" id="guideClose" aria-label="Закрыть">✕</button>
     </div>
-    <div class="modal-sub">Простое пошаговое руководство для тех, кто только начинает</div>
+    <div class="modal-sub" id="guideModalSub">Простое пошаговое руководство для тех, кто только начинает</div>
 
-    <div class="guide-block">
-      <div class="guide-block-title"><span class="guide-num">1</span>Что такое Тахаджуд</div>
-      <p>Тахаджуд — добровольный ночной намаз, который совершается после сна, перед рассветным (Фаджр) намазом. Он не входит в число обязательных пяти намазов, но считается одним из самых любимых Аллахом добровольных поклонений.</p>
-    </div>
-
-    <div class="guide-block">
-      <div class="guide-block-title"><span class="guide-num">2</span>Когда его читать</div>
-      <p>Лучшее время — последняя треть ночи, ближе к утру. Если сложно рассчитать точное время, ориентируйтесь просто: любое время после полноценного сна и до наступления времени Фаджра уже подходит.</p>
-      <ul>
-        <li>Проснулись за 30–60 минут до Фаджра — этого достаточно</li>
-        <li>Не обязательно спать полночи заранее, можно поставить будильник</li>
-      </ul>
-    </div>
-
-    <div class="guide-block">
-      <div class="guide-block-title"><span class="guide-num">3</span>Сколько ракятов</div>
-      <p>Для начала достаточно 2 ракята — этого хватит, чтобы намаз засчитался. Со временем можно увеличивать: 4, 8 или больше, по 2 ракята за раз.</p>
-    </div>
-
-    <div class="guide-block">
-      <div class="guide-block-title"><span class="guide-num">4</span>Как совершить (шаги)</div>
-      <ul>
-        <li>Проснитесь, сделайте вуду (омовение), как перед обычным намазом</li>
-        <li>Сделайте ният (намерение) в сердце: «Я совершаю добровольный ночной намаз Тахаджуд ради Аллаха»</li>
-        <li>Встаньте в направлении киблы и произнесите такбир «Аллаху Акбар», начиная намаз</li>
-        <li>Прочитайте суру Аль-Фатиха, затем любую другую суру или несколько аятов, которые знаете</li>
-        <li>Совершите руку (поясной поклон), затем два сажда (земных поклона) — так же, как в обычном намазе</li>
-        <li>Это первый ракят. Встаньте и повторите те же действия для второго ракята</li>
-        <li>После второго ракята сядьте и прочитайте ташаххуд, затем завершите намаз приветствием (салям) в обе стороны</li>
-      </ul>
-    </div>
-
-    <div class="guide-block">
-      <div class="guide-block-title"><span class="guide-num">5</span>После намаза</div>
-      <p>После намаза хорошо провести немного времени в мольбе (дуа) — своими словами, на любом языке, попросить о том, что важно для вас. Это время считается одним из лучших для принятия молитв.</p>
-    </div>
-
-    <div class="guide-note">
-      Совет: не гонитесь за количеством ракятов с первого дня. Начните с 2 ракятов несколько раз в неделю — регулярность важнее объёма. Отмечайте выполненные дни в трекере выше, чтобы видеть свой прогресс.
-    </div>
+    <div id="guideContent"></div>
   </div>
 </div>
 
@@ -1151,10 +1380,10 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-title">История</div>
+      <div class="modal-title" id="historyModalTitle">История</div>
       <button class="modal-close" id="historyClose" aria-label="Закрыть">✕</button>
     </div>
-    <div class="modal-sub">Нажмите на запись, чтобы открыть этот день в календаре</div>
+    <div class="modal-sub" id="historyModalSub">Нажмите на запись, чтобы открыть этот день в календаре</div>
     <div class="history-list" id="historyList"></div>
   </div>
 </div>
@@ -1163,10 +1392,10 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-title">Тасбих</div>
+      <div class="modal-title" id="tasbihModalTitle">Тасбих</div>
       <button class="modal-close" id="tasbihClose" aria-label="Закрыть">✕</button>
     </div>
-    <div class="modal-sub">Нажимайте на круг, чтобы считать зикр</div>
+    <div class="modal-sub" id="tasbihModalSub">Нажимайте на круг, чтобы считать зикр</div>
 
     <div class="tasbih-phrase-row" id="tasbihPhraseRow"></div>
 
@@ -1181,11 +1410,11 @@
     </div>
 
     <div class="btn-row">
-      <button class="action btn-clear" id="tasbihResetBtn">↺ Сбросить</button>
+      <button class="action btn-clear" id="tasbihResetBtn"><span id="tasbihResetLabel">↺ Сбросить</span></button>
       <button class="action btn-clear" id="tasbihTargetBtn">Цель: 33</button>
     </div>
 
-    <div class="tasbih-hint">Счётчик сохраняется автоматически на этом устройстве</div>
+    <div class="tasbih-hint" id="tasbihHint">Счётчик сохраняется автоматически на этом устройстве</div>
   </div>
 </div>
 
@@ -1193,41 +1422,55 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-head">
-      <div class="modal-title">Дуа для ночи</div>
+      <div class="modal-title" id="duaModalTitle">Дуа для ночи</div>
       <button class="modal-close" id="duaClose" aria-label="Закрыть">✕</button>
     </div>
-    <div class="modal-sub">Короткие мольбы для разных моментов ночного намаза</div>
+    <div class="modal-sub" id="duaModalSub">Короткие мольбы для разных моментов ночного намаза</div>
 
-    <div class="dua-block">
-      <div class="dua-block-title">🛏️ Перед сном</div>
-      <div class="dua-arabic">بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا</div>
-      <div class="dua-translit">Бисмикя Аллахумма амуту ва ахъя</div>
-      <div class="dua-meaning">С именем Твоим, о Аллах, я умираю (сплю) и оживаю (просыпаюсь)</div>
+    <div id="duaContent"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsOverlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title" id="settingsModalTitle">Настройки</div>
+      <button class="modal-close" id="settingsClose" aria-label="Закрыть">✕</button>
     </div>
 
-    <div class="dua-block">
-      <div class="dua-block-title">🌙 При пробуждении ночью</div>
-      <div class="dua-arabic">الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ</div>
-      <div class="dua-translit">Альхамду лилляхи-ллязи ахьяна ба‘да ма аматана ва иляйхи-н-нушур</div>
-      <div class="dua-meaning">Хвала Аллаху, Который оживил нас после того, как усыпил, и к Нему возвращение</div>
+    <div class="settings-section">
+      <div class="settings-label" id="settingsThemeLabel">Тема</div>
+      <div class="settings-row" id="settingsThemeRow">
+        <button class="settings-chip" data-theme-choice="dark">🌙 <span id="themeDarkLabel">Тёмная</span></button>
+        <button class="settings-chip" data-theme-choice="light">☀️ <span id="themeLightLabel">Светлая</span></button>
+      </div>
     </div>
 
-    <div class="dua-block">
-      <div class="dua-block-title">🤲 После Тахаджуда</div>
-      <div class="dua-arabic">اللَّهُمَّ لَكَ الْحَمْدُ أَنْتَ نُورُ السَّمَاوَاتِ وَالْأَرْضِ</div>
-      <div class="dua-translit">Аллахумма ляка-ль-хамду анта нуру-с-самавати валь-ард</div>
-      <div class="dua-meaning">О Аллах, хвала Тебе, Ты — свет небес и земли (начало известной мольбы после ночного намаза)</div>
+    <div class="settings-section">
+      <div class="settings-label" id="settingsLangLabel">Язык</div>
+      <div class="settings-row" id="settingsLangRow">
+        <button class="settings-chip" data-lang-choice="ru">Русский</button>
+        <button class="settings-chip" data-lang-choice="en">English</button>
+        <button class="settings-chip" data-lang-choice="ky">Кыргызча</button>
+      </div>
     </div>
 
-    <div class="dua-block">
-      <div class="dua-block-title">🌅 Перед рассветом</div>
-      <div class="dua-arabic">اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ خَيْرِ هَذَا الْيَوْمِ</div>
-      <div class="dua-translit">Аллахумма инни асъалюка мин хайри хаза-ль-явм</div>
-      <div class="dua-meaning">О Аллах, прошу у Тебя блага этого дня</div>
+    <div class="settings-section">
+      <div class="settings-label" id="settingsFontLabel">Размер шрифта</div>
+      <div class="settings-row" id="settingsFontRow">
+        <button class="settings-chip" data-font-choice="small">A-</button>
+        <button class="settings-chip" data-font-choice="medium">A</button>
+        <button class="settings-chip" data-font-choice="large">A+</button>
+      </div>
     </div>
 
-    <div class="guide-note">
-      Это лишь несколько примеров мольбы — вы можете обращаться к Аллаху и своими словами, на любом языке.
+    <div class="settings-section">
+      <div class="settings-label" id="settingsVibrateLabel">Вибрация</div>
+      <div class="settings-row" id="settingsVibrateRow">
+        <button class="settings-chip" data-vibrate-choice="on" id="vibrateOnLabel">Включена</button>
+        <button class="settings-chip" data-vibrate-choice="off" id="vibrateOffLabel">Выключена</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1235,11 +1478,146 @@
 <script>
 (function(){
   const STORAGE_KEY = 'tahajjud_tracker_v2';
-  const RU_MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  const RU_MONTHS_NOM = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  const RU_DAYS = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
-  const RU_DAYS_SHORT = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-  const RU_WEEK_MON_FIRST = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+
+  /* ===== Календарные названия по языкам ===== */
+  const MONTHS_GEN = {
+    ru:['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'],
+    en:['January','February','March','April','May','June','July','August','September','October','November','December'],
+    ky:['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь']
+  };
+  const MONTHS_NOM = {
+    ru:['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+    en:['January','February','March','April','May','June','July','August','September','October','November','December'],
+    ky:['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
+  };
+  const DAYS_FULL = {
+    ru:['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
+    en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+    ky:['Жекшемби','Дүйшөмбү','Шейшемби','Шаршемби','Бейшемби','Жума','Ишемби']
+  };
+  const DAYS_SHORT = {
+    ru:['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+    en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    ky:['Жек','Дүй','Шей','Шар','Бей','Жум','Ише']
+  };
+  const WEEK_MON_FIRST = {
+    ru:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
+    en:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    ky:['Дүй','Шей','Шар','Бей','Жум','Ише','Жек']
+  };
+
+  /* ===== Тексты интерфейса ===== */
+  const UI_TEXT = {
+    appTitle:{ru:'Тахаджуд',en:'Tahajjud',ky:'Тахажуд'},
+    appSubtitle:{ru:'Трекер ночного намаза — выберите любой день',en:'Night prayer tracker — pick any day',ky:'Түнкү намаз трекери — каалаган күндү тандаңыз'},
+    btnGuideLabel:{ru:'Как читать',en:'How to pray',ky:'Кантип окуу'},
+    btnHistoryLabel:{ru:'История',en:'History',ky:'Тарых'},
+    btnTasbihLabel:{ru:'Тасбих',en:'Tasbih',ky:'Тасбих'},
+    btnDuaLabel:{ru:'Дуа',en:'Dua',ky:'Дуба'},
+    statStreakLabel:{ru:'Серия дней',en:'Day streak',ky:'Күндөр сериясы'},
+    statDoneLabel:{ru:'Прочитал',en:'Completed',ky:'Аткарылды'},
+    statMissedLabel:{ru:'Не читал',en:'Missed',ky:'Аткарылган жок'},
+    legendDoneLabel:{ru:'Прочитал',en:'Completed',ky:'Аткарылды'},
+    legendMissedLabel:{ru:'Не читал',en:'Missed',ky:'Аткарылган жок'},
+    legendTodayLabel:{ru:'Сегодня',en:'Today',ky:'Бүгүн'},
+    dayPanelLabel:{ru:'Выбранный день',en:'Selected day',ky:'Тандалган күн'},
+    btnDoneLabel:{ru:'✓ Я выполнил',en:'✓ Completed',ky:'✓ Аткардым'},
+    btnMissedLabel:{ru:'✕ Не читал',en:'✕ Missed',ky:'✕ Окуган жокмун'},
+    btnClearLabel:{ru:'Сбросить',en:'Clear',ky:'Тазалоо'},
+    resetBtn:{ru:'Сбросить всю историю',en:'Reset all history',ky:'Бардык тарыхты тазалоо'},
+    guideModalTitle:{ru:'Тахаджуд с нуля',en:'Tahajjud from scratch',ky:'Тахажудду нөлдөн үйрөнүү'},
+    guideModalSub:{ru:'Простое пошаговое руководство для тех, кто только начинает',en:'A simple step-by-step guide for beginners',ky:'Жаңыдан баштагандар үчүн жөнөкөй көрсөтмө'},
+    historyModalTitle:{ru:'История',en:'History',ky:'Тарых'},
+    historyModalSub:{ru:'Нажмите на запись, чтобы открыть этот день в календаре',en:'Tap an entry to open that day in the calendar',ky:'Күндү календарда ачуу үчүн жазууну басыңыз'},
+    tasbihModalTitle:{ru:'Тасбих',en:'Tasbih',ky:'Тасбих'},
+    tasbihModalSub:{ru:'Нажимайте на круг, чтобы считать зикр',en:'Tap the circle to count your dhikr',ky:'Зикирди эсептөө үчүн тегерекче басыңыз'},
+    tasbihResetLabel:{ru:'↺ Сбросить',en:'↺ Reset',ky:'↺ Тазалоо'},
+    tasbihHint:{ru:'Счётчик сохраняется автоматически на этом устройстве',en:'The counter is saved automatically on this device',ky:'Эсептегич бул түзмөктө автоматтык түрдө сакталат'},
+    duaModalTitle:{ru:'Дуа для ночи',en:'Night duas',ky:'Түн үчүн дубалар'},
+    duaModalSub:{ru:'Короткие мольбы для разных моментов ночного намаза',en:'Short supplications for different moments of the night prayer',ky:'Түнкү намаздын ар кандай учурлары үчүн кыска дубалар'},
+    settingsModalTitle:{ru:'Настройки',en:'Settings',ky:'Жөндөөлөр'},
+    settingsThemeLabel:{ru:'Тема',en:'Theme',ky:'Тема'},
+    settingsLangLabel:{ru:'Язык',en:'Language',ky:'Тил'},
+    settingsFontLabel:{ru:'Размер шрифта',en:'Font size',ky:'Тамганын өлчөмү'},
+    settingsVibrateLabel:{ru:'Вибрация',en:'Vibration',ky:'Дирилдөө'},
+    themeDarkLabel:{ru:'Тёмная',en:'Dark',ky:'Караңгы'},
+    themeLightLabel:{ru:'Светлая',en:'Light',ky:'Жарык'},
+    vibrateOnLabel:{ru:'Включена',en:'On',ky:'Күйгүзүлгөн'},
+    vibrateOffLabel:{ru:'Выключена',en:'Off',ky:'Өчүрүлгөн'},
+    splashTranslit:{ru:'Бисмилляхи-р-Рахмани-р-Рахим',en:'Bismillahi r-Rahmani r-Rahim',ky:'Бисмилляхи-р-Рахмани-р-Рахим'},
+    splashTranslation:{ru:'Во имя Аллаха, Милостивого, Милосердного',en:'In the name of Allah, the Most Gracious, the Most Merciful',ky:'Ырайымдуу, Мээримдүү Аллахтын аты менен'}
+  };
+
+  const MISC_TEXT = {
+    today:{ru:' (сегодня)',en:' (today)',ky:' (бүгүн)'},
+    todayDot:{ru:' · сегодня',en:' · today',ky:' · бүгүн'},
+    pending:{ru:'Ожидает отметки',en:'Awaiting mark',ky:'Белги күтүлүүдө'},
+    doneBadge:{ru:'✓ Намаз прочитан',en:'✓ Prayer completed',ky:'✓ Намаз аткарылды'},
+    missedBadge:{ru:'✕ Отмечено как не прочитан',en:'✕ Marked as missed',ky:'✕ Аткарылган жок деп белгиленди'},
+    historyDone:{ru:'✓ Прочитал',en:'✓ Completed',ky:'✓ Аткарылды'},
+    historyMissed:{ru:'✕ Не читал',en:'✕ Missed',ky:'✕ Аткарылган жок'},
+    emptyState:{ru:'Пока нет отметок. Выберите день в календаре и отметьте его.',en:'No entries yet. Pick a day in the calendar and mark it.',ky:'Азырынча белги жок. Календарда күндү тандап, белгилеңиз.'},
+    bestPrefix:{ru:'рекорд ',en:'best ',ky:'рекорд '},
+    outOf:{ru:'из ',en:'of ',ky:'ичинен '},
+    targetPrefix:{ru:'Цель: ',en:'Target: ',ky:'Максат: '},
+    milestone:{ru:'✓ Цель {n} достигнута',en:'✓ Target of {n} reached',ky:'✓ {n} максатына жетти'},
+    confirmReset:{ru:'Удалить всю историю отметок? Это действие нельзя отменить.',en:'Delete all tracked history? This cannot be undone.',ky:'Бардык белгилердин тарыхын өчүрөсүзбү? Бул аракетти артка кайтарууга болбойт.'}
+  };
+
+  /* ===== Контент "Как читать" по языкам ===== */
+  const GUIDE_CONTENT = {
+    ru:{
+      blocks:[
+        {title:'Что такое Тахаджуд', paragraphs:['Тахаджуд — добровольный ночной намаз, который совершается после сна, перед рассветным (Фаджр) намазом. Он не входит в число обязательных пяти намазов, но считается одним из самых любимых Аллахом добровольных поклонений.']},
+        {title:'Когда его читать', paragraphs:['Лучшее время — последняя треть ночи, ближе к утру. Если сложно рассчитать точное время, ориентируйтесь просто: любое время после полноценного сна и до наступления времени Фаджра уже подходит.'], list:['Проснулись за 30–60 минут до Фаджра — этого достаточно','Не обязательно спать полночи заранее, можно поставить будильник']},
+        {title:'Сколько ракятов', paragraphs:['Для начала достаточно 2 ракята — этого хватит, чтобы намаз засчитался. Со временем можно увеличивать: 4, 8 или больше, по 2 ракята за раз.']},
+        {title:'Как совершить (шаги)', list:['Проснитесь, сделайте вуду (омовение), как перед обычным намазом','Сделайте ният (намерение) в сердце: «Я совершаю добровольный ночной намаз Тахаджуд ради Аллаха»','Встаньте в направлении киблы и произнесите такбир «Аллаху Акбар», начиная намаз','Прочитайте суру Аль-Фатиха, затем любую другую суру или несколько аятов, которые знаете','Совершите руку (поясной поклон), затем два сажда (земных поклона) — так же, как в обычном намазе','Это первый ракят. Встаньте и повторите те же действия для второго ракята','После второго ракята сядьте и прочитайте ташаххуд, затем завершите намаз приветствием (салям) в обе стороны']},
+        {title:'После намаза', paragraphs:['После намаза хорошо провести немного времени в мольбе (дуа) — своими словами, на любом языке, попросить о том, что важно для вас. Это время считается одним из лучших для принятия молитв.']}
+      ],
+      note:'Совет: не гонитесь за количеством ракятов с первого дня. Начните с 2 ракятов несколько раз в неделю — регулярность важнее объёма. Отмечайте выполненные дни в трекере выше, чтобы видеть свой прогресс.'
+    },
+    en:{
+      blocks:[
+        {title:'What is Tahajjud', paragraphs:['Tahajjud is a voluntary night prayer performed after sleeping, before the dawn (Fajr) prayer. It is not one of the five obligatory prayers, but it is described as one of the most beloved voluntary acts of worship.']},
+        {title:'When to pray it', paragraphs:['The best time is the last third of the night, closer to dawn. If that is hard to calculate, a simple rule works: any time after a proper sleep and before Fajr begins is fine.'], list:['Waking up 30–60 minutes before Fajr is enough','You don\u2019t need to sleep half the night first — a simple alarm works']},
+        {title:'How many rak\u2019ahs', paragraphs:['Two rak\u2019ahs are enough to start with — that already counts. Over time you can add more: 4, 8, or beyond, in pairs of two.']},
+        {title:'How to perform it (steps)', list:['Wake up and perform wudu (ablution), as before any prayer','Make the intention (niyyah) in your heart: \u201cI am performing the voluntary night prayer Tahajjud for the sake of Allah\u201d','Face the qibla and say the takbir \u201cAllahu Akbar\u201d to begin','Recite Surah Al-Fatiha, then any other surah or verses you know','Perform ruku (bowing), then two sujud (prostrations), as in a normal prayer','This completes the first rak\u2019ah. Stand and repeat the same steps for the second','After the second rak\u2019ah, sit and recite the tashahhud, then finish with the salam on both sides']},
+        {title:'After the prayer', paragraphs:['It is good to spend some time afterwards in du\u2019a (supplication) — in your own words, in any language, asking for what matters to you. This time is considered one of the best for prayers to be accepted.']}
+      ],
+      note:'Tip: don\u2019t chase a high rak\u2019ah count from day one. Start with 2 rak\u2019ahs a few times a week — consistency matters more than volume. Mark completed days in the tracker above to see your progress.'
+    },
+    ky:{
+      blocks:[
+        {title:'Тахажуд деген эмне', paragraphs:['Тахажуд — уйкудан кийин, таң намазынан (Бамдат) мурун окулуучу ыктыярдуу түнкү намаз. Ал милдеттүү беш намаздын катарына кирбейт, бирок Аллах эң сүйгөн ыктыярдуу ибадаттардын бири катары сүрөттөлөт.']},
+        {title:'Качан окуу керек', paragraphs:['Эң жакшы убакыт — түндүн акыркы үчтөн бир бөлүгү, таңга жакын. Так убакытты эсептөө кыйын болсо, жөнөкөй эреже иштейт: толук уктагандан кийин жана Бамдат кирерден мурунку каалаган убакыт ылайыктуу.'], list:['Бамдаттан 30–60 мүнөт мурун ойгонуу жетиштүү','Түндүн жарымын мурунтан уктоо милдеттүү эмес — жөн эле ойготкуч коюуга болот']},
+        {title:'Канча ракат', paragraphs:['Баштоо үчүн 2 ракат жетиштүү — намаз эсепке алынат. Убакыттын өтүшү менен көбөйтсө болот: 4, 8 же андан көп, ар дайым 2ден.']},
+        {title:'Кантип аткаруу керек (кадамдар)', list:['Ойгонуп, кадимки намаздагыдай даарат алыңыз','Жүрөгүңүздө нийет кылыңыз: «Аллах үчүн ыктыярдуу түнкү Тахажуд намазын окуп жатам»','Кыбыла тарапка бурулуп, «Аллаху Акбар» деп такбир айтып намазды баштаңыз','Ал-Фатиха сүрөсүн, андан кийин билген башка сүрөнү же бир нече аятты окуңуз','Кадимки намаздагыдай рукуу кылып, андан кийин эки саждага барыңыз','Бул биринчи ракат. Туруп, экинчи ракат үчүн ошол эле аракеттерди кайталаңыз','Экинчи ракаттан кийин отуруп, ташаххудду окуп, эки жакка салам берип намазды бүтүрүңүз']},
+        {title:'Намаздан кийин', paragraphs:['Намаздан кийин дуба кылып, өз сөзүңүз менен, каалаган тилде, өзүңүзгө маанилүү нерселерди сурап, бир аз убакыт өткөрүү жакшы. Бул убакыт дубалардын кабыл болушу үчүн эң жакшы учурлардын бири деп эсептелет.']}
+      ],
+      note:'Кеңеш: биринчи күндөн эле көп ракат окуйм деп аракет кылбаңыз. Жумасына бир нече жолу 2 ракаттан баштаңыз — көлөмдөн да туруктуулук маанилүү. Жогорудагы трекерде аткарылган күндөрдү белгилеп, өз прогрессиңизди көрүңүз.'
+    }
+  };
+
+  /* ===== Контент "Дуа для ночи" по языкам (арабский текст и транслитерация общие) ===== */
+  const DUA_BLOCKS = [
+    {icon:'🛏️', arabic:'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا', translit:'Бисмикя Аллахумма амуту ва ахъя',
+      title:{ru:'Перед сном',en:'Before sleep',ky:'Уктаар алдында'},
+      meaning:{ru:'С именем Твоим, о Аллах, я умираю (сплю) и оживаю (просыпаюсь)',en:'In Your name, O Allah, I die (sleep) and I live (wake up)',ky:'Аттың менен, о Аллах, мен өлөм (уктайм) жана тирилем (ойгонумун)'}},
+    {icon:'🌙', arabic:'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ', translit:'Альхамду лилляхи-ллязи ахьяна ба\u2018да ма аматана ва иляйхи-н-нушур',
+      title:{ru:'При пробуждении ночью',en:'Waking up at night',ky:'Түнү ойгонгондо'},
+      meaning:{ru:'Хвала Аллаху, Который оживил нас после того, как усыпил, и к Нему возвращение',en:'Praise be to Allah who gave us life after death (sleep), and to Him is the return',ky:'Бизди уктаткандан кийин тирилткен Аллахка мактоо болсун, кайтуу да Ага'}},
+    {icon:'🤲', arabic:'اللَّهُمَّ لَكَ الْحَمْدُ أَنْتَ نُورُ السَّمَاوَاتِ وَالْأَرْضِ', translit:'Аллахумма ляка-ль-хамду анта нуру-с-самавати валь-ард',
+      title:{ru:'После Тахаджуда',en:'After Tahajjud',ky:'Тахажуддан кийин'},
+      meaning:{ru:'О Аллах, хвала Тебе, Ты — свет небес и земли (начало известной мольбы после ночного намаза)',en:'O Allah, praise be to You, You are the light of the heavens and the earth (opening of a well-known night-prayer supplication)',ky:'О Аллах, Сага мактоо болсун, Сен асман менен жердин нуру турасың (түнкү намаздан кийинки белгилүү дубанын башы)'}},
+    {icon:'🌅', arabic:'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ خَيْرِ هَذَا الْيَوْمِ', translit:'Аллахумма инни асъалюка мин хайри хаза-ль-явм',
+      title:{ru:'Перед рассветом',en:'Before dawn',ky:'Таң атаар алдында'},
+      meaning:{ru:'О Аллах, прошу у Тебя блага этого дня',en:'O Allah, I ask You for the good of this day',ky:'О Аллах, ушул күндүн жакшылыгын Сенден сурайм'}}
+  ];
+  const DUA_NOTE = {
+    ru:'Это лишь несколько примеров мольбы — вы можете обращаться к Аллаху и своими словами, на любом языке.',
+    en:'These are just a few examples — you can also speak to Allah in your own words, in any language.',
+    ky:'Бул дубанын бир нече мисалы гана — сиз Аллахка өз сөзүңүз менен, каалаган тилде да кайрыла аласыз.'
+  };
 
   function fmtKey(d){
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -1268,33 +1646,133 @@
   const todayDate = startOfDay(new Date());
   const todayKey = fmtKey(todayDate);
 
+  /* ===== Настройки: вибрация, шрифт, язык, тема ===== */
+  const SETTINGS_KEY = 'tahajjud_settings_v1';
+  function loadSettings(){
+    try{
+      const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+      return Object.assign({theme:'dark', lang:'ru', font:'medium', vibrate:true}, raw || {});
+    }catch(e){
+      return {theme:'dark', lang:'ru', font:'medium', vibrate:true};
+    }
+  }
+  function saveSettings(s){
+    try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }catch(e){}
+  }
+  let settings = loadSettings();
+
   function vibrate(ms){
+    if(!settings.vibrate) return;
     try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
   }
 
-  /* ===== Тёмная / светлая тема ===== */
-  const THEME_KEY = 'tahajjud_theme_v1';
-  function loadTheme(){
-    try{ return localStorage.getItem(THEME_KEY) || 'dark'; }catch(e){ return 'dark'; }
-  }
-  function saveTheme(t){
-    try{ localStorage.setItem(THEME_KEY, t); }catch(e){}
-  }
-  let currentTheme = loadTheme();
+  const FONT_ZOOM = {small:0.9, medium:1, large:1.15};
 
-  const themeToggleBtn = document.getElementById('themeToggle');
-  function applyTheme(theme){
-    document.documentElement.setAttribute('data-theme', theme);
-    themeToggleBtn.textContent = theme === 'light' ? '☀️' : '🌙';
-    themeToggleBtn.setAttribute('aria-label', theme === 'light' ? 'Включить тёмную тему' : 'Включить светлую тему');
-  }
-  applyTheme(currentTheme);
+  function applySettings(){
+    document.documentElement.setAttribute('data-theme', settings.theme);
+    document.documentElement.style.setProperty('--text-zoom', FONT_ZOOM[settings.font] || 1);
 
-  themeToggleBtn.addEventListener('click', () => {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-    saveTheme(currentTheme);
-    vibrate(8);
-    applyTheme(currentTheme);
+    document.querySelectorAll('#settingsThemeRow .settings-chip').forEach(el => {
+      el.classList.toggle('active', el.dataset.themeChoice === settings.theme);
+    });
+    document.querySelectorAll('#settingsLangRow .settings-chip').forEach(el => {
+      el.classList.toggle('active', el.dataset.langChoice === settings.lang);
+    });
+    document.querySelectorAll('#settingsFontRow .settings-chip').forEach(el => {
+      el.classList.toggle('active', el.dataset.fontChoice === settings.font);
+    });
+    document.querySelectorAll('#settingsVibrateRow .settings-chip').forEach(el => {
+      el.classList.toggle('active', el.dataset.vibrateChoice === (settings.vibrate ? 'on' : 'off'));
+    });
+
+    applyLanguageTexts();
+  }
+
+  function applyLanguageTexts(){
+    const lang = settings.lang;
+    document.documentElement.lang = lang;
+    Object.keys(UI_TEXT).forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.textContent = UI_TEXT[id][lang];
+    });
+    renderGuideContent();
+    renderDuaContent();
+    render();
+  }
+
+  function renderGuideContent(){
+    const lang = settings.lang;
+    const content = GUIDE_CONTENT[lang];
+    const container = document.getElementById('guideContent');
+    container.innerHTML = content.blocks.map((b, i) => {
+      let html = '<div class="guide-block"><div class="guide-block-title"><span class="guide-num">' + (i+1) + '</span>' + b.title + '</div>';
+      if(b.paragraphs) html += b.paragraphs.map(p => '<p>' + p + '</p>').join('');
+      if(b.list) html += '<ul>' + b.list.map(li => '<li>' + li + '</li>').join('') + '</ul>';
+      html += '</div>';
+      return html;
+    }).join('') + '<div class="guide-note">' + content.note + '</div>';
+  }
+
+  function renderDuaContent(){
+    const lang = settings.lang;
+    const container = document.getElementById('duaContent');
+    container.innerHTML = DUA_BLOCKS.map(b =>
+      '<div class="dua-block">' +
+        '<div class="dua-block-title">' + b.icon + ' ' + b.title[lang] + '</div>' +
+        '<div class="dua-arabic">' + b.arabic + '</div>' +
+        '<div class="dua-translit">' + b.translit + '</div>' +
+        '<div class="dua-meaning">' + b.meaning[lang] + '</div>' +
+      '</div>'
+    ).join('') + '<div class="guide-note">' + DUA_NOTE[lang] + '</div>';
+  }
+
+  const settingsOverlay = document.getElementById('settingsOverlay');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsClose = document.getElementById('settingsClose');
+
+  function openSettings(){
+    settingsOverlay.classList.add('open');
+  }
+  function closeSettings(){
+    settingsOverlay.classList.remove('open');
+  }
+  settingsBtn.addEventListener('click', openSettings);
+  settingsClose.addEventListener('click', closeSettings);
+  settingsOverlay.addEventListener('click', (e) => {
+    if(e.target === settingsOverlay) closeSettings();
+  });
+
+  document.querySelectorAll('#settingsThemeRow .settings-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      settings.theme = btn.dataset.themeChoice;
+      saveSettings(settings);
+      vibrate(8);
+      applySettings();
+    });
+  });
+  document.querySelectorAll('#settingsLangRow .settings-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      settings.lang = btn.dataset.langChoice;
+      saveSettings(settings);
+      vibrate(8);
+      applySettings();
+    });
+  });
+  document.querySelectorAll('#settingsFontRow .settings-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      settings.font = btn.dataset.fontChoice;
+      saveSettings(settings);
+      vibrate(8);
+      applySettings();
+    });
+  });
+  document.querySelectorAll('#settingsVibrateRow .settings-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      settings.vibrate = btn.dataset.vibrateChoice === 'on';
+      saveSettings(settings);
+      if(settings.vibrate) vibrate(15);
+      applySettings();
+    });
   });
 
   let viewYear = todayDate.getFullYear();
@@ -1331,14 +1809,14 @@
     document.getElementById('doneNum').textContent = values.filter(v=>v==='done').length;
     document.getElementById('missedNum').textContent = values.filter(v=>v==='missed').length;
     document.getElementById('streakNum').textContent = computeStreak();
-    document.getElementById('bestStreakSub').textContent = 'рекорд ' + computeBestStreak();
+    document.getElementById('bestStreakSub').textContent = MISC_TEXT.bestPrefix[settings.lang] + computeBestStreak();
   }
 
   function renderCalendar(){
-    document.getElementById('calTitle').textContent = RU_MONTHS_NOM[viewMonth] + ' ' + viewYear;
+    document.getElementById('calTitle').textContent = MONTHS_NOM[settings.lang][viewMonth] + ' ' + viewYear;
 
     const weekdaysEl = document.getElementById('calWeekdays');
-    weekdaysEl.innerHTML = RU_WEEK_MON_FIRST.map(d => '<span>'+d+'</span>').join('');
+    weekdaysEl.innerHTML = WEEK_MON_FIRST[settings.lang].map(d => '<span>'+d+'</span>').join('');
 
     const grid = document.getElementById('calGrid');
     grid.innerHTML = '';
@@ -1382,23 +1860,24 @@
   }
 
   function renderDayPanel(){
+    const lang = settings.lang;
     const d = keyToDate(selectedKey);
     const isToday = selectedKey === todayKey;
     document.getElementById('selDayTitle').textContent =
-      d.getDate() + ' ' + RU_MONTHS[d.getMonth()] + ' ' + d.getFullYear() +
-      ' · ' + RU_DAYS[d.getDay()] + (isToday ? ' (сегодня)' : '');
+      d.getDate() + ' ' + MONTHS_GEN[lang][d.getMonth()] + ' ' + d.getFullYear() +
+      ' · ' + DAYS_FULL[lang][d.getDay()] + (isToday ? MISC_TEXT.today[lang] : '');
 
     const status = data[selectedKey];
     const badge = document.getElementById('selDayBadge');
     if(status === 'done'){
       badge.className = 'day-status-badge done';
-      badge.textContent = '✓ Намаз прочитан';
+      badge.textContent = MISC_TEXT.doneBadge[lang];
     }else if(status === 'missed'){
       badge.className = 'day-status-badge missed';
-      badge.textContent = '✕ Отмечено как не прочитан';
+      badge.textContent = MISC_TEXT.missedBadge[lang];
     }else{
       badge.className = 'day-status-badge pending';
-      badge.textContent = 'Ожидает отметки';
+      badge.textContent = MISC_TEXT.pending[lang];
     }
 
     document.getElementById('btnDone').classList.toggle('active', status === 'done');
@@ -1406,10 +1885,11 @@
   }
 
   function renderHistory(){
+    const lang = settings.lang;
     const list = document.getElementById('historyList');
     const keys = Object.keys(data).sort().reverse();
     if(keys.length === 0){
-      list.innerHTML = '<div class="empty-state">Пока нет отметок. Выберите день в календаре и отметьте его.</div>';
+      list.innerHTML = '<div class="empty-state">' + MISC_TEXT.emptyState[lang] + '</div>';
       return;
     }
     list.innerHTML = '';
@@ -1419,9 +1899,9 @@
       const row = document.createElement('div');
       row.className = 'history-row';
       row.innerHTML =
-        '<span><span class="history-date">'+d.getDate()+' '+RU_MONTHS[d.getMonth()]+' '+d.getFullYear()+'</span>'+
-        '<span class="history-day">'+RU_DAYS_SHORT[d.getDay()]+'</span></span>'+
-        '<span class="history-badge '+status+'">'+(status==='done' ? '✓ Прочитал' : '✕ Не читал')+'</span>';
+        '<span><span class="history-date">'+d.getDate()+' '+MONTHS_GEN[lang][d.getMonth()]+' '+d.getFullYear()+'</span>'+
+        '<span class="history-day">'+DAYS_SHORT[lang][d.getDay()]+'</span></span>'+
+        '<span class="history-badge '+status+'">'+(status==='done' ? MISC_TEXT.historyDone[lang] : MISC_TEXT.historyMissed[lang])+'</span>';
       row.addEventListener('click', () => {
         viewYear = d.getFullYear();
         viewMonth = d.getMonth();
@@ -1471,14 +1951,28 @@
   });
 
   document.getElementById('resetBtn').addEventListener('click', () => {
-    if(confirm('Удалить всю историю отметок? Это действие нельзя отменить.')){
+    if(confirm(MISC_TEXT.confirmReset[settings.lang])){
       data = {};
       saveData(data);
       render();
     }
   });
 
-  render();
+  applySettings();
+
+  /* ===== Заставка "Бисмиллях" при входе ===== */
+  const splashEl = document.getElementById('splash');
+  if(splashEl){
+    const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const visibleDuration = prefersReducedMotion ? 1400 : 3000;
+    const fadeDuration = prefersReducedMotion ? 400 : 1450;
+    setTimeout(() => {
+      splashEl.classList.add('fade-out');
+      setTimeout(() => {
+        splashEl.style.display = 'none';
+      }, fadeDuration);
+    }, visibleDuration);
+  }
 
   const guideOverlay = document.getElementById('guideOverlay');
   const guideBtn = document.getElementById('guideBtn');
@@ -1562,8 +2056,8 @@
     const count = tasbihState.counts[tasbihState.activePhrase] || 0;
     tasbihCountEl.textContent = count;
     const target = TASBIH_TARGETS[tasbihState.targetIndex];
-    tasbihTargetEl.textContent = 'из ' + target;
-    tasbihTargetBtn.textContent = 'Цель: ' + target;
+    tasbihTargetEl.textContent = MISC_TEXT.outOf[settings.lang] + target;
+    tasbihTargetBtn.textContent = MISC_TEXT.targetPrefix[settings.lang] + target;
   }
 
   const tasbihTapBtn = document.getElementById('tasbihTapBtn');
@@ -1586,7 +2080,7 @@
       void tasbihTapBtn.offsetWidth; // перезапуск анимации
       tasbihTapBtn.classList.add('milestone');
 
-      tasbihMilestoneBadge.textContent = '✓ Цель ' + target + ' достигнута';
+      tasbihMilestoneBadge.textContent = MISC_TEXT.milestone[settings.lang].replace('{n}', target);
       tasbihMilestoneBadge.classList.add('show');
       clearTimeout(milestoneTimer);
       milestoneTimer = setTimeout(() => {
@@ -1654,6 +2148,7 @@
       closeHistory();
       closeTasbih();
       closeDua();
+      closeSettings();
     }
   });
 
